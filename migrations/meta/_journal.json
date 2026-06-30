@@ -1,0 +1,76 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1781958427909,
+      "tag": "0000_sloppy_typhoid_mary",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782018505858,
+      "tag": "0001_colorful_nextwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782018827734,
+      "tag": "0002_volatile_ink",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782058228143,
+      "tag": "0003_bright_fenris",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782103068670,
+      "tag": "0004_rainy_secret_warriors",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1782221158369,
+      "tag": "0005_hard_gabe_jones",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782350400000,
+      "tag": "0006_rename_activity_logs_to_audit_logs",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782398877539,
+      "tag": "0007_wet_victor_mancha",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1751030400000,
+      "tag": "0008_audit_logs_user_id_idx",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1751034000000,
+      "tag": "0009_noop_admin_role_not_system",
+      "breakpoints": true
+    }
+  ]
+}

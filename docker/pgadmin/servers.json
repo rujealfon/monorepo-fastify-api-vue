@@ -1,0 +1,15 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "fastify_dev",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "fastify_dev",
+      "Username": "postgres",
+      "Password": "password",
+      "SSLMode": "prefer",
+      "PassFile": "/pgpass"
+    }
+  }
+}
