@@ -172,11 +172,11 @@ The dual `@/*` path in `apps/web` lets `vue-tsc` resolve both web source files a
 `packages/eslint-config` wraps `@antfu/eslint-config` and exports `createConfig()`:
 
 ```js
-// apps/api/eslint.config.js
+// apps/api/eslint.config.mjs
 import createConfig from "@monorepo-fastify-api-vue/eslint-config/create-config"
-export default createConfig({ ignores: ["dist/**", "migrations/**"] })
+export default createConfig()
 
-// apps/web/eslint.config.js
+// apps/web/eslint.config.mjs
 import createConfig from "@monorepo-fastify-api-vue/eslint-config/create-config"
 export default createConfig({ vue: true })
 ```
