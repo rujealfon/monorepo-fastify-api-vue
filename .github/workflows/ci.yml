@@ -28,8 +28,9 @@ jobs:
 
       - name: Run migrations
         run: |
-          DATABASE_URL=postgres://postgres:password@localhost:5432/fastify_dev nubx drizzle-kit migrate
-          DATABASE_URL=postgres://postgres:password@localhost:5432/fastify_test nubx drizzle-kit migrate
+          node -e "import('drizzle-orm/version').then(m => console.log(m)).catch(e => { console.error(e); process.exit(1) })"
+          DATABASE_URL=postgres://postgres:password@localhost:5432/fastify_dev ./node_modules/.bin/drizzle-kit migrate
+          DATABASE_URL=postgres://postgres:password@localhost:5432/fastify_test ./node_modules/.bin/drizzle-kit migrate
         working-directory: apps/api
 
       - name: Start API container
