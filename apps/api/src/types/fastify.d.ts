@@ -15,6 +15,11 @@ declare module 'fastify' {
     metricsRegistry: Registry
     optionalAuthenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
     requirePermission: (permission: string) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>
+    swagger: (opts?: { yaml?: boolean }) => Record<string, unknown> | string
     valkey: GlideClient
+  }
+
+  interface FastifySchema {
+    hide?: boolean
   }
 }
