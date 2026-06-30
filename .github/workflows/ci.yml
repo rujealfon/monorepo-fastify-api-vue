@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install nub
+        run: npm install -g @nubjs/nub
+
+      - name: Install dependencies
+        run: nub install --frozen-lockfile
+
+      - name: Start databases
+        run: docker compose up -d postgres valkey
+
+      - name: Run migrations
+        run: |
+          DATABASE_URL=postgres://postgres:password@localhost:5432/fastify_dev nubx drizzle-kit migrate
+          DATABASE_URL=postgres://postgres:password@localhost:5432/fastify_test nubx drizzle-kit migrate
+        working-directory: apps/api
+
+      - name: Start API container
+        run: docker compose up -d --build api
+
+      - name: Lint
+        run: nub run lint
+
+      - name: Test API
+        run: nub run test:unit
+
+      - name: Typecheck shared client
+        run: nub run --filter @monorepo-fastify-api-vue/api-client typecheck
+
+      - name: Typecheck web
+        run: nub run --filter @monorepo-fastify-api-vue/web typecheck
+
+      - name: Build API
+        run: nub run --filter @monorepo-fastify-api-vue/api build
+
+      - name: Build web
+        run: nub run --filter @monorepo-fastify-api-vue/web build
+
+      - name: Docker logs
+        if: failure()
+        run: |
+          docker compose ps
+          docker compose logs --no-color --tail=200 api postgres valkey
