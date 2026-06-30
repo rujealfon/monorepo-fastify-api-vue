@@ -1,0 +1,27 @@
+{
+  "name": "@monorepo-fastify-api-vue/web",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "vue-tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@monorepo-fastify-api-vue/api-client": "workspace:^",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@monorepo-fastify-api-vue/eslint-config": "workspace:^",
+    "@types/node": "^22.0.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/tsconfig": "^0.7.0",
+    "eslint": "^9.17.0",
+    "vite": "^6.3.5",
+    "vue-tsc": "^2.2.10"
+  }
+}

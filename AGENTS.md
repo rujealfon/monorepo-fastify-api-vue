@@ -1,23 +1,58 @@
 # Repository Guidelines
 
+## Monorepo Layout
+
+nub-managed workspace with two apps and two shared packages:
+
+```
+apps/api/        @monorepo-fastify-api-vue/api     Fastify API (Docker + PostgreSQL + Valkey)
+apps/web/        @monorepo-fastify-api-vue/web      Vue 3 + Vite frontend
+packages/api-client/   @monorepo-fastify-api-vue/api-client  Typed fetch client (re-exports Fastify contract)
+packages/eslint-config/ @monorepo-fastify-api-vue/eslint-config  Shared ESLint via @antfu/eslint-config
+```
+
+Root scripts run across all workspaces:
+- `nub run dev` — starts each workspace `dev` (web: Vite; API: Docker reminder)
+- `nub run build` — builds all workspaces
+- `nub run lint` — lints all workspaces
+- `nub run test` — runs tests across all workspaces
+
+Dev workflow: `docker-compose up -d` first (starts API + DB + Valkey), then `nub run dev` for the Vite web dev server. Web proxies `/api` → `http://localhost:3000`.
+
+api-client usage in Vue — import the singleton from `src/api.ts`:
+```ts
+import { api } from '@/api'
+const users = await api.users.list({ query: { page: 1, limit: 10 } })
+```
+
+The singleton base URL is controlled by `VITE_API_URL` (baked at build time). Leave unset for local dev and Docker; set to the VPS URL for S3/CDN deploys. See [README.md](README.md) for details.
+
 ## Project Structure & Module Organization
 
 This is a Fastify TypeScript API. Source code lives in `src/`, with startup in `server.ts` and app assembly in `app.ts`. Domain modules are under `src/modules/<domain>/` and usually contain `routes/`, `services/`, and `schemas/`. Shared errors, hooks, decorators, and schemas live in `src/common/`; plugins in `src/plugins/`; database schema in `src/db/schema/`; and portable RPC contracts in `src/contract/schemas/`. Tests live in `src/tests/`, with fixtures in `src/tests/fixtures/`.
 
 ## Build, Test, and Development Commands
 
-Run project scripts with `nub`; Docker services are required for most tasks.
+Run from the repo root (delegates to the API container via Docker):
+
+- `nub run test` — runs Vitest integration tests inside the app container.
+- `nub run lint` / `nub run lint:fix` — lints all workspaces.
+- `nub run db:generate` — generates Drizzle migrations after schema edits.
+- `nub run db:migrate` — applies migrations to dev + test databases.
+- `nub run db:seed` — seeds the dev database.
+
+Or run directly inside the API container with `nub`:
 
 - `docker-compose up -d` starts Postgres, Valkey, the app, Drizzle Studio, and pgAdmin.
-- `nub build` compiles TypeScript and resolves path aliases with `tsc-alias`.
-- `nub test:unit` runs Vitest integration tests inside the app container.
-- `docker exec -e NODE_ENV=test fastify_app nubx vitest run src/tests/modules/users.test.ts` runs one test file.
-- `nub lint` checks `src/` with ESLint; `nub lint:fix` applies automatic fixes.
-- `nub db:generate` creates Drizzle migrations after schema edits; `nub db:migrate` applies them.
+- `nub run build` compiles TypeScript and resolves path aliases with `tsc-alias`.
+- `nub run test:unit` runs Vitest integration tests inside the app container.
+- `docker exec -e NODE_ENV=test fastify_api nubx vitest run src/tests/modules/users.test.ts` runs one test file.
+- `nub run lint` checks `src/` with ESLint; `nub run lint:fix` applies automatic fixes.
+- `nub run db:generate` creates Drizzle migrations after schema edits; `nub run db:migrate` applies them.
 
 ## Coding Style & Naming Conventions
 
-Use TypeScript ES modules and the `@/` alias for imports from `src/`. Follow the ESLint setup based on `@antfu/eslint-config`; run `nub lint` before submitting changes. Prefer Zod for validation and derive types with `z.infer<>` instead of hand-written interfaces. Keep services free of Fastify imports and inject `db` explicitly. Contract schema files in `src/contract/schemas/` must only import from `zod` and `@/contract/types.js`.
+Use TypeScript ES modules and the `@/` alias for imports from `src/`. Follow the ESLint setup based on `@antfu/eslint-config`; run `nub run lint` before submitting changes. Prefer Zod for validation and derive types with `z.infer<>` instead of hand-written interfaces. Keep services free of Fastify imports and inject `db` explicitly. Contract schema files in `src/contract/schemas/` must only import from `zod` and `@/contract/types.js`.
 
 ## Testing Guidelines
 
@@ -32,7 +67,7 @@ Tests use Vitest and exercise the real database and Valkey; do not mock these de
 
 ### Schema & Validation
 - Use Zod for all params, query, body, and every declared response status. Derive types with `z.infer<>` — no hand-written interfaces.
-- Contract schemas in `src/contract/schemas/` must only import from `zod` and `@/contract/types.js`. No Fastify, Drizzle, or server-side imports.
+- Contract schemas in `src/contract/schemas/` must only import from `zod`, `@/contract/types.js`, `@/common/constants/`, `@/common/schemas/`, and `@/modules/<domain>/schemas/`. No Fastify, Drizzle, or server-side imports. Module schemas referenced from contracts must themselves be pure Zod (browser-safe).
 - Route handlers must return only the statuses declared in the contract schema (`responses` map). Undeclared statuses will not be serialized correctly by `fastify-type-provider-zod`.
 
 ### Services & Architecture
@@ -43,7 +78,7 @@ Tests use Vitest and exercise the real database and Valkey; do not mock these de
 - All `timestamp` columns use `{ withTimezone: true }` (TIMESTAMPTZ). Never use bare `timestamp()`.
 - Drizzle queries must include: ownership filters, soft-delete filters (`deletedAt IS NULL`), pagination limits on list queries, and unique-conflict handling.
 - Multi-write flows require a Drizzle transaction. Check for N+1 queries in loops — prefer `.where(inArray(...))` batch fetches.
-- Schema changes require a generated migration (`nub db:generate`) and backwards-compatibility notes if existing data is affected. Add indexes on foreign keys and columns used in common filters.
+- Schema changes require a generated migration (`nub run db:generate`) and backwards-compatibility notes if existing data is affected. Add indexes on foreign keys and columns used in common filters.
 
 ### Valkey & Plugins
 - Valkey is registered by `src/plugins/valkey.ts`; access through `fastify.valkey`. Do not instantiate separate Valkey clients elsewhere.

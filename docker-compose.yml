@@ -31,11 +31,12 @@ services:
       timeout: 5s
       retries: 5
 
-  app:
+  api:
     build:
       context: .
       target: deps
-    container_name: fastify_app
+    container_name: fastify_api
+    working_dir: /app/apps/api
     restart: unless-stopped
     command: nub watch src/server.ts
     depends_on:
@@ -60,17 +61,63 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./src:/app/src
+      - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/tsconfig.json:/app/apps/api/tsconfig.json:ro
+      - ./apps/api/eslint.config.js:/app/apps/api/eslint.config.js:ro
+      - ./apps/api/vitest.config.ts:/app/apps/api/vitest.config.ts:ro
+      - ./packages/eslint-config/create-config.js:/app/packages/eslint-config/create-config.js:ro
+      - ./packages/eslint-config/create-config.d.ts:/app/packages/eslint-config/create-config.d.ts:ro
+      - ./packages/eslint-config/eslint.config.js:/app/packages/eslint-config/eslint.config.js:ro
+      - ./packages/eslint-config/package.json:/app/packages/eslint-config/package.json:ro
       - ./tsconfig.json:/app/tsconfig.json:ro
-      - ./eslint.config.js:/app/eslint.config.js:ro
-      - ./vitest.config.ts:/app/vitest.config.ts:ro
+
+  # Vue Vite dev server with hot reload — always on in dev
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: dev
+    container_name: fastify_web
+    depends_on:
+      - api
+    environment:
+      API_URL: http://api:3000
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./apps/web/src:/app/apps/web/src
+      - ./apps/web/index.html:/app/apps/web/index.html
+      - ./apps/web/vite.config.ts:/app/apps/web/vite.config.ts:ro
+      - ./apps/api/src/contract:/app/apps/api/src/contract
+      - ./apps/api/src/common:/app/apps/api/src/common
+      - ./apps/api/src/modules:/app/apps/api/src/modules
+      - ./packages/api-client/src:/app/packages/api-client/src
+
+  # Vue nginx production build — opt in with: docker-compose --profile web-prod up -d
+  # For same-server: API_URL defaults to http://api:3000 (Docker network)
+  # For different-server: set API_URL=https://your-api-domain.com
+  web-prod:
+    profiles: [web-prod]
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: production
+    container_name: fastify_web_prod
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      API_URL: http://api:3000
+    ports:
+      - '80:80'
 
   drizzle-studio:
     build:
       context: .
       target: deps
     container_name: fastify_drizzle_studio
-    command: ['node_modules/.bin/drizzle-kit', 'studio', '--port', '4983', '--host', '0.0.0.0']
+    working_dir: /app/apps/api
+    command: ['nubx', 'drizzle-kit', 'studio', '--port', '4983', '--host', '0.0.0.0']
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,31 +126,11 @@ services:
     ports:
       - '4983:4983'
     volumes:
-      - ./drizzle.config.ts:/app/drizzle.config.ts:ro
+      - ./apps/api/drizzle.config.ts:/app/apps/api/drizzle.config.ts:ro
+      - ./apps/api/tsconfig.json:/app/apps/api/tsconfig.json:ro
+      - ./apps/api/src:/app/apps/api/src:ro
+      - ./apps/api/migrations:/app/apps/api/migrations
       - ./tsconfig.json:/app/tsconfig.json:ro
-      - ./src:/app/src:ro
-      - ./migrations:/app/migrations
-
-  # prod:
-  #   build:
-  #     context: .
-  #     target: production
-  #   container_name: fastify_prod
-  #   restart: unless-stopped
-  #   command: ['node', 'dist/server.js']
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     valkey:
-  #       condition: service_healthy
-  #   environment:
-  #     HOST: 0.0.0.0
-  #     NODE_ENV: production
-  #     DATABASE_URL: postgres://postgres:password@postgres:5432/fastify_dev
-  #     JWT_SECRET: change_this_to_a_random_string_at_least_32_characters
-  #     VALKEY_URL: redis://valkey:6379
-  #   ports:
-  #     - '8000:8000'
 
   cleanup:
     build:

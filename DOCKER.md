@@ -1,6 +1,31 @@
 # Docker Setup Guide
 
-This guide walks through the full local development setup using Docker. All services run together with hot reload so your code changes are reflected immediately.
+Everything runs in Docker — API, Vue dev server, database, and tooling. All services are defined in `docker-compose.yml` at the repo root.
+
+---
+
+## Local Development
+
+```bash
+# 1. Copy env files
+cp apps/api/.env.example apps/api/.env
+
+# 2. Start everything
+docker-compose up -d
+
+# 3. Run migrations + seed (first time only)
+nub run db:migrate
+nub run db:seed
+```
+
+That's it. Two URLs:
+
+| URL | What |
+|---|---|
+| `http://localhost:5173` | Vue app (Vite dev server, hot reload) |
+| `http://localhost:3000` | Fastify API |
+
+The Vue container proxies `/api` → `http://api:3000` inside Docker. No env vars needed.
 
 ---
 
@@ -8,151 +33,125 @@ This guide walks through the full local development setup using Docker. All serv
 
 | Service | Container | Port | Description |
 |---|---|---|---|
-| `postgres` | `fastify_postgres` | `5432` | PostgreSQL 18 database |
-| `app` | `fastify_app` | `3000` | Fastify API with hot reload (`nub watch src/server.ts`) |
-| `drizzle-studio` | `fastify_drizzle_studio` | `4983 (backend)` | Drizzle Studio — schema & data browser |
-| `pgadmin` | `fastify_pgadmin` | `5050` | pgAdmin 4 — Postgres GUI |
+| `postgres` | `fastify_postgres` | `5432` | PostgreSQL 18 |
+| `valkey` | `fastify_valkey` | `6379` | Valkey (Redis-compatible) cache |
+| `api` | `fastify_api` | `3000` | Fastify API — hot reload via `nub watch` |
+| `web` | `fastify_web` | `5173` | Vue Vite dev server — hot reload |
+| `drizzle-studio` | `fastify_drizzle_studio` | `4983` | Drizzle Studio |
+| `pgadmin` | `fastify_pgadmin` | `5050` | pgAdmin 4 |
+
+The `web-prod` service (nginx) is opt-in via `--profile web-prod` — used for production deploys only.
 
 ---
 
-## Step 1 — Build the images
+## Production Deployment
+
+### Same server (nginx serving Vue + proxying API)
 
 ```bash
-docker-compose build
+docker-compose --profile web-prod up -d
 ```
 
-This builds the `app` and `drizzle-studio` images from the `deps` stage of the Dockerfile (installs all dependencies including dev tools like `tsx` and `drizzle-kit`).
+nginx starts on port `80`, serves the built Vue SPA, and proxies `/api` → `http://api:3000`.
+
+Override `API_URL` if the API is on a different host:
+```bash
+API_URL=https://api.example.com docker-compose --profile web-prod up -d
+```
 
 ---
 
-## Step 2 — Start all services
+### S3 + VPS (static Vue + separate API server)
 
+**API on VPS:**
 ```bash
 docker-compose up -d
 ```
 
-Wait a few seconds for postgres to pass its healthcheck before the app and drizzle-studio start.
+Set `CORS_ORIGIN` to your CloudFront/S3 URL in `apps/api/.env` or `docker-compose.yml`:
+```
+CORS_ORIGIN=https://your-cloudfront.com
+```
 
-Check that everything is running:
+**Build Vue for S3:**
+```bash
+VITE_API_URL=https://api.your-vps.com nub run --filter @monorepo-fastify-api-vue/web build
+aws s3 sync apps/web/dist/ s3://your-bucket --delete
+```
+
+S3: enable static website hosting. CloudFront: add error response 404 → `/index.html` (status 200) for SPA routing.
+
+---
+
+### Vue in Docker on a separate server
 
 ```bash
-docker-compose ps
+docker build -f apps/web/Dockerfile --target production -t my-app-web .
+docker run -d -p 80:80 -e API_URL=https://api.your-vps.com my-app-web
 ```
 
 ---
 
-## Step 3 — Run migrations
+## Environment Variables
 
-Tables don't exist yet. Apply the migrations once:
+| Var | Where | When |
+|---|---|---|
+| `VITE_API_URL` | Baked into Vue bundle at **build time** | S3/CDN — no proxy available |
+| `API_URL` | Injected into nginx at **container startup** | `web-prod` Docker profile |
 
-```bash
-nub run db:migrate
-```
-
-```bash
-nub run db:seed
-```
-
-Expected output:
-
-```
-✓ migrations applied successfully!
-```
-
-Confirm the tables were created:
-
-```bash
-docker exec -it fastify_postgres psql -U postgres -d fastify_dev -c "\dt"
-```
+Neither is needed for local development — the `web` container proxies `/api` to the `api` container internally.
 
 ---
 
-## Step 4 — Verify the API is running
+## Useful Commands
 
 ```bash
-curl http://localhost:3000/health/live
-# → {"status":"ok"}
-```
+# View logs
+docker-compose logs -f api
+docker-compose logs -f web
 
-Open the Scalar API reference in your browser:
+# Restart API (e.g. after changing a plugin or env var)
+docker-compose restart api
 
-```
-http://localhost:3000/
-```
+# Run all tests
+nub run test
 
----
+# Run a single test file
+docker exec -e NODE_ENV=test fastify_api nubx vitest run src/tests/modules/users.test.ts
 
-## You're ready to develop
+# Open a psql shell
+docker exec -it fastify_postgres psql -U postgres -d fastify_dev
 
-Any change you make to a file inside `src/` is picked up automatically — `nub watch src/server.ts` restarts the server inside the container.
+# Stop all services (data preserved)
+docker-compose down
 
----
-
-## Drizzle Studio
-
-The Drizzle Studio UI is **not** at `http://localhost:4983`. Port `4983` is the local backend that the Drizzle cloud UI connects to.
-
-Open the UI at:
-
-```
-https://local.drizzle.studio
-```
-
-It will automatically connect to your running container on port `4983`.
-
----
-
-## pgAdmin
-
-Open `http://localhost:5050` and log in with:
-
-| Field | Value |
-|---|---|
-| Email | `admin@admin.com` |
-| Password | `admin` |
-
-The `fastify_dev` server is pre-configured — it appears in the left sidebar under *Servers* with no manual setup needed.
-
----
-
-## Schema changes & migrations
-
-After editing a file in `src/db/schema/`, generate a new migration then apply it:
-
-```bash
-# 1. Generate migration SQL (runs on host, reads your local schema files)
-nub run db:generate
-
-# 2. Apply it to the running Docker database
-nub run db:migrate
-```
-
----
-
-## Resetting the database
-
-### Full reset (wipe everything and start fresh)
-
-Tears down all containers and volumes, then rebuilds from scratch:
-
-```bash
-# 1. Stop and delete all containers + volumes (all data is destroyed)
+# Stop and wipe all volumes
 docker-compose down -v
+```
 
-# 2. Start services again
+---
+
+## Schema Changes & Migrations
+
+```bash
+# After editing apps/api/src/db/schema/
+nub run db:generate   # generate migration SQL
+nub run db:migrate    # apply to dev + test databases
+```
+
+---
+
+## Resetting the Database
+
+### Full reset (wipes volumes)
+```bash
+docker-compose down -v
 docker-compose up -d
-
-# 3. Apply migrations
 nub run db:migrate
-
-# 4. Seed initial roles and permissions
 nub run db:seed
 ```
 
-### Data-only reset (drop and recreate database)
-
-Drops and recreates the database, then re-runs migrations and seed:
-
+### Data-only reset
 ```bash
 docker exec -it fastify_postgres psql -U postgres -c "DROP DATABASE IF EXISTS fastify_dev WITH (FORCE);"
 docker exec -it fastify_postgres psql -U postgres -c "CREATE DATABASE fastify_dev;"
@@ -160,38 +159,29 @@ nub run db:migrate
 nub run db:seed
 ```
 
-> **Note:** After either reset, any existing JWT tokens are invalid (users no longer exist). Users must register and log in again.
+---
+
+## Drizzle Studio
+
+Port `4983` is the backend. Open the UI at:
+
+```
+https://local.drizzle.studio
+```
 
 ---
 
-## Useful commands
+## pgAdmin
+
+`http://localhost:5050` — log in with `admin@admin.com` / `admin`. The `fastify_dev` server is pre-configured in the sidebar.
+
+---
+
+## Fix Stale Dependencies
+
+If a container can't find a package after `nub install` changes:
 
 ```bash
-# View live logs
-docker-compose logs -f app
-docker-compose logs -f postgres
-
-# Restart the app (e.g. after changing a plugin or config)
-docker-compose restart app
-
-# Open a psql shell
-docker exec -it fastify_postgres psql -U postgres -d fastify_dev
-
-# Stop all services (data is preserved)
-docker-compose down
-
-# Stop and wipe all data
-docker-compose down -v
-```
-
-### Fix stale app dependencies
-
-If tests fail with `Cannot find package ... imported from /app/...` but the package is already in `package.json` and `pnpm-lock.yaml`, rebuild and recreate the app container. The app's `node_modules` comes from the image, not the host.
-
-```bash
-docker compose build app
-docker compose up -d app
-
-# Optional sanity check for one missing package
-docker exec fastify_app node -e "import('@opentelemetry/api').then(()=>console.log('otel api ok'))"
+docker-compose build api drizzle-studio web
+docker-compose up -d --force-recreate api drizzle-studio web
 ```
