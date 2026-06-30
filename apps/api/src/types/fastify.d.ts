@@ -5,6 +5,8 @@ import type { Registry } from 'prom-client'
 import type { AppConfig } from '@/config/schema.js'
 import type { Db } from '@/db/index.js'
 
+import '@fastify/swagger'
+
 declare module 'fastify' {
   interface FastifyInstance {
     authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>

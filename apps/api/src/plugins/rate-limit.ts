@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync } from 'fastify'
+import type { FastifyPluginAsync, FastifyRequest } from 'fastify'
 
 import rateLimit from '@fastify/rate-limit'
 import fp from 'fastify-plugin'
@@ -16,8 +16,8 @@ const rateLimitPlugin: FastifyPluginAsync = async (fastify) => {
     max: 100,
     timeWindow: '15 minutes',
     store: createValkeyRateLimitStore(fastify.valkey),
-    allowList: request => request.url === '/health/live' || request.url === '/health/ready',
-    keyGenerator: request => request.ip,
+    allowList: (request: FastifyRequest) => request.url === '/health/live' || request.url === '/health/ready',
+    keyGenerator: (request: FastifyRequest) => request.ip,
   })
 }
 
