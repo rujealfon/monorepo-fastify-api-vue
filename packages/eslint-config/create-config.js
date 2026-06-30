@@ -19,8 +19,8 @@ export default function createConfig(options = {}, ...userConfigs) {
     ignores: [...defaultIgnores, ...ignores],
   }, {
     rules: {
-      'ts/consistent-type-definitions': ['error', 'type'],
       'no-console': ['warn'],
+      'ts/consistent-type-definitions': ['error', 'type'],
       'antfu/no-top-level-await': ['off'],
       'node/prefer-global/process': ['off'],
       'node/no-process-env': ['error'],
@@ -31,6 +31,11 @@ export default function createConfig(options = {}, ...userConfigs) {
         case: 'kebabCase',
         ignore: ['README.md'],
       }],
+    },
+  }, {
+    files: ['**/*.d.ts'],
+    rules: {
+      'ts/consistent-type-definitions': ['error', 'interface'],
     },
   }, ...userConfigs)
 }

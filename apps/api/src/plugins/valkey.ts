@@ -4,12 +4,6 @@ import type { FastifyPluginAsync } from 'fastify'
 import { GlideClient } from '@valkey/valkey-glide'
 import fp from 'fastify-plugin'
 
-declare module 'fastify' {
-  type FastifyInstance = {
-    valkey: GlideClient
-  }
-}
-
 function createValkeyConfig(url: string): GlideClientConfiguration {
   const parsedUrl = new URL(url)
   const databaseId = Number.parseInt(parsedUrl.pathname.replace('/', ''), 10)

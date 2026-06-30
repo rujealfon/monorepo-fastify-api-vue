@@ -5,12 +5,6 @@ import { collectDefaultMetrics, Registry } from 'prom-client'
 
 import { PERMISSIONS } from '@/common/constants/index.js'
 
-declare module 'fastify' {
-  type FastifyInstance = {
-    metricsRegistry: Registry
-  }
-}
-
 const metricsPlugin: FastifyPluginAsync = async (fastify) => {
   const registry = new Registry()
   registry.setDefaultLabels({ app: 'fastify-api' })
