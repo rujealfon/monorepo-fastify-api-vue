@@ -2,15 +2,7 @@ import type { FastifyPluginAsync } from 'fastify'
 
 import fp from 'fastify-plugin'
 
-import type { Db } from '@/db/index.js'
-
 import { createDb } from '@/db/index.js'
-
-declare module 'fastify' {
-  type FastifyInstance = {
-    db: Db
-  }
-}
 
 const dbPlugin: FastifyPluginAsync = async (fastify) => {
   const env = fastify.config

@@ -63,11 +63,11 @@ services:
     volumes:
       - ./apps/api/src:/app/apps/api/src
       - ./apps/api/tsconfig.json:/app/apps/api/tsconfig.json:ro
-      - ./apps/api/eslint.config.js:/app/apps/api/eslint.config.js:ro
+      - ./apps/api/eslint.config.mjs:/app/apps/api/eslint.config.mjs:ro
       - ./apps/api/vitest.config.ts:/app/apps/api/vitest.config.ts:ro
       - ./packages/eslint-config/create-config.js:/app/packages/eslint-config/create-config.js:ro
       - ./packages/eslint-config/create-config.d.ts:/app/packages/eslint-config/create-config.d.ts:ro
-      - ./packages/eslint-config/eslint.config.js:/app/packages/eslint-config/eslint.config.js:ro
+      - ./packages/eslint-config/eslint.config.mjs:/app/packages/eslint-config/eslint.config.mjs:ro
       - ./packages/eslint-config/package.json:/app/packages/eslint-config/package.json:ro
       - ./tsconfig.json:/app/tsconfig.json:ro
 

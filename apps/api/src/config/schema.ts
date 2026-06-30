@@ -1,9 +1,3 @@
-declare module 'fastify' {
-  type FastifyInstance = {
-    config: AppConfig
-  }
-}
-
 export type AppConfig = {
   PORT: number
   HOST: string

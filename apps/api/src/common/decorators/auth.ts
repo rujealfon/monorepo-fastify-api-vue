@@ -6,14 +6,6 @@ import fp from 'fastify-plugin'
 import { ROLES } from '@/common/constants/index.js'
 import { userRoles, users } from '@/db/schema/index.js'
 
-declare module 'fastify' {
-  type FastifyInstance = {
-    authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
-    optionalAuthenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
-    requirePermission: (permission: string) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>
-  }
-}
-
 async function verifyAndGetUserId(request: FastifyRequest): Promise<string | null> {
   try {
     await request.jwtVerify()

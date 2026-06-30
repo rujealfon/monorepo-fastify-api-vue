@@ -1,15 +1,9 @@
-import type { FastifyPluginAsync } from 'fastify'
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify'
 
 import fp from 'fastify-plugin'
 import { collectDefaultMetrics, Registry } from 'prom-client'
 
 import { PERMISSIONS } from '@/common/constants/index.js'
-
-declare module 'fastify' {
-  type FastifyInstance = {
-    metricsRegistry: Registry
-  }
-}
 
 const metricsPlugin: FastifyPluginAsync = async (fastify) => {
   const registry = new Registry()
@@ -21,7 +15,7 @@ const metricsPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.get('/metrics', {
     schema: { hide: true },
     preValidation: [fastify.authenticate, fastify.requirePermission(PERMISSIONS.METRICS.READ_ANY)],
-    handler: async (_request, reply) => {
+    handler: async (_request: FastifyRequest, reply: FastifyReply) => {
       reply.header('Content-Type', registry.contentType)
       return registry.metrics()
     },
