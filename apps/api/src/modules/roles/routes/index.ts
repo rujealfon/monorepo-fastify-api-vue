@@ -4,9 +4,9 @@ import * as roleService from '@/modules/roles/services/role.service.js'
 import { createFastifyRpcPlugin } from '@/plugins/rpc.js'
 
 export default createFastifyRpcPlugin(rolesSchema, {
-  list: async ({ request }) => {
-    const data = await roleService.findAllRoles(request.server.db)
-    return { status: 200 as const, body: { success: true as const, data, pagination: { page: 1, limit: data.length, total: data.length } } }
+  list: async ({ query, request }) => {
+    const { data, total } = await roleService.findAllRoles(request.server.db, query.page, query.limit)
+    return { status: 200 as const, body: { success: true as const, data, pagination: { page: query.page, limit: query.limit, total } } }
   },
 
   get: async ({ params, request }) => {
@@ -35,7 +35,8 @@ export default createFastifyRpcPlugin(rolesSchema, {
 
   assignPermission: async ({ params, request }) => {
     const isSuperAdmin = request.requestContext.get('isSuperAdmin') ?? false
-    await roleService.assignPermissionToRole(request.server.db, params.id, params.permId, isSuperAdmin)
+    const callerPermissions = request.requestContext.get('permissions') ?? []
+    await roleService.assignPermissionToRole(request.server.db, params.id, params.permId, isSuperAdmin, callerPermissions)
     logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'permission.assigned', resourceType: 'role', resourceId: params.id, metadata: { permId: params.permId } })
     return { status: 200 as const, body: { success: true as const, data: null } }
   },

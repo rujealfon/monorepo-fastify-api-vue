@@ -10,3 +10,6 @@ export function createDb(url: string) {
 }
 
 export type Db = ReturnType<typeof createDb>['db']
+
+/** The transaction-scoped client passed into `db.transaction(async (tx) => ...)`. */
+export type Tx = Parameters<Db['transaction']>[0] extends (tx: infer T) => unknown ? T : never

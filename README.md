@@ -61,6 +61,7 @@ A nub-managed monorepo containing a production-ready Fastify API and a Vue 3 fro
 
 ```bash
 nub install
+cp .env.example .env   # set JWT_SECRET and MOBILE_API_KEY — openssl rand -hex 32
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 docker-compose up -d

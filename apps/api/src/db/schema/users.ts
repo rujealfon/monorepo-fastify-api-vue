@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
+import { index, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
 import { uuidv7 } from 'uuidv7'
 
 export const users = pgTable('users', {
@@ -13,6 +13,9 @@ export const users = pgTable('users', {
 }, t => [
   // ponytail: partial index so deleted users don't block re-registration
   uniqueIndex('users_email_unique').on(t.email).where(sql`${t.deletedAt} IS NULL`),
+  // Speeds up the soft-deleted-account reactivation lookup in registerUser,
+  // which filters by email + deletedAt IS NOT NULL and sorts by deletedAt desc.
+  index('users_email_deleted_at_idx').on(t.email, t.deletedAt).where(sql`${t.deletedAt} IS NOT NULL`),
 ])
 
 export type UserRow = typeof users.$inferSelect

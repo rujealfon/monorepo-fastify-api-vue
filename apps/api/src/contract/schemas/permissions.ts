@@ -1,5 +1,5 @@
 import { PERMISSIONS } from '@/common/constants/index.js'
-import { apiErrorSchema, apiListSchema } from '@/common/schemas/index.js'
+import { apiErrorSchema, apiListSchema, paginationQuerySchema } from '@/common/schemas/index.js'
 import { permissionSchema } from '@/modules/permissions/schemas/index.js'
 
 import type { RouteMap } from '../types.js'
@@ -10,6 +10,7 @@ export const permissionsSchema = {
     path: '/api/v1/permissions',
     tags: ['Permissions'],
     permission: PERMISSIONS.PERMISSION.READ_ANY,
+    query: paginationQuerySchema,
     responses: {
       200: apiListSchema(permissionSchema),
       401: apiErrorSchema,

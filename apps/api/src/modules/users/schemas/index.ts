@@ -44,8 +44,8 @@ export const updateUserBodySchema = z
     email: z.email().optional().meta({ description: 'Email address', examples: ['user@example.com'] }),
     profile: updateProfileBodySchema.optional().meta({ description: 'Profile fields to update' }),
   })
-  .refine(data => data.email !== undefined || data.profile !== undefined, {
-    message: 'At least one field must be provided (email or profile)',
+  .refine(data => data.email !== undefined || (data.profile !== undefined && Object.keys(data.profile).length > 0), {
+    message: 'At least one field must be provided (email or a non-empty profile)',
   })
 
 export { uuidParamSchema as userParamsSchema, paginationQuerySchema as userQuerySchema }

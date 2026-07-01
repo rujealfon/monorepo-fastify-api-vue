@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci_test_jwt_secret_at_least_32_characters' }}
+      MOBILE_API_KEY: ${{ secrets.MOBILE_API_KEY || 'ci_test_mobile_api_key_at_least_32_chars' }}
 
     steps:
       - uses: actions/checkout@v4
