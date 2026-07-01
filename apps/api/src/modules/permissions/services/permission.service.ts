@@ -9,7 +9,7 @@ export async function findAllPermissions(db: Db, page: number, limit: number) {
     db
       .select()
       .from(permissions)
-      .orderBy(asc(permissions.resource), asc(permissions.action))
+      .orderBy(asc(permissions.resource), asc(permissions.action), asc(permissions.scope), asc(permissions.id))
       .offset((page - 1) * limit)
       .limit(limit),
     db.select({ total: count() }).from(permissions),

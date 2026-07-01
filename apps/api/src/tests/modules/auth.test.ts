@@ -428,6 +428,23 @@ describe('auth API', () => {
       expect(patch.statusCode).toBe(200)
     })
 
+    it('clears stale role assignments before adding the default role on reactivation', async () => {
+      const id = await registerThenDelete('stalerole@example.com')
+      const adminRole = await app.db.query.roles.findFirst({ where: eq(roles.name, ROLES.ADMIN) })
+      if (!adminRole)
+        throw new Error('Expected seeded admin role')
+      await app.db.insert(userRoles).values({ userId: id, roleId: adminRole.id })
+
+      await register('stalerole@example.com', 'Password123')
+
+      const assignedRoles = await app.db
+        .select({ name: roles.name })
+        .from(userRoles)
+        .innerJoin(roles, eq(userRoles.roleId, roles.id))
+        .where(eq(userRoles.userId, id))
+      expect(assignedRoles.map(role => role.name)).toEqual([ROLES.USER])
+    })
+
     it('returns 409 when re-registering a soft-deleted account with the wrong password', async () => {
       await registerThenDelete('frank@example.com')
 

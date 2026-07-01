@@ -39,6 +39,7 @@ export async function registerUser(db: Db, body: RegisterBody) {
     if (await bcrypt.compare(body.password, dead.passwordHash)) {
       await db.transaction(async (tx) => {
         await tx.update(users).set({ deletedAt: null, deletedBy: null }).where(eq(users.id, dead.id))
+        await tx.delete(userRoles).where(eq(userRoles.userId, dead.id))
         const [userRole] = await tx.select({ id: roles.id }).from(roles).where(eq(roles.name, ROLES.USER)).limit(1)
         if (userRole) {
           // Same lock every other userRoles/rolePermissions writer takes —
