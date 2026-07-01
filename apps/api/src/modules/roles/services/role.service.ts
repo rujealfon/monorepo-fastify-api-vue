@@ -110,9 +110,14 @@ export async function assignPermissionToRole(db: Db, roleId: string, permId: str
 }
 
 export async function removePermissionFromRole(db: Db, roleId: string, permId: string, callerIsSuperAdmin = false) {
-  const role = await findRoleById(db, roleId)
+  const [role, perm] = await Promise.all([
+    findRoleById(db, roleId),
+    db.query.permissions.findFirst({ where: eq(permissions.id, permId) }),
+  ])
   if (role.isSystemRole && !callerIsSuperAdmin)
     throw new ForbiddenError('System role permissions can only be modified by a super-admin')
+  if (!perm)
+    throw new NotFoundError('Permission', permId)
   await db.transaction(async (tx) => {
     // Take the same lock as assignPermissionToRole/assignRoleToUser/deleteRole
     // — without it, this removal isn't serialized against a concurrent

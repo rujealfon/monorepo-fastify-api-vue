@@ -95,5 +95,18 @@ describe('permissions API', () => {
       const permKeys = data.map(p => `${p.resource}:${p.action}:${p.scope}:${p.id}`)
       expect(permKeys).toEqual([...permKeys].sort())
     })
+
+    it('paginates with ?page and ?limit', async () => {
+      const page1 = await app.inject({ method: 'GET', url: '/api/v1/permissions?page=1&limit=2', headers: auth(adminToken) })
+      const page2 = await app.inject({ method: 'GET', url: '/api/v1/permissions?page=2&limit=2', headers: auth(adminToken) })
+      expect(page1.statusCode).toBe(200)
+      expect(page2.statusCode).toBe(200)
+
+      const body1 = page1.json<{ data: Permission[], pagination: { page: number, limit: number, total: number } }>()
+      const body2 = page2.json<{ data: Permission[], pagination: { page: number, limit: number, total: number } }>()
+      expect(body1.data).toHaveLength(2)
+      expect(body1.pagination).toMatchObject({ page: 1, limit: 2, total: SEED_PERMISSIONS.length })
+      expect(body2.data.some(perm => body1.data.some(firstPagePerm => firstPagePerm.id === perm.id))).toBe(false)
+    })
   })
 })

@@ -479,5 +479,34 @@ describe('roles API', () => {
       })
       expect(res.statusCode).toBe(200)
     })
+
+    it('returns 404 for an unknown role', async () => {
+      const perms = await listPermissions()
+      const res = await app.inject({
+        method: 'DELETE',
+        url: `/api/v1/roles/00000000-0000-0000-0000-000000000000/permissions/${perms[0].id}`,
+        headers: auth(superAdminToken),
+      })
+      expect(res.statusCode).toBe(404)
+    })
+
+    it('returns 404 for an unknown permission', async () => {
+      const role = await createRole('unknown-perm')
+      const res = await app.inject({
+        method: 'DELETE',
+        url: `/api/v1/roles/${role.id}/permissions/00000000-0000-0000-0000-000000000000`,
+        headers: auth(superAdminToken),
+      })
+      expect(res.statusCode).toBe(404)
+    })
+
+    it('returns 400 for non-uuid params', async () => {
+      const res = await app.inject({
+        method: 'DELETE',
+        url: '/api/v1/roles/not-a-uuid/permissions/not-a-uuid',
+        headers: auth(superAdminToken),
+      })
+      expect(res.statusCode).toBe(400)
+    })
   })
 })
