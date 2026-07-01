@@ -17,6 +17,7 @@ export const PERMISSIONS = {
     DELETE_ANY: 'user:delete:any',
     READ_OWN: 'user:read:own',
     UPDATE_OWN: 'user:update:own',
+    ASSIGN_ROLE_ANY: 'user:assign-role:any',
   },
   ROLE: {
     READ_ANY: 'role:read:any',

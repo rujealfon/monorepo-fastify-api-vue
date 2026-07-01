@@ -124,8 +124,8 @@ Auth endpoints are rate-limited to 5 requests per 15 minutes per IP in productio
 | POST | `/api/v1/users` | `user:create:any` | Create a user |
 | PATCH | `/api/v1/users/:id` | authenticated + self-or-`user:update:any` | Update a user |
 | DELETE | `/api/v1/users/:id` | authenticated + self-or-`user:delete:any` | Soft-delete a user |
-| POST | `/api/v1/users/:id/roles/:roleId` | `role:update:any` | Assign a role to a user |
-| DELETE | `/api/v1/users/:id/roles/:roleId` | `role:update:any` | Remove a role from a user |
+| POST | `/api/v1/users/:id/roles/:roleId` | `user:assign-role:any` | Assign a role to a user |
+| DELETE | `/api/v1/users/:id/roles/:roleId` | `user:assign-role:any` | Remove a role from a user |
 
 ### Roles
 

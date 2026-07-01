@@ -1,11 +1,12 @@
 import bcrypt from 'bcryptjs'
-import { and, eq, isNotNull, isNull } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm'
 
 import type { Db } from '@/db/index.js'
 import type { LoginBody, RegisterBody } from '@/modules/auth/schemas/index.js'
 
 import { PG_UNIQUE_VIOLATION, ROLES } from '@/common/constants/index.js'
 import { AppError, ConflictError, UnauthorizedError } from '@/common/errors/AppError.js'
+import { lockRoleForPermissionChange } from '@/common/permissions.js'
 import { passwordSchema } from '@/common/schemas/index.js'
 import { profiles, roles, userRoles, users } from '@/db/schema/index.js'
 import { logAudit } from '@/modules/audit-logs/helpers/log-audit.js'
@@ -30,14 +31,23 @@ export async function registerUser(db: Db, body: RegisterBody) {
   // Reactivate a soft-deleted account if the password matches (within the 90-day
   // window before the cleanup cron hard-deletes it). Profile row still exists, so
   // we only clear the soft-delete flags.
-  const dead = await db.query.users.findFirst({ where: and(eq(users.email, body.email), isNotNull(users.deletedAt)) })
+  const dead = await db.query.users.findFirst({
+    where: and(eq(users.email, body.email), isNotNull(users.deletedAt)),
+    orderBy: desc(users.deletedAt),
+  })
   if (dead) {
     if (await bcrypt.compare(body.password, dead.passwordHash)) {
       await db.transaction(async (tx) => {
         await tx.update(users).set({ deletedAt: null, deletedBy: null }).where(eq(users.id, dead.id))
+        await tx.delete(userRoles).where(eq(userRoles.userId, dead.id))
         const [userRole] = await tx.select({ id: roles.id }).from(roles).where(eq(roles.name, ROLES.USER)).limit(1)
-        if (userRole)
+        if (userRole) {
+          // Same lock every other userRoles/rolePermissions writer takes —
+          // without it, a concurrent deleteRole/removeRoleFromUser on this
+          // role isn't serialized against this insert.
+          await lockRoleForPermissionChange(tx, userRole.id)
           await tx.insert(userRoles).values({ userId: dead.id, roleId: userRole.id }).onConflictDoNothing()
+        }
       })
       logAudit(db, { userId: dead.id, action: 'auth.account_restored', resourceType: 'user', resourceId: dead.id })
       return { id: dead.id, email: dead.email }
@@ -62,8 +72,10 @@ export async function registerUser(db: Db, body: RegisterBody) {
 
       // Assign the default 'user' role if seed has been run
       const [userRole] = await tx.select({ id: roles.id }).from(roles).where(eq(roles.name, ROLES.USER)).limit(1)
-      if (userRole)
+      if (userRole) {
+        await lockRoleForPermissionChange(tx, userRole.id)
         await tx.insert(userRoles).values({ userId: row.id, roleId: userRole.id })
+      }
 
       return row
     })

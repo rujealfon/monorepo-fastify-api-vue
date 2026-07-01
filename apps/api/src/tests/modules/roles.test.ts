@@ -2,22 +2,9 @@ import type { FastifyInstance } from 'fastify'
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { createTestApp, registerAdminAndLogin, registerAndLogin, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
+import type { TestPermission as Permission, TestRole as Role } from '@/tests/fixtures/index.js'
 
-type Role = {
-  id: string
-  name: string
-  description: string | null
-  isSystemRole: boolean
-  createdAt: string
-}
-
-type Permission = {
-  id: string
-  resource: string
-  action: string
-  scope: string
-}
+import { createRole as createRoleFixture, createRoleWithPermission, createTestApp, listPermissions as listPermissionsFixture, listRoles as listRolesFixture, registerAdminAndLogin, registerAndAssignRole, registerAndLogin, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
 
 describe('roles API', () => {
   let app: FastifyInstance
@@ -44,24 +31,16 @@ describe('roles API', () => {
 
   const auth = (t: string) => ({ authorization: `Bearer ${t}` })
 
-  async function createRole(name: string, description?: string) {
-    const res = await app.inject({
-      method: 'POST',
-      url: '/api/v1/roles',
-      headers: auth(superAdminToken),
-      payload: { name, description },
-    })
-    return res.json<{ data: Role }>().data
+  function createRole(name: string, description?: string): Promise<Role> {
+    return createRoleFixture(app, superAdminToken, name, description)
   }
 
-  async function listRoles() {
-    const res = await app.inject({ method: 'GET', url: '/api/v1/roles', headers: auth(adminToken) })
-    return res.json<{ data: Role[] }>().data
+  function listRoles(): Promise<Role[]> {
+    return listRolesFixture(app, adminToken)
   }
 
-  async function listPermissions() {
-    const res = await app.inject({ method: 'GET', url: '/api/v1/permissions', headers: auth(adminToken) })
-    return res.json<{ data: Permission[] }>().data
+  function listPermissions(): Promise<Permission[]> {
+    return listPermissionsFixture(app, adminToken)
   }
 
   // ── GET /api/v1/roles ──────────────────────────────────────────────────────
@@ -115,6 +94,35 @@ describe('roles API', () => {
       const roles = await listRoles()
       const names = roles.map(r => r.name)
       expect(names).toEqual([...names].sort())
+    })
+
+    it('paginates with ?page and ?limit', async () => {
+      await createRole('page-role-1')
+      await createRole('page-role-2')
+      await createRole('page-role-3')
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/roles?page=1&limit=2',
+        headers: auth(superAdminToken),
+      })
+      expect(res.statusCode).toBe(200)
+      const body = res.json<{ data: unknown[], pagination: { page: number, limit: number, total: number } }>()
+      expect(body.data.length).toBeLessThanOrEqual(2)
+      expect(body.pagination.page).toBe(1)
+      expect(body.pagination.limit).toBe(2)
+      // 3 seeded roles + 3 created above, DB reset per test via beforeEach
+      expect(body.pagination.total).toBe(6)
+    })
+
+    it('returns different roles on page 2', async () => {
+      await createRole('page-role-a')
+      await createRole('page-role-b')
+      await createRole('page-role-c')
+      const page1 = await app.inject({ method: 'GET', url: '/api/v1/roles?page=1&limit=2', headers: auth(superAdminToken) })
+      const page2 = await app.inject({ method: 'GET', url: '/api/v1/roles?page=2&limit=2', headers: auth(superAdminToken) })
+      const page1Ids = page1.json<{ data: Array<{ id: string }> }>().data.map(r => r.id)
+      const page2Ids = page2.json<{ data: Array<{ id: string }> }>().data.map(r => r.id)
+      expect(page2Ids.some(id => page1Ids.includes(id))).toBe(false)
     })
   })
 
@@ -408,6 +416,22 @@ describe('roles API', () => {
         headers: auth(superAdminToken),
       })
       expect(res.statusCode).toBe(404)
+    })
+
+    it('returns 403 when caller holds role:update:any but not the permission being granted', async () => {
+      // A "role manager" who can edit role definitions but was never granted user:delete:any.
+      const managerRole = await createRoleWithPermission(app, superAdminToken, 'role-manager-2', { resource: 'role', action: 'update', scope: 'any' })
+      const { token: managerToken } = await registerAndAssignRole(app, superAdminToken, managerRole.id, { email: 'rolemgr2@example.com', password: 'Password123' })
+
+      const perms = await listPermissions()
+      const deleteAnyPerm = perms.find(p => p.resource === 'user' && p.action === 'delete' && p.scope === 'any')!
+      const target = await createRole('escalation-target')
+      const res = await app.inject({
+        method: 'POST',
+        url: `/api/v1/roles/${target.id}/permissions/${deleteAnyPerm.id}`,
+        headers: auth(managerToken),
+      })
+      expect(res.statusCode).toBe(403)
     })
   })
 

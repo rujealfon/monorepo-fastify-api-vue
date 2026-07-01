@@ -71,6 +71,20 @@
       "when": 1751034000000,
       "tag": "0009_noop_admin_role_not_system",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1751037600000,
+      "tag": "0010_add_assign_role_permission",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1751041200000,
+      "tag": "0011_users_email_deleted_at_idx",
+      "breakpoints": true
     }
   ]
 }

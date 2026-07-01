@@ -155,7 +155,8 @@ export async function buildApp() {
         },
       })
     }
-    request.log.error({ err }, 'unhandled error')
+    const cause = (err as { cause?: { code?: string } }).cause
+    request.log.error({ err: { name: err.name, message: err.message, code: err.code, stack: err.stack, causeCode: cause?.code } }, 'unhandled error')
     return reply.status(500).send({
       success: false,
       error: {

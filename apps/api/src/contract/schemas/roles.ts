@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { PERMISSIONS } from '@/common/constants/index.js'
-import { apiErrorSchema, apiListSchema, apiSuccessSchema, uuidParamSchema } from '@/common/schemas/index.js'
+import { apiErrorSchema, apiListSchema, apiSuccessSchema, paginationQuerySchema, uuidParamSchema } from '@/common/schemas/index.js'
 import { createRoleBodySchema, roleSchema, updateRoleBodySchema } from '@/modules/roles/schemas/index.js'
 
 import type { RouteMap } from '../types.js'
@@ -17,6 +17,7 @@ export const rolesSchema = {
     path: '/api/v1/roles',
     tags: ['Roles'],
     permission: PERMISSIONS.ROLE.READ_ANY,
+    query: paginationQuerySchema,
     responses: {
       200: apiListSchema(roleSchema),
       401: apiErrorSchema,

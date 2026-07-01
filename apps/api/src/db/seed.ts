@@ -12,6 +12,9 @@ const SEED_ROLES = [
   { name: 'user', description: 'Standard user access', isSystemRole: false },
 ]
 
+// Adding an entry here only affects fresh databases — existing databases need
+// migrations/0010_add_assign_role_permission.sql (or an equivalent re-run of
+// `nub run db:seed`) to pick up newly seeded permissions/grants.
 export const SEED_PERMISSIONS = [
   { resource: 'user', action: 'create', scope: 'any' },
   { resource: 'user', action: 'read', scope: 'any' },
@@ -19,6 +22,7 @@ export const SEED_PERMISSIONS = [
   { resource: 'user', action: 'delete', scope: 'any' },
   { resource: 'user', action: 'read', scope: 'own' },
   { resource: 'user', action: 'update', scope: 'own' },
+  { resource: 'user', action: 'assign-role', scope: 'any' },
   { resource: 'role', action: 'create', scope: 'any' },
   { resource: 'role', action: 'read', scope: 'any' },
   { resource: 'role', action: 'update', scope: 'any' },

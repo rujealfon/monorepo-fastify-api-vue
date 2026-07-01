@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import type { User } from '@/modules/users/schemas/index.js'
 
-import { createTestApp, extractTokenFromCookie, registerAdminAndLogin, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
+import { createRoleWithPermission, createTestApp, extractTokenFromCookie, listRoles, registerAdminAndLogin, registerAndAssignRole, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
 
 describe('users API', () => {
   let app: FastifyInstance
@@ -474,13 +474,13 @@ describe('users API', () => {
     })
 
     it('lets an admin assign a non-system role to a user', async () => {
-      // admin lacks role:update:any — only super-admin can assign roles
+      // admin lacks user:assign-role:any — only super-admin can assign roles
       const superToken = await registerSuperAdminAndLogin(app)
       const { id } = await registerNormal('roleassign@example.com')
 
       // get seeded roles to find the 'admin' role id
-      const rolesRes = await app.inject({ method: 'GET', url: '/api/v1/roles', headers: { authorization: `Bearer ${superToken}` } })
-      const adminRole = rolesRes.json<{ data: Array<{ id: string, name: string }> }>().data.find(r => r.name === 'admin')!
+      const roles = await listRoles(app, superToken)
+      const adminRole = roles.find(r => r.name === 'admin')!
 
       const res = await app.inject({
         method: 'POST',
@@ -490,11 +490,11 @@ describe('users API', () => {
       expect(res.statusCode).toBe(200)
     })
 
-    it('returns 403 when admin tries to assign any role (missing role:update:any)', async () => {
+    it('returns 403 when admin tries to assign any role (missing user:assign-role:any)', async () => {
       const superToken = await registerSuperAdminAndLogin(app)
       const { id } = await registerNormal('roleblock@example.com')
-      const rolesRes = await app.inject({ method: 'GET', url: '/api/v1/roles', headers: { authorization: `Bearer ${superToken}` } })
-      const adminRole = rolesRes.json<{ data: Array<{ id: string, name: string }> }>().data.find(r => r.name === 'admin')!
+      const roles = await listRoles(app, superToken)
+      const adminRole = roles.find(r => r.name === 'admin')!
 
       const res = await app.inject({
         method: 'POST',
@@ -504,14 +504,52 @@ describe('users API', () => {
       expect(res.statusCode).toBe(403)
     })
 
+    it('returns 403 when caller holds user:assign-role:any but not every permission bundled into the target role', async () => {
+      const superToken = await registerSuperAdminAndLogin(app)
+
+      // A role carrying a permission the assigner will not hold.
+      const privilegedRole = await createRoleWithPermission(app, superToken, 'privileged-role', { resource: 'user', action: 'delete', scope: 'any' })
+
+      // A "role manager" who can assign roles but was never granted user:delete:any.
+      const managerRole = await createRoleWithPermission(app, superToken, 'role-manager', { resource: 'user', action: 'assign-role', scope: 'any' })
+      const { token: managerToken } = await registerAndAssignRole(app, superToken, managerRole.id, { email: 'rolemanager@example.com', password: 'Password123' })
+
+      const { id: targetId } = await registerNormal('escalationtarget@example.com')
+      const res = await app.inject({
+        method: 'POST',
+        url: `/api/v1/users/${targetId}/roles/${privilegedRole.id}`,
+        headers: { authorization: `Bearer ${managerToken}` },
+      })
+      expect(res.statusCode).toBe(403)
+    })
+
+    it('returns 403 when caller holds user:assign-role:any but not every permission bundled into the role being removed', async () => {
+      const superToken = await registerSuperAdminAndLogin(app)
+
+      // A role carrying a permission the delegated role manager will not hold.
+      const privilegedRole = await createRoleWithPermission(app, superToken, 'privileged-remove-role', { resource: 'user', action: 'delete', scope: 'any' })
+
+      // A "role manager" who can manage user roles but was never granted user:delete:any.
+      const managerRole = await createRoleWithPermission(app, superToken, 'role-removal-manager', { resource: 'user', action: 'assign-role', scope: 'any' })
+      const { token: managerToken } = await registerAndAssignRole(app, superToken, managerRole.id, { email: 'roleremovalmanager@example.com', password: 'Password123' })
+
+      const { id: targetId } = await registerAndAssignRole(app, superToken, privilegedRole.id, { email: 'removalescalationtarget@example.com', password: 'Password123' })
+      const res = await app.inject({
+        method: 'DELETE',
+        url: `/api/v1/users/${targetId}/roles/${privilegedRole.id}`,
+        headers: { authorization: `Bearer ${managerToken}` },
+      })
+      expect(res.statusCode).toBe(403)
+    })
+
     it('blocks assigning a system role to a user unless caller is super-admin', async () => {
       // This test verifies VULN-3 is fixed: non-super-admin cannot escalate to super-admin
-      // by assigning a system role. In practice admin lacks role:update:any, so the
+      // by assigning a system role. In practice admin lacks user:assign-role:any, so the
       // permission gate fires first. We verify the system role guard via super-admin.
       const superToken = await registerSuperAdminAndLogin(app)
       const { id } = await registerNormal('nosysrole@example.com')
-      const rolesRes = await app.inject({ method: 'GET', url: '/api/v1/roles', headers: { authorization: `Bearer ${superToken}` } })
-      const systemRole = rolesRes.json<{ data: Array<{ id: string, isSystemRole: boolean }> }>().data.find(r => r.isSystemRole)!
+      const roles = await listRoles(app, superToken)
+      const systemRole = roles.find(r => r.isSystemRole)!
 
       // super-admin CAN assign a system role (they are super-admin)
       const res = await app.inject({
@@ -525,8 +563,8 @@ describe('users API', () => {
     it('removes a role from a user', async () => {
       const superToken = await registerSuperAdminAndLogin(app)
       const { id } = await registerNormal('rmrole@example.com')
-      const rolesRes = await app.inject({ method: 'GET', url: '/api/v1/roles', headers: { authorization: `Bearer ${superToken}` } })
-      const userRole = rolesRes.json<{ data: Array<{ id: string, name: string }> }>().data.find(r => r.name === 'user')!
+      const roles = await listRoles(app, superToken)
+      const userRole = roles.find(r => r.name === 'user')!
 
       // user already has the 'user' role from registration; remove it
       const res = await app.inject({

@@ -91,7 +91,7 @@ export const usersSchema = {
     method: 'POST' as const,
     path: '/api/v1/users/:id/roles/:roleId',
     tags: ['Users'],
-    permission: PERMISSIONS.ROLE.UPDATE_ANY,
+    permission: PERMISSIONS.USER.ASSIGN_ROLE_ANY,
     params: userRoleParamsSchema,
     responses: {
       200: apiSuccessSchema(z.null()),
@@ -105,7 +105,7 @@ export const usersSchema = {
     method: 'DELETE' as const,
     path: '/api/v1/users/:id/roles/:roleId',
     tags: ['Users'],
-    permission: PERMISSIONS.ROLE.UPDATE_ANY,
+    permission: PERMISSIONS.USER.ASSIGN_ROLE_ANY,
     params: userRoleParamsSchema,
     responses: {
       200: apiSuccessSchema(z.null()),

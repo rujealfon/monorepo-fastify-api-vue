@@ -4,6 +4,7 @@ import { and, eq, isNull } from 'drizzle-orm'
 import fp from 'fastify-plugin'
 
 import { ROLES } from '@/common/constants/index.js'
+import { formatPermission } from '@/common/permissions.js'
 import { userRoles, users } from '@/db/schema/index.js'
 
 async function verifyAndGetUserId(request: FastifyRequest): Promise<string | null> {
@@ -42,9 +43,7 @@ async function loadPermissions(request: FastifyRequest, userId: string): Promise
   const permissions = [
     ...new Set(
       userRoleRows.flatMap(r =>
-        r.role.rolePermissions.map(rp =>
-          `${rp.permission.resource}:${rp.permission.action}:${rp.permission.scope}`,
-        ),
+        r.role.rolePermissions.map(rp => formatPermission(rp.permission)),
       ),
     ),
   ]

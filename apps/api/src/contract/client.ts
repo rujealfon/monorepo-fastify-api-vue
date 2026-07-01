@@ -63,6 +63,16 @@ function buildNsClient<T extends RouteMap>(
 ): NsClient<T> {
   const client: Record<string, unknown> = {}
 
+  // Computed once per client, not per call. Used as the resolution base for
+  // `new URL(path, origin)` below. When `path` already has a scheme (baseUrl
+  // was a full absolute URL, e.g. https://api.example.com), `origin` is
+  // ignored per the URL spec, so this one call also correctly handles an
+  // empty/relative baseUrl (dev-server proxy) with no extra branching.
+  // Note: baseUrl must be either empty or a fully-qualified absolute URL —
+  // a protocol-relative value (e.g. //cdn.example.com) is not absolute and
+  // will silently resolve against `origin`'s scheme instead of erroring.
+  const origin = 'location' in globalThis ? (globalThis as unknown as { location: { origin: string } }).location.origin : 'http://localhost'
+
   for (const [name, route] of Object.entries(schema)) {
     client[name] = async (input?: {
       query?: Record<string, unknown>
@@ -78,7 +88,7 @@ function buildNsClient<T extends RouteMap>(
         }
       }
 
-      const url = new URL(path)
+      const url = new URL(path, origin)
       if (input?.query) {
         for (const [key, value] of Object.entries(input.query)) {
           if (value !== undefined && value !== null) {

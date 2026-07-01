@@ -61,7 +61,7 @@ describe('permissions API', () => {
     })
 
     it('returns every seeded permission', async () => {
-      const res = await app.inject({ method: 'GET', url: '/api/v1/permissions', headers: auth(adminToken) })
+      const res = await app.inject({ method: 'GET', url: '/api/v1/permissions?limit=100', headers: auth(adminToken) })
       const { data } = res.json<{ data: Permission[] }>()
       expect(data).toHaveLength(SEED_PERMISSIONS.length)
     })
@@ -78,7 +78,7 @@ describe('permissions API', () => {
     })
 
     it('includes all expected resource:action:scope combinations', async () => {
-      const res = await app.inject({ method: 'GET', url: '/api/v1/permissions', headers: auth(adminToken) })
+      const res = await app.inject({ method: 'GET', url: '/api/v1/permissions?limit=100', headers: auth(adminToken) })
       const { data } = res.json<{ data: Permission[] }>()
       const keys = data.map(p => `${p.resource}:${p.action}:${p.scope}`)
 
@@ -89,10 +89,10 @@ describe('permissions API', () => {
       }
     })
 
-    it('returns permissions sorted by resource then action', async () => {
+    it('returns permissions sorted by resource, action, scope, then id', async () => {
       const res = await app.inject({ method: 'GET', url: '/api/v1/permissions', headers: auth(adminToken) })
       const { data } = res.json<{ data: Permission[] }>()
-      const permKeys = data.map(p => `${p.resource}:${p.action}`)
+      const permKeys = data.map(p => `${p.resource}:${p.action}:${p.scope}:${p.id}`)
       expect(permKeys).toEqual([...permKeys].sort())
     })
   })
