@@ -353,6 +353,18 @@ describe('users API', () => {
       })
       expect(res.statusCode).toBe(400)
     })
+
+    it('returns 409 when updating email to one already in use', async () => {
+      await createUser('taken@example.com')
+      const user = await createUser('free@example.com')
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { email: 'taken@example.com' },
+      })
+      expect(res.statusCode).toBe(409)
+    })
   })
 
   // ── DELETE /api/v1/users/:id ───────────────────────────────────────────────

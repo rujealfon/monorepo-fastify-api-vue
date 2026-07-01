@@ -8,7 +8,11 @@ export default function createConfig(options = {}, ...userConfigs) {
   return antfu({
     type: 'app',
     typescript: true,
-    formatters: true,
+    formatters: {
+      css: true,
+      html: true,
+      markdown: 'prettier',
+    },
     stylistic: true,
     // stylistic: {
     //   indent: 2,
@@ -19,17 +23,18 @@ export default function createConfig(options = {}, ...userConfigs) {
     ignores: [...defaultIgnores, ...ignores],
   }, {
     rules: {
+      // 'antfu/no-top-level-await': 'off',
+      // 'node/prefer-global/process': 'off',
+      // 'ts/no-redeclare': 'off',
       'no-console': ['warn'],
-      'ts/consistent-type-definitions': ['error', 'type'],
-      'antfu/no-top-level-await': ['off'],
-      'node/prefer-global/process': ['off'],
       'node/no-process-env': ['error'],
+      'ts/consistent-type-definitions': ['error', 'type'],
       'perfectionist/sort-imports': ['error', {
         tsconfigRootDir: '.',
       }],
       'unicorn/filename-case': ['error', {
         case: 'kebabCase',
-        ignore: ['README.md'],
+        ignore: [/\.md$/],
       }],
     },
   }, {
