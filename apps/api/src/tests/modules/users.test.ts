@@ -523,6 +523,25 @@ describe('users API', () => {
       expect(res.statusCode).toBe(403)
     })
 
+    it('returns 403 when caller holds user:assign-role:any but not every permission bundled into the role being removed', async () => {
+      const superToken = await registerSuperAdminAndLogin(app)
+
+      // A role carrying a permission the delegated role manager will not hold.
+      const privilegedRole = await createRoleWithPermission(app, superToken, 'privileged-remove-role', { resource: 'user', action: 'delete', scope: 'any' })
+
+      // A "role manager" who can manage user roles but was never granted user:delete:any.
+      const managerRole = await createRoleWithPermission(app, superToken, 'role-removal-manager', { resource: 'user', action: 'assign-role', scope: 'any' })
+      const { token: managerToken } = await registerAndAssignRole(app, superToken, managerRole.id, { email: 'roleremovalmanager@example.com', password: 'Password123' })
+
+      const { id: targetId } = await registerAndAssignRole(app, superToken, privilegedRole.id, { email: 'removalescalationtarget@example.com', password: 'Password123' })
+      const res = await app.inject({
+        method: 'DELETE',
+        url: `/api/v1/users/${targetId}/roles/${privilegedRole.id}`,
+        headers: { authorization: `Bearer ${managerToken}` },
+      })
+      expect(res.statusCode).toBe(403)
+    })
+
     it('blocks assigning a system role to a user unless caller is super-admin', async () => {
       // This test verifies VULN-3 is fixed: non-super-admin cannot escalate to super-admin
       // by assigning a system role. In practice admin lacks user:assign-role:any, so the

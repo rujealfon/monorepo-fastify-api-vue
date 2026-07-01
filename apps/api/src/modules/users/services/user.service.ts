@@ -213,7 +213,7 @@ export async function assignRoleToUser(db: Db, userId: string, roleId: string, c
   })
 }
 
-export async function removeRoleFromUser(db: Db, userId: string, roleId: string, callerIsSuperAdmin = false) {
+export async function removeRoleFromUser(db: Db, userId: string, roleId: string, callerIsSuperAdmin = false, callerPermissions: string[] = []) {
   const [, role] = await Promise.all([
     findUserById(db, userId),
     db.query.roles.findFirst({ where: eq(roles.id, roleId) }),
@@ -228,6 +228,10 @@ export async function removeRoleFromUser(db: Db, userId: string, roleId: string,
     // deleteRole cascading away this role's user_roles rows, reopening the
     // race those locks exist to close.
     await lockRoleForPermissionChange(tx, roleId)
+    if (!callerIsSuperAdmin) {
+      const rolePerms = await tx.query.rolePermissions.findMany({ where: eq(rolePermissions.roleId, roleId), with: { permission: true } })
+      assertCallerHoldsPermissions(callerIsSuperAdmin, callerPermissions, rolePerms.map(rp => rp.permission), 'Cannot remove a role that grants permissions you do not hold yourself')
+    }
     if (role.name === ROLES.SUPER_ADMIN)
       await assertNotLastSuperAdmin(tx, userId, 'Cannot remove the last super-admin')
     await tx.delete(userRoles).where(and(eq(userRoles.userId, userId), eq(userRoles.roleId, roleId)))
