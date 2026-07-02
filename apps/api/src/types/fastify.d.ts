@@ -35,6 +35,7 @@ declare module 'fastify' {
   }
 
   interface FastifyRequest {
+    cookies: { [cookieName: string]: string | undefined }
     jwtVerify: () => Promise<unknown>
     user: unknown
   }
