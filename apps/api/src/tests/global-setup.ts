@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import postgres from 'postgres'
@@ -7,6 +7,11 @@ import { testSchemaName } from '../common/test-db-schema.js'
 import { TEST_WORKER_COUNT } from './worker-count.js'
 
 export default async function setup() {
+  const envFile = resolve(process.cwd(), '.env.test')
+  if (existsSync(envFile)) {
+    process.loadEnvFile(envFile)
+  }
+
   const url = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL
   if (!url)
     throw new Error('TEST_DATABASE_URL (or DATABASE_URL) is not set')
