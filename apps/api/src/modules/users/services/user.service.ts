@@ -138,14 +138,20 @@ export async function createUser(db: Db, body: CreateUserBody) {
 }
 
 export async function updateUser(db: Db, id: string, body: UpdateUserBody) {
+  let userUpdatedAt: Date
   try {
-    await db.transaction(async (tx) => {
-      if (body.email !== undefined) {
-        await tx.update(users).set({ email: body.email }).where(eq(users.id, id))
-      }
+    userUpdatedAt = await db.transaction(async (tx) => {
+      const [user] = await tx.update(users).set({
+        updatedAt: new Date(),
+        ...(body.email !== undefined && { email: body.email }),
+      }).where(and(eq(users.id, id), isNull(users.deletedAt))).returning({ updatedAt: users.updatedAt })
+      if (!user)
+        throw new NotFoundError('User', id)
+
       if (body.profile !== undefined && Object.keys(body.profile).length > 0) {
         await tx.update(profiles).set(body.profile).where(eq(profiles.userId, id))
       }
+      return user.updatedAt
     })
   }
   catch (err) {
@@ -154,7 +160,8 @@ export async function updateUser(db: Db, id: string, body: UpdateUserBody) {
     throw err
   }
 
-  return findUserById(db, id)
+  const user = await findUserById(db, id)
+  return { ...user, updatedAt: userUpdatedAt.toISOString() }
 }
 
 export async function deleteUser(db: Db, id: string, deletedBy?: string) {

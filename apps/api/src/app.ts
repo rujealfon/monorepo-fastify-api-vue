@@ -3,6 +3,7 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import envPlugin from '@fastify/env'
 import Fastify from 'fastify'
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
+import { readFileSync } from 'node:fs'
 import process from 'node:process'
 
 import authDecorator from './common/decorators/auth.js'
@@ -46,8 +47,21 @@ function parseTrustProxy(value: string | undefined) {
   return value
 }
 
+function readDotenvTrustProxy() {
+  try {
+    const line = readFileSync('.env', 'utf8')
+      .split(/\r?\n/)
+      .find(line => line.trimStart().startsWith('TRUST_PROXY='))
+    const value = line?.slice(line.indexOf('=') + 1).split('#')[0]?.trim()
+    return value ? value.replace(/^(['"])(.*)\1$/, '$2') : undefined
+  }
+  catch {
+    return undefined
+  }
+}
+
 export async function buildApp() {
-  const trustProxy = parseTrustProxy(process.env.TRUST_PROXY)
+  const trustProxy = parseTrustProxy(process.env.TRUST_PROXY ?? readDotenvTrustProxy())
   const fastify = Fastify({
     ...(trustProxy !== undefined && { trustProxy }),
     logger: {
@@ -128,11 +142,21 @@ export async function buildApp() {
       })
     }
     if (err.statusCode !== undefined && err.statusCode >= 400 && err.statusCode < 500) {
+      const clientErrorMessages: Record<number, string> = {
+        400: 'Bad request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not found',
+        409: 'Conflict',
+        413: 'Payload too large',
+        415: 'Unsupported media type',
+        422: 'Unprocessable entity',
+      }
       return reply.status(err.statusCode).send({
         success: false,
         error: {
           code: err.code ?? 'HTTP_ERROR',
-          message: err.message,
+          message: err.statusCode === 429 ? err.message : clientErrorMessages[err.statusCode] ?? 'HTTP error',
         },
       })
     }

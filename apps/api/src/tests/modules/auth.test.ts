@@ -346,6 +346,34 @@ describe('auth API', () => {
       )
       expect(log.resourceId).toBe(user.id)
     })
+
+    it('rejects production cookie logout from an untrusted origin', async () => {
+      const originalNodeEnv = app.config.NODE_ENV
+      const originalCorsOrigin = app.config.CORS_ORIGIN
+      app.config.NODE_ENV = 'production'
+      app.config.CORS_ORIGIN = 'https://app.example.com'
+      try {
+        const token = await registerAndLogin(app, { email: 'csrf-logout@example.com', password: 'Password123' })
+
+        const blocked = await app.inject({
+          method: 'POST',
+          url: '/api/v1/auth/logout',
+          headers: { cookie: `token=${token}`, origin: 'https://evil.example.com' },
+        })
+        expect(blocked.statusCode).toBe(403)
+
+        const allowed = await app.inject({
+          method: 'POST',
+          url: '/api/v1/auth/logout',
+          headers: { cookie: `token=${token}`, origin: 'https://app.example.com' },
+        })
+        expect(allowed.statusCode).toBe(200)
+      }
+      finally {
+        app.config.NODE_ENV = originalNodeEnv
+        app.config.CORS_ORIGIN = originalCorsOrigin
+      }
+    })
   })
 
   // ── Account retention: reactivation within the 90-day window ────────────────
