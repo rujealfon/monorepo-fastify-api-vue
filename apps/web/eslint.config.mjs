@@ -18,5 +18,5 @@ export default createConfig({
   ],
 }, {
   ...pluginVitest.configs.recommended,
-  files: ['src/**/__tests__/*'],
+  files: ['src/**/__tests__/*', 'src/**/*.spec.ts'],
 })
