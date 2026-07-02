@@ -4,6 +4,7 @@ import type { RouteMap } from './types.js'
 
 import { auditLogsSchema } from './schemas/audit-logs.js'
 import { authSchema } from './schemas/auth.js'
+import { healthSchema } from './schemas/health.js'
 import { permissionsSchema } from './schemas/permissions.js'
 import { productsSchema } from './schemas/products.js'
 import { profileSchema } from './schemas/profile.js'
@@ -134,6 +135,7 @@ export function createApiClient(
   return {
     auditLogs: buildNsClient(auditLogsSchema, baseUrl, options?.getToken),
     auth: buildNsClient(authSchema, baseUrl, options?.getToken),
+    health: buildNsClient(healthSchema, baseUrl, options?.getToken),
     permissions: buildNsClient(permissionsSchema, baseUrl, options?.getToken),
     products: buildNsClient(productsSchema, baseUrl, options?.getToken),
     profile: buildNsClient(profileSchema, baseUrl, options?.getToken),

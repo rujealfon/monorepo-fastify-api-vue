@@ -1,15 +1,20 @@
 import vue from '@vitejs/plugin-vue'
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
+
+const apiSrc = fileURLToPath(new URL('../api/src', import.meta.url))
+const webSrc = fileURLToPath(new URL('./src', import.meta.url))
 
 export default defineConfig({
   plugins: [vue()],
   resolve: {
-    alias: {
-      // Resolves @/ imports from the Fastify API's contract chain
-      '@': fileURLToPath(new URL('../../apps/api/src', import.meta.url)),
-    },
+    alias: [
+      { find: /^@\/common\//, replacement: `${apiSrc}/common/` },
+      { find: /^@\/contract\//, replacement: `${apiSrc}/contract/` },
+      { find: /^@\/modules\//, replacement: `${apiSrc}/modules/` },
+      { find: '@', replacement: webSrc },
+    ],
   },
   server: {
     host: true,

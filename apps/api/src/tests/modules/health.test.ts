@@ -19,23 +19,28 @@ describe('health API', () => {
     await app.close()
   })
 
-  describe('get /health/live', () => {
+  describe('get /api/v1/health/live', () => {
     it('returns 200 without authentication', async () => {
-      const res = await app.inject({ method: 'GET', url: '/health/live' })
+      const res = await app.inject({ method: 'GET', url: '/api/v1/health/live' })
       expect(res.statusCode).toBe(200)
       expect(res.json()).toEqual({ success: true, data: { status: 'ok' } })
     })
+
+    it('is documented in OpenAPI', () => {
+      const spec = app.swagger() as { paths: Record<string, unknown> }
+      expect(spec.paths['/api/v1/health/live']).toBeDefined()
+    })
   })
 
-  describe('get /health/ready', () => {
+  describe('get /api/v1/health/ready', () => {
     it('returns 200 without authentication when dependencies are reachable', async () => {
-      const res = await app.inject({ method: 'GET', url: '/health/ready' })
+      const res = await app.inject({ method: 'GET', url: '/api/v1/health/ready' })
       expect(res.statusCode).toBe(200)
       expect(res.json()).toEqual({ success: true, data: { status: 'ready' } })
     })
   })
 
-  describe('get /health/details', () => {
+  describe('get /api/v1/health/details', () => {
     const expectHealthDetails = (body: {
       success: boolean
       data: {
@@ -54,7 +59,7 @@ describe('health API', () => {
     }
 
     it('returns 401 without a token', async () => {
-      const res = await app.inject({ method: 'GET', url: '/health/details' })
+      const res = await app.inject({ method: 'GET', url: '/api/v1/health/details' })
       expect(res.statusCode).toBe(401)
     })
 
@@ -62,7 +67,7 @@ describe('health API', () => {
       const token = await registerAndLogin(app, { email: 'user@example.com', password: 'Password123' })
       const res = await app.inject({
         method: 'GET',
-        url: '/health/details',
+        url: '/api/v1/health/details',
         headers: { authorization: `Bearer ${token}` },
       })
       expect(res.statusCode).toBe(403)
@@ -72,7 +77,7 @@ describe('health API', () => {
       const token = await registerAdminAndLogin(app)
       const res = await app.inject({
         method: 'GET',
-        url: '/health/details',
+        url: '/api/v1/health/details',
         headers: { authorization: `Bearer ${token}` },
       })
       expect(res.statusCode).toBe(200)
@@ -83,7 +88,7 @@ describe('health API', () => {
       const token = await registerSuperAdminAndLogin(app)
       const res = await app.inject({
         method: 'GET',
-        url: '/health/details',
+        url: '/api/v1/health/details',
         headers: { authorization: `Bearer ${token}` },
       })
       expect(res.statusCode).toBe(200)

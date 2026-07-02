@@ -15,7 +15,7 @@ A production-ready REST API built with **Fastify 5**, **TypeScript**, **PostgreS
 | Validation | [Zod](https://zod.dev) + [fastify-type-provider-zod](https://github.com/turkerdev/fastify-type-provider-zod) |
 | Auth | JWT via [@fastify/jwt](https://github.com/fastify/fastify-jwt) |
 | API Docs | [Scalar](https://scalar.com) + [@fastify/swagger](https://github.com/fastify/fastify-swagger) (OpenAPI 3.0) |
-| Metrics | [prom-client](https://github.com/siimon/prom-client) — Prometheus endpoint at `/metrics` |
+| Metrics | [prom-client](https://github.com/siimon/prom-client) — Prometheus endpoint at `/api/v1/metrics` |
 | Tracing | [OpenTelemetry](https://opentelemetry.io/) (OTLP HTTP, optional via `OTEL_ENDPOINT`) |
 | RPC | Contract-first RPC — shared schemas, `createFastifyRpcPlugin`, type-safe `createApiClient` |
 | Testing | [Vitest](https://vitest.dev) |
@@ -166,10 +166,10 @@ Auth endpoints are rate-limited to 5 requests per 15 minutes per IP in productio
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/health/live` | Liveness probe |
-| GET | `/health/ready` | Readiness probe — checks DB + Valkey |
-| GET | `/health/details` | Heap, RSS, event loop lag, pressure status |
-| GET | `/metrics` | Prometheus metrics |
+| GET | `/api/v1/health/live` | Liveness probe |
+| GET | `/api/v1/health/ready` | Readiness probe — checks DB + Valkey |
+| GET | `/api/v1/health/details` | Heap, RSS, event loop lag, pressure status |
+| GET | `/api/v1/metrics` | Prometheus metrics |
 
 ## RPC Layer
 

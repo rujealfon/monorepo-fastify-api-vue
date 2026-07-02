@@ -167,7 +167,7 @@ export async function buildApp() {
   })
 
   // Routes
-  await fastify.register(healthRoutes, { prefix: '/health' })
+  await fastify.register(healthRoutes, { prefix: '/api/v1/health' })
   await fastify.register(authRoutes)
   await fastify.register(profileRoutes)
   await fastify.register(usersRoutes)
