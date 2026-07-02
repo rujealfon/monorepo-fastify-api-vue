@@ -27,6 +27,18 @@ const users = await api.users.list({ query: { page: 1, limit: 10 } })
 
 The singleton base URL is controlled by `VITE_API_URL` (baked at build time). Leave unset for local dev and Docker; set to the VPS URL for S3/CDN deploys. See [README.md](README.md) for details.
 
+### Web (apps/web) structure
+
+Feature-based layout under `apps/web/src/`:
+
+- `features/<feature>/` — `views/`, `composables/`, and a `routes.ts` exporting `RouteRecordRaw[]`; `router/index.ts` only aggregates feature routes.
+- `shared/` — cross-feature components, composables, and utilities.
+
+Rules:
+- A feature may import from `@/shared/*` and `@/api`, never from a sibling feature.
+- Components never call `api` directly — API calls live in feature composables (or Pinia stores).
+- API types come from `@monorepo-fastify-api-vue/api-client`; do not hand-write them.
+
 ## Project Structure & Module Organization
 
 This is a Fastify TypeScript API. Source code lives in `src/`, with startup in `server.ts` and app assembly in `app.ts`. Domain modules are under `src/modules/<domain>/` and usually contain `routes/`, `services/`, and `schemas/`. Shared errors, hooks, decorators, and schemas live in `src/common/`; plugins in `src/plugins/`; database schema in `src/db/schema/`; and portable RPC contracts in `src/contract/schemas/`. Tests live in `src/tests/`, with fixtures in `src/tests/fixtures/`.
