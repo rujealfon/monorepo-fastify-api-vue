@@ -1,9 +1,9 @@
 import type { FastifyRequest } from 'fastify'
 
+import { logAudit } from '@/common/audit-log.js'
 import { PERMISSIONS } from '@/common/constants/index.js'
 import { ForbiddenError } from '@/common/errors/AppError.js'
 import { usersSchema } from '@/contract/schemas/users.js'
-import { logAudit } from '@/modules/audit-logs/helpers/log-audit.js'
 import * as userService from '@/modules/users/services/user.service.js'
 import { createFastifyRpcPlugin } from '@/plugins/rpc.js'
 

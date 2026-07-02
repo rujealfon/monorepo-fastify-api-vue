@@ -20,24 +20,31 @@ async function verifyAndGetUserId(request: FastifyRequest): Promise<string | nul
   if (!userId)
     return null
 
-  // ponytail: add Valkey cache when DB query becomes a bottleneck
-  const [activeUser] = await request.server.db
-    .select({ id: users.id })
-    .from(users)
-    .where(and(eq(users.id, userId), isNull(users.deletedAt)))
-    .limit(1)
-
-  return activeUser ? userId : null
+  return userId
 }
 
-async function loadPermissions(request: FastifyRequest, userId: string): Promise<void> {
+async function loadAuthContext(request: FastifyRequest): Promise<boolean> {
+  const userId = await verifyAndGetUserId(request)
+  if (!userId)
+    return false
+
   // ponytail: add Valkey cache when DB query becomes a bottleneck
-  const userRoleRows = await request.server.db.query.userRoles.findMany({
-    where: eq(userRoles.userId, userId),
-    with: {
-      role: { with: { rolePermissions: { with: { permission: true } } } },
-    },
-  })
+  const [activeUsers, userRoleRows] = await Promise.all([
+    request.server.db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.id, userId), isNull(users.deletedAt)))
+      .limit(1),
+    request.server.db.query.userRoles.findMany({
+      where: eq(userRoles.userId, userId),
+      with: {
+        role: { with: { rolePermissions: { with: { permission: true } } } },
+      },
+    }),
+  ])
+
+  if (!activeUsers[0])
+    return false
 
   const isSuperAdmin = userRoleRows.some(r => r.role.name === ROLES.SUPER_ADMIN)
   const permissions = [
@@ -51,20 +58,17 @@ async function loadPermissions(request: FastifyRequest, userId: string): Promise
   request.requestContext.set('userId', userId)
   request.requestContext.set('permissions', permissions)
   request.requestContext.set('isSuperAdmin', isSuperAdmin)
+  return true
 }
 
 const authDecorator: FastifyPluginAsync = async (fastify) => {
   fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
-    const userId = await verifyAndGetUserId(request)
-    if (!userId)
+    if (!await loadAuthContext(request))
       return reply.status(401).send({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid or missing token' } })
-    await loadPermissions(request, userId)
   })
 
   fastify.decorate('optionalAuthenticate', async (request: FastifyRequest, _reply: FastifyReply) => {
-    const userId = await verifyAndGetUserId(request)
-    if (userId)
-      await loadPermissions(request, userId)
+    await loadAuthContext(request)
   })
 
   fastify.decorate('requirePermission', (permission: string) => {

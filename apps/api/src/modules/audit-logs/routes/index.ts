@@ -15,7 +15,7 @@ export default createFastifyRpcPlugin(auditLogsSchema, {
     const isSuperAdmin = request.requestContext.get('isSuperAdmin') ?? false
     const perms = request.requestContext.get('permissions') ?? []
     const actorId = request.requestContext.get('userId')
-    if (!isSuperAdmin && !perms.includes(PERMISSIONS.USER.READ_ANY) && actorId !== params.id)
+    if (!isSuperAdmin && !perms.includes(PERMISSIONS.AUDIT_LOG.READ_ANY) && actorId !== params.id)
       throw new ForbiddenError('You can only view your own audit log')
 
     const { page, limit } = query

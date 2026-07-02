@@ -102,7 +102,7 @@ function buildNsClient<T extends RouteMap>(
         'Content-Type': 'application/json',
         ...input?.headers,
       }
-      if (getToken && (route.auth || route.optionalAuth)) {
+      if (getToken && (route.auth || route.optionalAuth || route.permission)) {
         const token = getToken()
         if (token)
           headers.Authorization = `Bearer ${token}`
@@ -111,12 +111,23 @@ function buildNsClient<T extends RouteMap>(
       const res = await fetch(url.toString(), {
         method: route.method,
         headers,
+        credentials: 'include',
         body: input?.body !== undefined ? JSON.stringify(input.body) : undefined,
       })
 
       if (res.status === 204)
         return undefined
-      const data = await res.json()
+
+      const text = await res.text()
+      let data: unknown = null
+      if (text) {
+        try {
+          data = JSON.parse(text)
+        }
+        catch {
+          data = { success: false, error: { code: 'HTTP_ERROR', message: text } }
+        }
+      }
       if (!res.ok)
         throw new RpcError(res.status, data)
       return data

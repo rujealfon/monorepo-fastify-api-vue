@@ -8,7 +8,7 @@ export const profileSchema = z.object({
   avatarUrl: z.string().nullable().meta({ examples: ['https://example.com/avatar.jpg'] }),
   bio: z.string().nullable().meta({ examples: ['Software engineer based in NYC'] }),
   phoneNumber: z.string().nullable().meta({ examples: ['+1234567890'] }),
-  birthDate: z.string().nullable().meta({ examples: ['1990-01-15'] }),
+  birthDate: z.iso.date().nullable().meta({ examples: ['1990-01-15'] }),
 })
 
 export const embeddedRoleSchema = z.object({
@@ -36,7 +36,7 @@ export const updateProfileBodySchema = z.object({
   avatarUrl: z.url().nullable().optional().meta({ description: 'Avatar URL', examples: ['https://example.com/avatar.jpg'] }),
   bio: z.string().nullable().optional().meta({ description: 'Short bio', examples: ['Software engineer based in NYC'] }),
   phoneNumber: z.string().nullable().optional().meta({ description: 'Phone number', examples: ['+1234567890'] }),
-  birthDate: z.string().nullable().optional().meta({ description: 'Birth date (YYYY-MM-DD)', examples: ['1990-01-15'] }),
+  birthDate: z.iso.date().nullable().optional().meta({ description: 'Birth date (YYYY-MM-DD)', examples: ['1990-01-15'] }),
 })
 
 export const updateUserBodySchema = z

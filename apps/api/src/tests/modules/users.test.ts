@@ -365,6 +365,29 @@ describe('users API', () => {
       })
       expect(res.statusCode).toBe(409)
     })
+
+    it('updates email when profile is an empty object', async () => {
+      const user = await createUser('emptyprofile@example.com')
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { email: 'emptyprofile-new@example.com', profile: {} },
+      })
+      expect(res.statusCode).toBe(200)
+      expect(res.json<{ data: User }>().data.email).toBe('emptyprofile-new@example.com')
+    })
+
+    it('returns 400 for an invalid profile birthDate', async () => {
+      const user = await createUser('birthdate@example.com')
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { profile: { birthDate: 'not-a-date' } },
+      })
+      expect(res.statusCode).toBe(400)
+    })
   })
 
   // ── DELETE /api/v1/users/:id ───────────────────────────────────────────────

@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify'
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { createTestApp, eventually, registerAdminAndLogin, registerAndLogin, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
+import { createRoleWithPermission, createTestApp, eventually, registerAdminAndLogin, registerAndAssignRole, registerAndLogin, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
 
 describe('audit logs API', () => {
   let app: FastifyInstance
@@ -76,6 +76,19 @@ describe('audit logs API', () => {
       expect(body.data).toHaveLength(1)
       expect(body.pagination.limit).toBe(1)
     })
+
+    it('keeps the real total on an empty page', async () => {
+      const token = await registerAdminAndLogin(app)
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/audit-logs?page=99&limit=10',
+        headers: { authorization: `Bearer ${token}` },
+      })
+      expect(res.statusCode).toBe(200)
+      const body = res.json<{ data: unknown[], pagination: { total: number } }>()
+      expect(body.data).toEqual([])
+      expect(body.pagination.total).toBeGreaterThan(0)
+    })
   })
 
   describe('list logs for user', () => {
@@ -138,6 +151,38 @@ describe('audit logs API', () => {
         method: 'GET',
         url: `/api/v1/users/${userId}/audit-logs`,
         headers: { authorization: `Bearer ${adminToken}` },
+      })
+      expect(res.statusCode).toBe(200)
+    })
+
+    it('does not allow user:read:any to read another user audit log', async () => {
+      const superToken = await registerSuperAdminAndLogin(app)
+      const role = await createRoleWithPermission(app, superToken, 'user-reader', { resource: 'user', action: 'read', scope: 'any' })
+      const { token: readerToken } = await registerAndAssignRole(app, superToken, role.id, { email: 'reader@example.com', password: 'Password123' })
+      const targetToken = await registerAndLogin(app, { email: 'audit-target@example.com', password: 'Password123' })
+      const targetProfile = await app.inject({ method: 'GET', url: '/api/v1/profile', headers: { authorization: `Bearer ${targetToken}` } })
+      const targetId = targetProfile.json().data.id
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/api/v1/users/${targetId}/audit-logs`,
+        headers: { authorization: `Bearer ${readerToken}` },
+      })
+      expect(res.statusCode).toBe(403)
+    })
+
+    it('allows audit-log:read:any to read another user audit log', async () => {
+      const superToken = await registerSuperAdminAndLogin(app)
+      const role = await createRoleWithPermission(app, superToken, 'audit-reader', { resource: 'audit-log', action: 'read', scope: 'any' })
+      const { token: readerToken } = await registerAndAssignRole(app, superToken, role.id, { email: 'auditreader@example.com', password: 'Password123' })
+      const targetToken = await registerAndLogin(app, { email: 'audit-target-2@example.com', password: 'Password123' })
+      const targetProfile = await app.inject({ method: 'GET', url: '/api/v1/profile', headers: { authorization: `Bearer ${targetToken}` } })
+      const targetId = targetProfile.json().data.id
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/api/v1/users/${targetId}/audit-logs`,
+        headers: { authorization: `Bearer ${readerToken}` },
       })
       expect(res.statusCode).toBe(200)
     })

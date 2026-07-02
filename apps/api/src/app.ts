@@ -3,7 +3,6 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import envPlugin from '@fastify/env'
 import Fastify from 'fastify'
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
-import { existsSync, readFileSync } from 'node:fs'
 import process from 'node:process'
 
 import authDecorator from './common/decorators/auth.js'
@@ -47,26 +46,8 @@ function parseTrustProxy(value: string | undefined) {
   return value
 }
 
-function readDotEnvValue(key: string) {
-  if (!existsSync('.env'))
-    return undefined
-  const prefix = `${key}=`
-  const line = readFileSync('.env', 'utf8')
-    .split(/\r?\n/)
-    .find(line => line.trim().startsWith(prefix))
-  const value = line?.trim().slice(prefix.length).trim()
-  if (!value)
-    return undefined
-  const quote = value[0]
-  if (quote === '"' || quote === '\'') {
-    const end = value.indexOf(quote, 1)
-    return end === -1 ? value.slice(1) : value.slice(1, end)
-  }
-  return value.replace(/\s+#.*$/, '').trim()
-}
-
 export async function buildApp() {
-  const trustProxy = parseTrustProxy(process.env.TRUST_PROXY ?? readDotEnvValue('TRUST_PROXY'))
+  const trustProxy = parseTrustProxy(process.env.TRUST_PROXY)
   const fastify = Fastify({
     ...(trustProxy !== undefined && { trustProxy }),
     logger: {
@@ -146,8 +127,8 @@ export async function buildApp() {
         },
       })
     }
-    if (err.statusCode === 429) {
-      return reply.status(429).send({
+    if (err.statusCode !== undefined && err.statusCode >= 400 && err.statusCode < 500) {
+      return reply.status(err.statusCode).send({
         success: false,
         error: {
           code: err.code ?? 'HTTP_ERROR',

@@ -3,8 +3,9 @@ import { and, asc, count, eq } from 'drizzle-orm'
 import type { Db } from '@/db/index.js'
 import type { CreateRoleBody, UpdateRoleBody } from '@/modules/roles/schemas/index.js'
 
-import { PG_UNIQUE_VIOLATION } from '@/common/constants/index.js'
 import { ConflictError, ForbiddenError, NotFoundError } from '@/common/errors/AppError.js'
+import { isUniqueViolation } from '@/common/errors/postgres.js'
+import { resolvePage } from '@/common/pagination.js'
 import { assertCallerHoldsPermissions, lockRoleForPermissionChange } from '@/common/permissions.js'
 import { permissions, rolePermissions, roles } from '@/db/schema/index.js'
 
@@ -19,10 +20,10 @@ function toRole(row: typeof roles.$inferSelect) {
 }
 
 export async function findAllRoles(db: Db, page: number, limit: number) {
-  const [rows, [{ total }]] = await Promise.all([
+  const { rows, total } = await resolvePage(
     db.select().from(roles).orderBy(asc(roles.name)).offset((page - 1) * limit).limit(limit),
     db.select({ total: count() }).from(roles),
-  ])
+  )
   return { data: rows.map(toRole), total }
 }
 
@@ -34,8 +35,7 @@ export async function findRoleById(db: Db, id: string) {
 }
 
 function throwIfRoleNameConflict(err: unknown, name: string): never {
-  const pgCode = (err as { cause?: { code?: string } })?.cause?.code
-  if (pgCode === PG_UNIQUE_VIOLATION)
+  if (isUniqueViolation(err))
     throw new ConflictError(`Role name '${name}' already exists`)
   throw err
 }
