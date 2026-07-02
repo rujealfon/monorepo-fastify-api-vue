@@ -8,9 +8,15 @@
 
     // Path mapping for cleaner imports.
     "paths": {
-      "@/common/*": ["../api/src/common/*"],
+      "@/common/constants/*": ["../api/src/common/constants/*"],
+      "@/common/schemas/*": ["../api/src/common/schemas/*"],
       "@/contract/*": ["../api/src/contract/*"],
-      "@/modules/*": ["../api/src/modules/*"],
+      "@/modules/audit-logs/schemas/*": ["../api/src/modules/audit-logs/schemas/*"],
+      "@/modules/auth/schemas/*": ["../api/src/modules/auth/schemas/*"],
+      "@/modules/permissions/schemas/*": ["../api/src/modules/permissions/schemas/*"],
+      "@/modules/products/schemas/*": ["../api/src/modules/products/schemas/*"],
+      "@/modules/roles/schemas/*": ["../api/src/modules/roles/schemas/*"],
+      "@/modules/users/schemas/*": ["../api/src/modules/users/schemas/*"],
       "@/*": ["./src/*"]
     },
     // Extra safety for array and object lookups, but may have false positives.

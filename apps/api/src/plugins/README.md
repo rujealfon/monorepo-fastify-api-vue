@@ -43,7 +43,7 @@ requestIdHook      ← writes requestId into request context
 | `request-context.ts` | `@fastify/request-context` | `request.requestContext` — stores `requestId`, `userId` |
 | `metrics.ts` | `prom-client` | `fastify.metricsRegistry`, `/api/v1/metrics` Prometheus endpoint |
 | `jwt.ts` | `@fastify/jwt` | `fastify.jwt`, `request.jwtVerify()` (24 h expiry) |
-| `scalar.ts` | `@fastify/swagger` + `@scalar/fastify-api-reference` | OpenAPI spec at `/openapi.json`, Scalar UI at `/` |
+| `scalar.ts` | `@fastify/swagger` + `@scalar/fastify-api-reference` | OpenAPI spec at `/openapi.json`, Scalar UI at `/`; disabled in production |
 
 ## Adding a new plugin
 

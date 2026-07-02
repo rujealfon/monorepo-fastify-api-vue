@@ -5,14 +5,19 @@ import { defineConfig } from 'vite'
 
 const apiSrc = fileURLToPath(new URL('../api/src', import.meta.url))
 const webSrc = fileURLToPath(new URL('./src', import.meta.url))
+const apiModuleSchemas = ['audit-logs', 'auth', 'permissions', 'products', 'roles', 'users']
 
 export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: [
-      { find: /^@\/common\//, replacement: `${apiSrc}/common/` },
+      { find: /^@\/common\/constants\//, replacement: `${apiSrc}/common/constants/` },
+      { find: /^@\/common\/schemas\//, replacement: `${apiSrc}/common/schemas/` },
       { find: /^@\/contract\//, replacement: `${apiSrc}/contract/` },
-      { find: /^@\/modules\//, replacement: `${apiSrc}/modules/` },
+      ...apiModuleSchemas.map(moduleName => ({
+        find: new RegExp(`^@/modules/${moduleName}/schemas/`),
+        replacement: `${apiSrc}/modules/${moduleName}/schemas/`,
+      })),
       { find: '@', replacement: webSrc },
     ],
   },
