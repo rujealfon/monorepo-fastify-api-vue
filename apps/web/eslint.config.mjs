@@ -2,6 +2,8 @@ import createConfig from '@monorepo-fastify-api-vue/eslint-config/create-config'
 import pluginVitest from '@vitest/eslint-plugin'
 import pluginCypress from 'eslint-plugin-cypress'
 
+const { plugins: _vitestPlugins, ...vitestRecommended } = pluginVitest.configs.recommended
+
 export default createConfig({
   vue: true,
   ignores: ['dist-ssr/**', 'coverage/**'],
@@ -17,6 +19,6 @@ export default createConfig({
     'cypress/support/**/*.{js,ts,jsx,tsx}',
   ],
 }, {
-  ...pluginVitest.configs.recommended,
+  ...vitestRecommended,
   files: ['src/**/__tests__/*', 'src/**/*.spec.ts'],
 })
