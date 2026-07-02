@@ -62,6 +62,7 @@ services:
       - '3000:3000'
     volumes:
       - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/migrations:/app/apps/api/migrations:ro
       - ./apps/api/tsconfig.json:/app/apps/api/tsconfig.json:ro
       - ./apps/api/eslint.config.mjs:/app/apps/api/eslint.config.mjs:ro
       - ./apps/api/vitest.config.ts:/app/apps/api/vitest.config.ts:ro

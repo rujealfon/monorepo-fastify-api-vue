@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import process from 'node:process'
 
 import type { Tx } from '@/db/index.js'
 
