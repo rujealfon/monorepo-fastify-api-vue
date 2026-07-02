@@ -5,6 +5,7 @@ import type { Registry } from 'prom-client'
 import type { AppConfig } from '@/config/schema.js'
 import type { Db } from '@/db/index.js'
 
+import '@fastify/cookie'
 import '@fastify/swagger'
 
 interface CookieOptions {
@@ -34,6 +35,7 @@ declare module 'fastify' {
   }
 
   interface FastifyRequest {
+    cookies: { [cookieName: string]: string | undefined }
     jwtVerify: () => Promise<unknown>
     user: unknown
   }
