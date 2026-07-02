@@ -20,7 +20,7 @@ dbPlugin           ← fastify.db
 underPressurePlugin← auto-503 when heap/loop thresholds exceeded
 multipartPlugin    ← file upload body parser
 requestContextPlugin← AsyncLocalStorage per request
-metricsPlugin      ← /metrics endpoint
+metricsPlugin      ← /api/v1/metrics endpoint
 jwtPlugin          ← fastify.jwt
 authDecorator      ← fastify.authenticate (uses fastify.jwt)
 requestIdHook      ← writes requestId into request context
@@ -41,9 +41,9 @@ requestIdHook      ← writes requestId into request context
 | `under-pressure.ts` | `@fastify/under-pressure` | Auto-503 when heap > 200 MB, RSS > 300 MB, or loop delay > 1 s |
 | `multipart.ts` | `@fastify/multipart` | File upload support (10 MB / file, max 10 files) |
 | `request-context.ts` | `@fastify/request-context` | `request.requestContext` — stores `requestId`, `userId` |
-| `metrics.ts` | `prom-client` | `fastify.metricsRegistry`, `/metrics` Prometheus endpoint |
+| `metrics.ts` | `prom-client` | `fastify.metricsRegistry`, `/api/v1/metrics` Prometheus endpoint |
 | `jwt.ts` | `@fastify/jwt` | `fastify.jwt`, `request.jwtVerify()` (24 h expiry) |
-| `scalar.ts` | `@fastify/swagger` + `@scalar/fastify-api-reference` | OpenAPI spec at `/openapi.json`, Scalar UI at `/` |
+| `scalar.ts` | `@fastify/swagger` + `@scalar/fastify-api-reference` | OpenAPI spec at `/openapi.json`, Scalar UI at `/`; disabled in production |
 
 ## Adding a new plugin
 

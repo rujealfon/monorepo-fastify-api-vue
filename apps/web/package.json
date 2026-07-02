@@ -8,20 +8,34 @@
     "build": "vue-tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "start-server-and-test 'pnpm exec vite preview --host 127.0.0.1 --port 4173' http://127.0.0.1:4173 'pnpm exec cypress run --e2e'",
+    "test:e2e:dev": "start-server-and-test 'pnpm exec vite dev --host 127.0.0.1 --port 4173' http://127.0.0.1:4173 'pnpm exec cypress open --e2e'",
+    "test:unit": "vitest",
     "typecheck": "vue-tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
     "@monorepo-fastify-api-vue/api-client": "workspace:^",
+    "pinia": "^3.0.4",
+    "vue-router": "^5.1.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {
     "@monorepo-fastify-api-vue/eslint-config": "workspace:^",
+    "@types/jsdom": "^21.1.7",
     "@types/node": "^22.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/eslint-plugin": "^1.6.20",
+    "@vue/test-utils": "^2.4.11",
     "@vue/tsconfig": "^0.7.0",
+    "cypress": "^15.17.0",
     "eslint": "^9.17.0",
+    "eslint-plugin-cypress": "^6.4.1",
+    "jsdom": "^26.1.0",
+    "start-server-and-test": "^3.0.11",
     "vite": "^6.3.5",
+    "vitest": "^4.1.9",
     "vue-tsc": "^2.2.10"
   }
 }

@@ -1,16 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "jsx": "preserve",
-    "jsxImportSource": "vue",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "paths": {
-      "@/*": ["./src/*", "../../apps/api/src/*"]
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
     },
-    "allowImportingTsExtensions": true,
-    "noEmit": true
-  },
-  "include": ["src/**/*", "vite.config.ts"]
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.vitest.json"
+    }
+  ]
 }

@@ -26,6 +26,7 @@ export default function createConfig(options = {}, ...userConfigs) {
       // 'antfu/no-top-level-await': 'off',
       // 'node/prefer-global/process': 'off',
       // 'ts/no-redeclare': 'off',
+      // '@style/comma-dangle': ['error', 'never'],
       'no-console': ['warn'],
       'node/no-process-env': ['error'],
       'ts/consistent-type-definitions': ['error', 'type'],

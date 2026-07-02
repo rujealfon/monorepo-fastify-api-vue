@@ -2,8 +2,10 @@ import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify'
 
 import fp from 'fastify-plugin'
 import { collectDefaultMetrics, Registry } from 'prom-client'
+import { z } from 'zod'
 
 import { PERMISSIONS } from '@/common/constants/index.js'
+import { apiErrorSchema } from '@/common/schemas/index.js'
 
 const metricsPlugin: FastifyPluginAsync = async (fastify) => {
   const registry = new Registry()
@@ -12,8 +14,18 @@ const metricsPlugin: FastifyPluginAsync = async (fastify) => {
 
   fastify.decorate('metricsRegistry', registry)
 
-  fastify.get('/metrics', {
-    schema: { hide: true },
+  fastify.get('/api/v1/metrics', {
+    schema: {
+      tags: ['Metrics'],
+      summary: 'Prometheus metrics',
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }],
+      response: {
+        200: z.string(),
+        401: apiErrorSchema,
+        403: apiErrorSchema,
+        429: apiErrorSchema,
+      },
+    },
     preValidation: [fastify.authenticate, fastify.requirePermission(PERMISSIONS.METRICS.READ_ANY)],
     handler: async (_request: FastifyRequest, reply: FastifyReply) => {
       reply.header('Content-Type', registry.contentType)

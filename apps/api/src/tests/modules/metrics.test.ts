@@ -20,7 +20,7 @@ describe('metrics API', () => {
   })
 
   it('returns 401 without a token', async () => {
-    const res = await app.inject({ method: 'GET', url: '/metrics' })
+    const res = await app.inject({ method: 'GET', url: '/api/v1/metrics' })
     expect(res.statusCode).toBe(401)
   })
 
@@ -28,7 +28,7 @@ describe('metrics API', () => {
     const token = await registerAndLogin(app, { email: 'user@example.com', password: 'Password123' })
     const res = await app.inject({
       method: 'GET',
-      url: '/metrics',
+      url: '/api/v1/metrics',
       headers: { authorization: `Bearer ${token}` },
     })
     expect(res.statusCode).toBe(403)
@@ -38,7 +38,7 @@ describe('metrics API', () => {
     const token = await registerAdminAndLogin(app)
     const res = await app.inject({
       method: 'GET',
-      url: '/metrics',
+      url: '/api/v1/metrics',
       headers: { authorization: `Bearer ${token}` },
     })
     expect(res.statusCode).toBe(403)
@@ -48,9 +48,14 @@ describe('metrics API', () => {
     const token = await registerSuperAdminAndLogin(app)
     const res = await app.inject({
       method: 'GET',
-      url: '/metrics',
+      url: '/api/v1/metrics',
       headers: { authorization: `Bearer ${token}` },
     })
     expect(res.statusCode).toBe(200)
+  })
+
+  it('is documented in OpenAPI', () => {
+    const spec = app.swagger() as { paths: Record<string, unknown> }
+    expect(spec.paths['/api/v1/metrics']).toBeDefined()
   })
 })

@@ -28,6 +28,7 @@ const scalarPlugin: FastifyPluginAsync = async (fastify) => {
         { name: 'Audit Logs', description: 'Audit log management endpoints' },
         { name: 'Auth', description: 'Authentication endpoints' },
         { name: 'Health', description: 'Health check endpoints' },
+        { name: 'Metrics', description: 'Prometheus metrics endpoints' },
         { name: 'Permissions', description: 'Permission management endpoints' },
         { name: 'Products', description: 'Product management endpoints' },
         { name: 'Profile', description: 'Authenticated user self-management endpoints' },

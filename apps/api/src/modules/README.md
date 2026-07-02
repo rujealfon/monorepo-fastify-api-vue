@@ -9,7 +9,7 @@ Domain modules. Each module owns its full vertical slice: validation schema → 
 | `auth/` | `/api/v1/auth` | Public |
 | `users/` | `/api/v1/users` | JWT required |
 | `products/` | `/api/v1/products` | JWT required |
-| `health/` | `/health` | Public |
+| `health/` | `/api/v1/health` | Public |
 
 ## Internal structure
 

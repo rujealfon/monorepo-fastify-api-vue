@@ -17,7 +17,7 @@ const rateLimitPlugin: FastifyPluginAsync = async (fastify) => {
     max: 100,
     timeWindow: '15 minutes',
     store: createValkeyRateLimitStore(fastify.valkey),
-    allowList: (request: FastifyRequest) => request.url === '/health/live' || request.url === '/health/ready',
+    allowList: (request: FastifyRequest) => request.url === '/api/v1/health/live' || request.url === '/api/v1/health/ready',
     keyGenerator: (request: FastifyRequest) => request.ip,
   })
 }

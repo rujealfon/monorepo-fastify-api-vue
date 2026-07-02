@@ -26,7 +26,7 @@ A nub-managed monorepo containing a production-ready Fastify API and a Vue 3 fro
 | App / Package | Stack |
 |---|---|
 | `apps/api` | Fastify 5, TypeScript, PostgreSQL, Drizzle ORM, Valkey, Zod, JWT, OpenTelemetry |
-| `apps/web` | Vue 3, Vite, TypeScript, nginx (Docker) / S3+CloudFront (CDN) |
+| `apps/web` | Vue 3, Vite, TypeScript, Pinia, Vue Router, Vitest, Cypress, nginx (Docker) / S3+CloudFront (CDN) |
 | `packages/api-client` | Source-first typed fetch client derived from the Fastify contract schemas |
 | `packages/eslint-config` | `@antfu/eslint-config` wrapper shared across all workspaces |
 
@@ -35,7 +35,7 @@ A nub-managed monorepo containing a production-ready Fastify API and a Vue 3 fro
 | Package | Role |
 |---|---|
 | `@monorepo-fastify-api-vue/api` | Fastify API in Docker. Owns the RPC contract (`src/contract/`), Drizzle migrations, and all business logic. Exports `./contract` for `api-client`. |
-| `@monorepo-fastify-api-vue/web` | Vue 3 app. Vite in dev, nginx in Docker prod, S3/CloudFront as static files. |
+| `@monorepo-fastify-api-vue/web` | Vue 3 app. Vite in dev, Pinia + Vue Router in app code, Vitest for unit tests, Cypress for e2e, nginx in Docker prod, S3/CloudFront as static files. |
 | `@monorepo-fastify-api-vue/api-client` | Source-first — re-exports `createApiClient`, `RpcError`, and types from the API contract. Vite resolves TypeScript through workspace symlinks, no build step needed. |
 | `@monorepo-fastify-api-vue/eslint-config` | Wraps `@antfu/eslint-config`, exports `createConfig()`. Used by all workspaces. |
 
@@ -80,6 +80,8 @@ nub run dev   # Vue at http://localhost:5173
 | `nub run build` | All workspace `build`. |
 | `nub run test` | All workspace `test` in parallel. API requires Docker container running. |
 | `nub run test:unit` | API vitest suite inside Docker container. |
+| `nub run test:e2e` | Web Cypress e2e against Vite preview on `127.0.0.1:4173`. |
+| `nub run test:e2e:dev` | Web Cypress interactive runner against Vite dev on `127.0.0.1:4173`. |
 | `nub run lint` / `nub run lint:fix` | Lint all workspaces. |
 | `nub run db:generate` | Generate Drizzle migration after schema edits. |
 | `nub run db:migrate` | Apply migrations to dev + test databases. |
@@ -108,7 +110,17 @@ docker exec -e NODE_ENV=test fastify_api nubx vitest run src/tests/modules/users
 ```bash
 nub run dev   # Vite at http://localhost:5173 — proxies /api → localhost:3000
 nub run --filter @monorepo-fastify-api-vue/web typecheck
+nub run --filter @monorepo-fastify-api-vue/web test       # Vitest
+nub run --filter @monorepo-fastify-api-vue/web test:e2e   # Cypress headless
 ```
+
+For interactive Cypress:
+
+```bash
+nub run test:e2e:dev
+```
+
+The Cypress scripts start Vite on `127.0.0.1:4173` through `start-server-and-test`.
 
 ---
 
@@ -134,6 +146,8 @@ import { api } from "@/api"
 
 const users = await api.users.list({ query: { page: 1, limit: 10 } })
 ```
+
+The web health page at `/health` uses `api.health.live()` (`GET /api/v1/health/live`).
 
 | Deploy target | `VITE_API_URL` | Behavior |
 |---|---|---|
@@ -161,10 +175,10 @@ Root `tsconfig.json` sets shared flags. Each workspace extends it:
 | Workspace | `module` | `moduleResolution` | Notes |
 |---|---|---|---|
 | `apps/api` | `NodeNext` | `NodeNext` | Emits to `dist/`; `@/*` → `./src/*` |
-| `apps/web` | `ESNext` | `Bundler` | `noEmit`; `@/*` → `./src/*` then `../../apps/api/src/*` |
+| `apps/web` | `ESNext` | `Bundler` | `vue-tsc`; `@/*` → `./src/*`; API contract aliases resolve `@/common`, `@/contract`, and `@/modules` to `apps/api/src/*` |
 | `packages/api-client` | `ESNext` | `Bundler` | `noEmit`; `@/*` → `../../apps/api/src/*` |
 
-The dual `@/*` path in `apps/web` lets `vue-tsc` resolve both web source files and the API contract chain (`@/common/`, `@/modules/*/schemas/`, etc.).
+`apps/web` also has separate TypeScript project references for tool config files (`tsconfig.node.json`), app source (`tsconfig.app.json`), and Vitest (`tsconfig.vitest.json`). Cypress has its own `apps/web/cypress/tsconfig.json`.
 
 ---
 
@@ -183,6 +197,7 @@ export default createConfig({ vue: true })
 ```
 
 `@antfu/eslint-config` enforces TypeScript documentation key order in `tsconfig.json` via `perfectionist/sort-keys`. Run `eslint tsconfig.json --fix` after manual edits.
+The web config also scopes Vitest rules to `src/**/__tests__/*` and Cypress rules to `cypress/**`.
 
 ---
 
@@ -199,4 +214,5 @@ Use `@monorepo-fastify-api-vue/<name>` as the package name and `workspace:^` for
 | Topic | File |
 |---|---|
 | API endpoints, RBAC, env vars | [apps/api/README.md](apps/api/README.md) |
+| Web scaffold and Vue commands | [apps/web/README.md](apps/web/README.md) |
 | Docker setup, profiles, deployment scenarios | [DOCKER.md](DOCKER.md) |
