@@ -56,6 +56,7 @@ export const authSchema = {
     optionalAuth: true,
     responses: {
       200: apiSuccessSchema(z.null()),
+      403: apiErrorSchema,
       429: apiErrorSchema,
     },
   },

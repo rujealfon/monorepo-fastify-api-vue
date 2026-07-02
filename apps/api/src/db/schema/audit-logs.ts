@@ -11,6 +11,7 @@ export const auditLogs = pgTable('audit_logs', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, t => [
   index('audit_logs_user_id_idx').on(t.userId),
+  index('audit_logs_created_at_idx').on(t.createdAt),
 ])
 
 export type AuditLogRow = typeof auditLogs.$inferSelect

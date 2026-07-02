@@ -1,0 +1,2 @@
+CREATE INDEX "audit_logs_created_at_idx" ON "audit_logs" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "products_deleted_at_idx" ON "products" USING btree ("deleted_at") WHERE "products"."deleted_at" IS NULL;

@@ -5,7 +5,6 @@ import { defineConfig } from 'vite'
 
 const apiSrc = fileURLToPath(new URL('../api/src', import.meta.url))
 const webSrc = fileURLToPath(new URL('./src', import.meta.url))
-const apiModuleSchemas = ['audit-logs', 'auth', 'permissions', 'products', 'roles', 'users']
 
 export default defineConfig({
   plugins: [vue()],
@@ -14,10 +13,12 @@ export default defineConfig({
       { find: /^@\/common\/constants\//, replacement: `${apiSrc}/common/constants/` },
       { find: /^@\/common\/schemas\//, replacement: `${apiSrc}/common/schemas/` },
       { find: /^@\/contract\//, replacement: `${apiSrc}/contract/` },
-      ...apiModuleSchemas.map(moduleName => ({
-        find: new RegExp(`^@/modules/${moduleName}/schemas/`),
-        replacement: `${apiSrc}/modules/${moduleName}/schemas/`,
-      })),
+      { find: /^@\/modules\/audit-logs\/schemas\//, replacement: `${apiSrc}/modules/audit-logs/schemas/` },
+      { find: /^@\/modules\/auth\/schemas\//, replacement: `${apiSrc}/modules/auth/schemas/` },
+      { find: /^@\/modules\/permissions\/schemas\//, replacement: `${apiSrc}/modules/permissions/schemas/` },
+      { find: /^@\/modules\/products\/schemas\//, replacement: `${apiSrc}/modules/products/schemas/` },
+      { find: /^@\/modules\/roles\/schemas\//, replacement: `${apiSrc}/modules/roles/schemas/` },
+      { find: /^@\/modules\/users\/schemas\//, replacement: `${apiSrc}/modules/users/schemas/` },
       { find: '@', replacement: webSrc },
     ],
   },

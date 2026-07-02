@@ -26,7 +26,10 @@ export const PERMISSIONS = {
     DELETE_ANY: 'role:delete:any',
   },
   PERMISSION: {
+    CREATE_ANY: 'permission:create:any',
     READ_ANY: 'permission:read:any',
+    UPDATE_ANY: 'permission:update:any',
+    DELETE_ANY: 'permission:delete:any',
   },
   PRODUCT: {
     READ_ANY: 'product:read:any',

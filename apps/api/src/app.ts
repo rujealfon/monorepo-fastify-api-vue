@@ -3,7 +3,7 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import envPlugin from '@fastify/env'
 import Fastify from 'fastify'
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
-import { existsSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import process from 'node:process'
 
 import authDecorator from './common/decorators/auth.js'
@@ -47,26 +47,21 @@ function parseTrustProxy(value: string | undefined) {
   return value
 }
 
-function readDotEnvValue(key: string) {
-  if (!existsSync('.env'))
-    return undefined
-  const prefix = `${key}=`
-  const line = readFileSync('.env', 'utf8')
-    .split(/\r?\n/)
-    .find(line => line.trim().startsWith(prefix))
-  const value = line?.trim().slice(prefix.length).trim()
-  if (!value)
-    return undefined
-  const quote = value[0]
-  if (quote === '"' || quote === '\'') {
-    const end = value.indexOf(quote, 1)
-    return end === -1 ? value.slice(1) : value.slice(1, end)
+function readDotenvTrustProxy() {
+  try {
+    const line = readFileSync('.env', 'utf8')
+      .split(/\r?\n/)
+      .find(line => line.trimStart().startsWith('TRUST_PROXY='))
+    const value = line?.slice(line.indexOf('=') + 1).split('#')[0]?.trim()
+    return value ? value.replace(/^(['"])(.*)\1$/, '$2') : undefined
   }
-  return value.replace(/\s+#.*$/, '').trim()
+  catch {
+    return undefined
+  }
 }
 
 export async function buildApp() {
-  const trustProxy = parseTrustProxy(process.env.TRUST_PROXY ?? readDotEnvValue('TRUST_PROXY'))
+  const trustProxy = parseTrustProxy(process.env.TRUST_PROXY ?? readDotenvTrustProxy())
   const fastify = Fastify({
     ...(trustProxy !== undefined && { trustProxy }),
     logger: {
@@ -146,12 +141,22 @@ export async function buildApp() {
         },
       })
     }
-    if (err.statusCode === 429) {
-      return reply.status(429).send({
+    if (err.statusCode !== undefined && err.statusCode >= 400 && err.statusCode < 500) {
+      const clientErrorMessages: Record<number, string> = {
+        400: 'Bad request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not found',
+        409: 'Conflict',
+        413: 'Payload too large',
+        415: 'Unsupported media type',
+        422: 'Unprocessable entity',
+      }
+      return reply.status(err.statusCode).send({
         success: false,
         error: {
           code: err.code ?? 'HTTP_ERROR',
-          message: err.message,
+          message: err.statusCode === 429 ? err.message : clientErrorMessages[err.statusCode] ?? 'HTTP error',
         },
       })
     }

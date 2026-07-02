@@ -1,9 +1,11 @@
 import type { FastifyInstance } from 'fastify'
 
+import { eq } from 'drizzle-orm'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import type { User } from '@/modules/users/schemas/index.js'
 
+import { profiles, users } from '@/db/schema/index.js'
 import { createRoleWithPermission, createTestApp, extractTokenFromCookie, listRoles, registerAdminAndLogin, registerAndAssignRole, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
 
 describe('users API', () => {
@@ -332,6 +334,31 @@ describe('users API', () => {
       expect(res.statusCode).toBe(404)
     })
 
+    it('does not mutate a soft-deleted user', async () => {
+      const user = await createUser('deleted-update@example.com')
+      await app.inject({
+        method: 'DELETE',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+      })
+
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: {
+          email: 'deleted-update-new@example.com',
+          profile: { firstName: 'Changed' },
+        },
+      })
+
+      expect(res.statusCode).toBe(404)
+      const [userRow] = await app.db.select().from(users).where(eq(users.id, user.id)).limit(1)
+      const [profileRow] = await app.db.select().from(profiles).where(eq(profiles.userId, user.id)).limit(1)
+      expect(userRow.email).toBe('deleted-update@example.com')
+      expect(profileRow.firstName).toBeNull()
+    })
+
     it('returns 400 when body is empty', async () => {
       const user = await createUser()
       const res = await app.inject({
@@ -364,6 +391,29 @@ describe('users API', () => {
         payload: { email: 'taken@example.com' },
       })
       expect(res.statusCode).toBe(409)
+    })
+
+    it('updates email when profile is an empty object', async () => {
+      const user = await createUser('emptyprofile@example.com')
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { email: 'emptyprofile-new@example.com', profile: {} },
+      })
+      expect(res.statusCode).toBe(200)
+      expect(res.json<{ data: User }>().data.email).toBe('emptyprofile-new@example.com')
+    })
+
+    it('returns 400 for an invalid profile birthDate', async () => {
+      const user = await createUser('birthdate@example.com')
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { profile: { birthDate: 'not-a-date' } },
+      })
+      expect(res.statusCode).toBe(400)
     })
   })
 

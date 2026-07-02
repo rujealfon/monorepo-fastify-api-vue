@@ -85,6 +85,13 @@
       "when": 1751041200000,
       "tag": "0011_users_email_deleted_at_idx",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1782959342786,
+      "tag": "0012_rainy_masked_marvel",
+      "breakpoints": true
     }
   ]
 }

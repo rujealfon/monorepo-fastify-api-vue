@@ -3,62 +3,70 @@ import { fileURLToPath } from 'node:url'
 
 import type { Db } from '@/db/index.js'
 
+import { PERMISSIONS, ROLES } from '@/common/constants/index.js'
 import { createDb } from '@/db/index.js'
 import { permissions, rolePermissions, roles } from '@/db/schema/index.js'
 
 const SEED_ROLES = [
-  { name: 'super-admin', description: 'Full system access', isSystemRole: true },
-  { name: 'admin', description: 'Administrative access', isSystemRole: false },
-  { name: 'user', description: 'Standard user access', isSystemRole: false },
+  { name: ROLES.SUPER_ADMIN, description: 'Full system access', isSystemRole: true },
+  { name: ROLES.ADMIN, description: 'Administrative access', isSystemRole: false },
+  { name: ROLES.USER, description: 'Standard user access', isSystemRole: false },
 ]
+
+function parsePermission(value: string) {
+  const [resource, action, scope] = value.split(':')
+  if (!resource || !action || !scope)
+    throw new Error(`Invalid permission constant: ${value}`)
+  return { resource, action, scope }
+}
 
 // Adding an entry here only affects fresh databases — existing databases need
 // migrations/0010_add_assign_role_permission.sql (or an equivalent re-run of
 // `nub run db:seed`) to pick up newly seeded permissions/grants.
 export const SEED_PERMISSIONS = [
-  { resource: 'user', action: 'create', scope: 'any' },
-  { resource: 'user', action: 'read', scope: 'any' },
-  { resource: 'user', action: 'update', scope: 'any' },
-  { resource: 'user', action: 'delete', scope: 'any' },
-  { resource: 'user', action: 'read', scope: 'own' },
-  { resource: 'user', action: 'update', scope: 'own' },
-  { resource: 'user', action: 'assign-role', scope: 'any' },
-  { resource: 'role', action: 'create', scope: 'any' },
-  { resource: 'role', action: 'read', scope: 'any' },
-  { resource: 'role', action: 'update', scope: 'any' },
-  { resource: 'role', action: 'delete', scope: 'any' },
-  { resource: 'permission', action: 'create', scope: 'any' },
-  { resource: 'permission', action: 'read', scope: 'any' },
-  { resource: 'permission', action: 'update', scope: 'any' },
-  { resource: 'permission', action: 'delete', scope: 'any' },
-  { resource: 'product', action: 'read', scope: 'any' },
-  { resource: 'product', action: 'create', scope: 'any' },
-  { resource: 'product', action: 'update', scope: 'any' },
-  { resource: 'product', action: 'delete', scope: 'any' },
-  { resource: 'audit-log', action: 'read', scope: 'any' },
-  { resource: 'metrics', action: 'read', scope: 'any' },
-  { resource: 'health', action: 'read', scope: 'details' },
-]
+  PERMISSIONS.USER.CREATE_ANY,
+  PERMISSIONS.USER.READ_ANY,
+  PERMISSIONS.USER.UPDATE_ANY,
+  PERMISSIONS.USER.DELETE_ANY,
+  PERMISSIONS.USER.READ_OWN,
+  PERMISSIONS.USER.UPDATE_OWN,
+  PERMISSIONS.USER.ASSIGN_ROLE_ANY,
+  PERMISSIONS.ROLE.CREATE_ANY,
+  PERMISSIONS.ROLE.READ_ANY,
+  PERMISSIONS.ROLE.UPDATE_ANY,
+  PERMISSIONS.ROLE.DELETE_ANY,
+  PERMISSIONS.PERMISSION.CREATE_ANY,
+  PERMISSIONS.PERMISSION.READ_ANY,
+  PERMISSIONS.PERMISSION.UPDATE_ANY,
+  PERMISSIONS.PERMISSION.DELETE_ANY,
+  PERMISSIONS.PRODUCT.READ_ANY,
+  PERMISSIONS.PRODUCT.CREATE_ANY,
+  PERMISSIONS.PRODUCT.UPDATE_ANY,
+  PERMISSIONS.PRODUCT.DELETE_ANY,
+  PERMISSIONS.AUDIT_LOG.READ_ANY,
+  PERMISSIONS.METRICS.READ_ANY,
+  PERMISSIONS.HEALTH.READ_DETAILS,
+].map(parsePermission)
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
-  'super-admin': SEED_PERMISSIONS.map(p => `${p.resource}:${p.action}:${p.scope}`),
-  'admin': [
-    'health:read:details',
-    'user:create:any',
-    'user:read:any',
-    'user:update:any',
-    'user:delete:any',
-    'user:read:own',
-    'user:update:own',
-    'role:read:any',
-    'permission:read:any',
-    'product:read:any',
-    'product:create:any',
-    'product:update:any',
-    'product:delete:any',
-    'audit-log:read:any',
+  [ROLES.SUPER_ADMIN]: SEED_PERMISSIONS.map(p => `${p.resource}:${p.action}:${p.scope}`),
+  [ROLES.ADMIN]: [
+    PERMISSIONS.HEALTH.READ_DETAILS,
+    PERMISSIONS.USER.CREATE_ANY,
+    PERMISSIONS.USER.READ_ANY,
+    PERMISSIONS.USER.UPDATE_ANY,
+    PERMISSIONS.USER.DELETE_ANY,
+    PERMISSIONS.USER.READ_OWN,
+    PERMISSIONS.USER.UPDATE_OWN,
+    PERMISSIONS.ROLE.READ_ANY,
+    PERMISSIONS.PERMISSION.READ_ANY,
+    PERMISSIONS.PRODUCT.READ_ANY,
+    PERMISSIONS.PRODUCT.CREATE_ANY,
+    PERMISSIONS.PRODUCT.UPDATE_ANY,
+    PERMISSIONS.PRODUCT.DELETE_ANY,
+    PERMISSIONS.AUDIT_LOG.READ_ANY,
   ],
-  'user': ['user:read:own', 'user:update:own', 'product:read:any'],
+  [ROLES.USER]: [PERMISSIONS.USER.READ_OWN, PERMISSIONS.USER.UPDATE_OWN, PERMISSIONS.PRODUCT.READ_ANY],
 }
 
 export async function seedRoles(db: Db) {

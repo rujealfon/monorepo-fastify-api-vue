@@ -6,7 +6,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { ROLES } from '@/common/constants/index.js'
 import { auditLogs, profiles, roles, userRoles, users } from '@/db/schema/index.js'
-import { createTestApp, eventually, extractTokenFromCookie, firstCookieHeader, registerAndLogin, registerAndLoginWithUser, resetDb } from '@/tests/fixtures/index.js'
+import { createTestApp, eventually, extractTokenFromCookie, firstCookieHeader, registerAndLogin, registerAndLoginWithUser, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
 
 describe('auth API', () => {
   let app: FastifyInstance
@@ -346,6 +346,34 @@ describe('auth API', () => {
       )
       expect(log.resourceId).toBe(user.id)
     })
+
+    it('rejects production cookie logout from an untrusted origin', async () => {
+      const originalNodeEnv = app.config.NODE_ENV
+      const originalCorsOrigin = app.config.CORS_ORIGIN
+      app.config.NODE_ENV = 'production'
+      app.config.CORS_ORIGIN = 'https://app.example.com'
+      try {
+        const token = await registerAndLogin(app, { email: 'csrf-logout@example.com', password: 'Password123' })
+
+        const blocked = await app.inject({
+          method: 'POST',
+          url: '/api/v1/auth/logout',
+          headers: { cookie: `token=${token}`, origin: 'https://evil.example.com' },
+        })
+        expect(blocked.statusCode).toBe(403)
+
+        const allowed = await app.inject({
+          method: 'POST',
+          url: '/api/v1/auth/logout',
+          headers: { cookie: `token=${token}`, origin: 'https://app.example.com' },
+        })
+        expect(allowed.statusCode).toBe(200)
+      }
+      finally {
+        app.config.NODE_ENV = originalNodeEnv
+        app.config.CORS_ORIGIN = originalCorsOrigin
+      }
+    })
   })
 
   // ── Account retention: reactivation within the 90-day window ────────────────
@@ -468,5 +496,32 @@ describe('auth API', () => {
       expect(again.statusCode).toBe(201)
       expect(again.json<{ data: { id: string } }>().data.id).toBe(id)
     })
+
+    it('does not reactivate an account deleted by another user', async () => {
+      const { user } = await registerAndLoginWithUser(app, { email: 'banned@example.com', password: 'Password123' })
+      const superToken = await registerSuperAdminAndLogin(app)
+
+      const del = await app.inject({
+        method: 'DELETE',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${superToken}` },
+      })
+      expect(del.statusCode).toBe(204)
+
+      const again = await register('banned@example.com', 'Password123')
+      expect(again.statusCode).toBe(409)
+      expect((await login('banned@example.com', 'Password123')).statusCode).toBe(401)
+    })
+  })
+
+  it('returns 400 for malformed JSON instead of 500', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/auth/login',
+      headers: { 'content-type': 'application/json' },
+      payload: '{"email":',
+    })
+    expect(res.statusCode).toBe(400)
+    expect(res.json()).toMatchObject({ success: false, error: { code: expect.any(String) } })
   })
 })

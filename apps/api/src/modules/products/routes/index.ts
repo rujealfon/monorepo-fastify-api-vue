@@ -1,5 +1,5 @@
+import { logAudit } from '@/common/audit-log.js'
 import { productsSchema } from '@/contract/schemas/products.js'
-import { logAudit } from '@/modules/audit-logs/helpers/log-audit.js'
 import * as productService from '@/modules/products/services/product.service.js'
 import { createFastifyRpcPlugin } from '@/plugins/rpc.js'
 

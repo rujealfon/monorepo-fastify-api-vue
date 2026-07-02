@@ -1,12 +1,14 @@
-import bcrypt from 'bcryptjs'
 import { and, count, eq, isNull } from 'drizzle-orm'
 
 import type { Db, Tx } from '@/db/index.js'
 import type { CreateUserBody, UpdateUserBody } from '@/modules/users/schemas/index.js'
 
-import { PG_UNIQUE_VIOLATION, ROLES } from '@/common/constants/index.js'
+import { ROLES } from '@/common/constants/index.js'
 import { ConflictError, ForbiddenError, NotFoundError } from '@/common/errors/AppError.js'
+import { isUniqueViolation } from '@/common/errors/postgres.js'
+import { resolvePage } from '@/common/pagination.js'
 import { assertCallerHoldsPermissions, lockRoleForPermissionChange } from '@/common/permissions.js'
+import { hashPassword, insertUserWithProfile } from '@/common/user-records.js'
 import { profiles, rolePermissions, roles, userRoles, users } from '@/db/schema/index.js'
 
 const userColumns = {
@@ -88,7 +90,7 @@ function toUser(row: UserRow) {
 }
 
 export async function findAllUsers(db: Db, page: number, limit: number) {
-  const [rows, [{ total }]] = await Promise.all([
+  const { rows, total } = await resolvePage(
     db.query.users.findMany({
       columns: userColumns,
       with: { profile: { columns: profileColumns }, userRoles: userRolesRelation },
@@ -97,7 +99,7 @@ export async function findAllUsers(db: Db, page: number, limit: number) {
       limit,
     }),
     db.select({ total: count() }).from(users).where(isNull(users.deletedAt)),
-  ])
+  )
   return { data: rows.map(toUser), total }
 }
 
@@ -117,16 +119,11 @@ export async function createUser(db: Db, body: CreateUserBody) {
   if (existing)
     throw new ConflictError(`Email '${body.email}' is already registered`)
 
-  const passwordHash = await bcrypt.hash(body.password, 12)
+  const passwordHash = await hashPassword(body.password)
 
   try {
     return await db.transaction(async (tx) => {
-      const [row] = await tx
-        .insert(users)
-        .values({ email: body.email, passwordHash })
-        .returning({ id: users.id, email: users.email, createdAt: users.createdAt, updatedAt: users.updatedAt })
-
-      await tx.insert(profiles).values({ userId: row.id })
+      const row = await insertUserWithProfile(tx, { email: body.email, passwordHash })
 
       // Profile row was just inserted but not returned; pass null and let toUser
       // fill in the empty shape so the response contract is always complete.
@@ -134,34 +131,37 @@ export async function createUser(db: Db, body: CreateUserBody) {
     })
   }
   catch (err) {
-    const pgCode = (err as { cause?: { code?: string } })?.cause?.code
-    if (pgCode === PG_UNIQUE_VIOLATION)
+    if (isUniqueViolation(err))
       throw new ConflictError(`Email '${body.email}' is already registered`)
     throw err
   }
 }
 
 export async function updateUser(db: Db, id: string, body: UpdateUserBody) {
-  await findUserById(db, id)
-
+  let userUpdatedAt: Date
   try {
-    await db.transaction(async (tx) => {
-      if (body.email !== undefined) {
-        await tx.update(users).set({ email: body.email }).where(eq(users.id, id))
-      }
-      if (body.profile !== undefined) {
+    userUpdatedAt = await db.transaction(async (tx) => {
+      const [user] = await tx.update(users).set({
+        updatedAt: new Date(),
+        ...(body.email !== undefined && { email: body.email }),
+      }).where(and(eq(users.id, id), isNull(users.deletedAt))).returning({ updatedAt: users.updatedAt })
+      if (!user)
+        throw new NotFoundError('User', id)
+
+      if (body.profile !== undefined && Object.keys(body.profile).length > 0) {
         await tx.update(profiles).set(body.profile).where(eq(profiles.userId, id))
       }
+      return user.updatedAt
     })
   }
   catch (err) {
-    const pgCode = (err as { cause?: { code?: string } })?.cause?.code
-    if (pgCode === PG_UNIQUE_VIOLATION)
+    if (isUniqueViolation(err))
       throw new ConflictError(`Email '${body.email}' is already registered`)
     throw err
   }
 
-  return findUserById(db, id)
+  const user = await findUserById(db, id)
+  return { ...user, updatedAt: userUpdatedAt.toISOString() }
 }
 
 export async function deleteUser(db: Db, id: string, deletedBy?: string) {

@@ -1,7 +1,15 @@
-import process from 'node:process'
+import process, { loadEnvFile } from 'node:process'
 
 import { buildApp } from './app.js'
 import { initTelemetry, shutdownTelemetry } from './telemetry.js'
+
+try {
+  loadEnvFile()
+}
+catch (err) {
+  if ((err as NodeJS.ErrnoException).code !== 'ENOENT')
+    throw err
+}
 
 initTelemetry(process.env.OTEL_ENDPOINT ?? '')
 
