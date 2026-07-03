@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run --passWithNoTests",
-    "test:e2e": "start-server-and-test 'pnpm exec vite preview --host 127.0.0.1 --port 4173' http://127.0.0.1:4173 'pnpm exec cypress run --e2e'",
-    "test:e2e:dev": "start-server-and-test 'pnpm exec vite dev --host 127.0.0.1 --port 4173' http://127.0.0.1:4173 'pnpm exec cypress open --e2e'",
+    "test:e2e": "docker exec fastify_web sh -lc 'cd /app/apps/web && CYPRESS_baseUrl=http://127.0.0.1:5173 nubx cypress run --e2e --browser electron'",
     "test:unit": "vitest",
     "typecheck": "vue-tsc --noEmit",
     "preview": "vite preview"

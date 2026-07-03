@@ -9,7 +9,6 @@
     "start": "nub run --filter @monorepo-fastify-api-vue/api start",
     "test": "nub run -r --parallel test",
     "test:e2e": "nub run --filter @monorepo-fastify-api-vue/web test:e2e",
-    "test:e2e:dev": "nub run --filter @monorepo-fastify-api-vue/web test:e2e:dev",
     "test:unit": "nub run --filter @monorepo-fastify-api-vue/api test:unit",
     "lint": "nub run -r --parallel lint",
     "lint:fix": "nub run -r --parallel lint:fix",

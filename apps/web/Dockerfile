@@ -1,5 +1,18 @@
 FROM node:24-slim AS base
 WORKDIR /app
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libgbm1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnss3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxkbcommon0 \
+    xvfb \
+  && rm -rf /var/lib/apt/lists/*
 RUN npm install -g @nubjs/nub
 
 # Install all workspace deps
