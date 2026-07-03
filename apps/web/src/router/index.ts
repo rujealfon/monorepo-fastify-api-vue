@@ -1,27 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import AboutView from '../views/AboutView.vue'
-import HealthView from '../views/HealthView.vue'
-import HomeView from '../views/HomeView.vue'
+import DefaultLayout from '@/app/layouts/DefaultLayout.vue'
+import { aboutRoutes } from '@/features/about/routes'
+import { healthRoutes } from '@/features/health/routes'
+import { homeRoutes } from '@/features/home/routes'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      component: DefaultLayout,
+      children: [...homeRoutes, ...aboutRoutes, ...healthRoutes],
     },
-    {
-      path: '/about',
-      name: 'about',
-      component: AboutView,
-    },
-    {
-      path: '/health',
-      name: 'health',
-      component: HealthView,
-    },
+    // TODO Auth feature routes go under AuthLayout once they exist:
+    // { path: '/', component: () => import('@/app/layouts/AuthLayout.vue'), children: [...authRoutes] },
   ],
 })
 

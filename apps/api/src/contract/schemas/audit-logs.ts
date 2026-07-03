@@ -1,8 +1,8 @@
+import type { RouteMap } from '@/contract/types.js'
+
 import { PERMISSIONS } from '@/common/constants/index.js'
 import { apiErrorSchema, apiListSchema, paginationQuerySchema, uuidParamSchema } from '@/common/schemas/index.js'
 import { auditLogSchema } from '@/modules/audit-logs/schemas/index.js'
-
-import type { RouteMap } from '../types.js'
 
 export const auditLogsSchema = {
   list: {

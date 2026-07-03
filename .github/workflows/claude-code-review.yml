@@ -22,11 +22,39 @@ jobs:
       issues: read
       id-token: write
 
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci_test_jwt_secret_at_least_32_characters' }}
+      MOBILE_API_KEY: ${{ secrets.MOBILE_API_KEY || 'ci_test_mobile_api_key_at_least_32_chars' }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install nub
+        run: npm install -g @nubjs/nub
+
+      - name: Install dependencies
+        run: nub install --frozen-lockfile
+
+      - name: Start databases
+        run: docker compose up -d --wait postgres valkey
+
+      - name: Run migrations
+        run: |
+          for db in fastify_dev fastify_test; do
+            for file in apps/api/migrations/*.sql; do
+              docker exec -i fastify_postgres psql -v ON_ERROR_STOP=1 -U postgres -d "$db" < "$file"
+            done
+          done
+
+      - name: Start API container
+        run: docker compose up -d --build api
 
       - name: Run Claude Code Review
         id: claude-review

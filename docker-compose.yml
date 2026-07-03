@@ -87,6 +87,8 @@ services:
       - '5173:5173'
     volumes:
       - ./apps/web/src:/app/apps/web/src
+      - ./apps/web/cypress:/app/apps/web/cypress
+      - ./apps/web/cypress.config.ts:/app/apps/web/cypress.config.ts:ro
       - ./apps/web/index.html:/app/apps/web/index.html
       - ./apps/web/vite.config.ts:/app/apps/web/vite.config.ts:ro
       - ./apps/api/src/contract:/app/apps/api/src/contract

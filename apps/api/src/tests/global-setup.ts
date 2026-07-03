@@ -3,7 +3,8 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 import postgres from 'postgres'
 
-import { testSchemaName } from '../common/test-db-schema.js'
+import { testSchemaName } from '@/common/test-db-schema.js'
+
 import { TEST_WORKER_COUNT } from './worker-count.js'
 
 export default async function setup() {

@@ -30,7 +30,7 @@ vitest
 Boots a full Fastify application (all plugins, routes) and calls `.ready()`. Use in `beforeAll` and close with `app.close()` in `afterAll`.
 
 ```ts
-import { createTestApp } from '../fixtures/index.js'
+import { createTestApp } from '@/tests/fixtures/index.js'
 
 let app: Awaited<ReturnType<typeof createTestApp>>
 

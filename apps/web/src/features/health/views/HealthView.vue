@@ -1,30 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { useHealth } from '@/features/health/composables/useHealth'
 
-import { api } from '@/api'
-
-const status = ref('checking')
-const error = ref('')
-const loading = ref(false)
-
-async function checkHealth() {
-  loading.value = true
-  error.value = ''
-
-  try {
-    const response = await api.health.live()
-    status.value = response.data.status
-  }
-  catch {
-    status.value = 'unavailable'
-    error.value = 'Health check failed'
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-onMounted(checkHealth)
+const { status, error, loading, checkHealth } = useHealth()
 </script>
 
 <template>

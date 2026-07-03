@@ -1,23 +1,29 @@
 {
   "version": 1,
   "skills": {
-    "caveman": {
-      "source": "juliusbrussee/caveman",
-      "sourceType": "github",
-      "skillPath": "skills/caveman/SKILL.md",
-      "computedHash": "1902fa0b569912d0c05736d8d98a72097d9b82719aac88c0c1d03bb546f9176d"
-    },
     "fastify-best-practices": {
       "source": "mcollina/skills",
       "sourceType": "github",
       "skillPath": "skills/fastify/SKILL.md",
       "computedHash": "269924684709b8c6f50a569ef988e66031efb822ef92cba6c8dfa160e54ed4d4"
     },
+    "pinia": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/pinia/SKILL.md",
+      "computedHash": "897b6b0982956f41f5cc85128ca638b625e1b3c8bc619e303cd1e7661c95b7de"
+    },
     "postgres-drizzle": {
       "source": "ccheney/robust-skills",
       "sourceType": "github",
       "skillPath": "skills/postgres-drizzle/SKILL.md",
       "computedHash": "60534e1aa880981e26360db836115df77a8e73be219c7a027e635802686b5bd9"
+    },
+    "vue": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue/SKILL.md",
+      "computedHash": "9c241141e07e836e4f0537c63e8f929fba3767c2997250be38e699f19b75e3f2"
     },
     "zod": {
       "source": "pproenca/dot-skills",

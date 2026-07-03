@@ -1,7 +1,7 @@
+import type { RouteMap } from '@/contract/types.js'
+
 import { apiErrorSchema, apiSuccessSchema } from '@/common/schemas/index.js'
 import { userSchema } from '@/modules/users/schemas/index.js'
-
-import type { RouteMap } from '../types.js'
 
 export const profileSchema = {
   me: {
