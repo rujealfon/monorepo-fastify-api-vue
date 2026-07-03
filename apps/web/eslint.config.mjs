@@ -1,8 +1,8 @@
+import { readdirSync } from 'node:fs'
 import createConfig from '@monorepo-fastify-api-vue/eslint-config/create-config'
 import pluginVitest from '@vitest/eslint-plugin'
 import pluginCypress from 'eslint-plugin-cypress'
 import pluginVueA11y from 'eslint-plugin-vuejs-accessibility'
-import { readdirSync } from 'node:fs'
 
 const { plugins: _vitestPlugins, ...vitestRecommended } = pluginVitest.configs.recommended
 

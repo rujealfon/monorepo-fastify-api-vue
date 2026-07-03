@@ -1,8 +1,8 @@
-import bcrypt from 'bcryptjs'
-import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm'
-
 import type { Db } from '@/db/index.js'
 import type { LoginBody, RegisterBody } from '@/modules/auth/schemas/index.js'
+
+import bcrypt from 'bcryptjs'
+import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm'
 
 import { ROLES } from '@/common/constants/index.js'
 import { AppError, ConflictError, UnauthorizedError } from '@/common/errors/AppError.js'

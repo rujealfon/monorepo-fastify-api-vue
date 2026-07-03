@@ -1,9 +1,9 @@
 import type { FastifyInstance } from 'fastify'
 
-import { eq } from 'drizzle-orm'
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-
 import type { User } from '@/modules/users/schemas/index.js'
+import { eq } from 'drizzle-orm'
+
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { profiles, users } from '@/db/schema/index.js'
 import { createRoleWithPermission, createTestApp, extractTokenFromCookie, listRoles, registerAdminAndLogin, registerAndAssignRole, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'

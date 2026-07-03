@@ -33,7 +33,7 @@ const rateLimitScript = new Script(`
 
 type StoreCallback = (
   error: Error | null,
-  result?: { current: number, ttl: number },
+  result?: { current: number, ttl: number }
 ) => void
 
 type RateLimitRouteOptions = RouteOptions & {

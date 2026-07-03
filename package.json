@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=24.18.0 <25"
+  },
   "scripts": {
     "dev": "nub run -r --parallel --aggregate-output dev",
     "build": "nub run -r build",
@@ -23,7 +26,7 @@
   },
   "devDependencies": {
     "lint-staged": "^17.0.8",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "lint-staged": {
     "apps/api/**/*.{js,cjs,mjs,ts}": "pnpm --dir apps/api exec eslint --fix",

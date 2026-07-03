@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify'
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-
 import type { TestPermission as Permission, TestRole as Role } from '@/tests/fixtures/index.js'
+
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { createRole as createRoleFixture, createRoleWithPermission, createTestApp, listPermissions as listPermissionsFixture, listRoles as listRolesFixture, registerAdminAndLogin, registerAndAssignRole, registerAndLogin, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
 

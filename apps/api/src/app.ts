@@ -1,10 +1,10 @@
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 
+import { readFileSync } from 'node:fs'
+import process from 'node:process'
 import envPlugin from '@fastify/env'
 import Fastify from 'fastify'
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
-import { readFileSync } from 'node:fs'
-import process from 'node:process'
 
 import authDecorator from './common/decorators/auth.js'
 import { AppError } from './common/errors/AppError.js'

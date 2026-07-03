@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-
 import type { RpcError } from '@/contract/client.js'
+
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { createApiClient } from '@/contract/client.js'
 

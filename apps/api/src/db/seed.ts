@@ -1,7 +1,7 @@
-import process from 'node:process'
-import { fileURLToPath } from 'node:url'
-
 import type { Db } from '@/db/index.js'
+import process from 'node:process'
+
+import { fileURLToPath } from 'node:url'
 
 import { PERMISSIONS, ROLES } from '@/common/constants/index.js'
 import { createDb } from '@/db/index.js'

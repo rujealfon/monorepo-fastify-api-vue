@@ -1,7 +1,7 @@
-import { and, asc, count, eq } from 'drizzle-orm'
-
 import type { Db } from '@/db/index.js'
+
 import type { CreateRoleBody, UpdateRoleBody } from '@/modules/roles/schemas/index.js'
+import { and, asc, count, eq } from 'drizzle-orm'
 
 import { ConflictError, ForbiddenError, NotFoundError } from '@/common/errors/AppError.js'
 import { isUniqueViolation } from '@/common/errors/postgres.js'

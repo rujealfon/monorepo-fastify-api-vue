@@ -1,6 +1,20 @@
 import antfu from '@antfu/eslint-config'
 
-const defaultIgnores = ['dist/**', 'migrations/**', '**/*.md', '**/package.json', '**/tsconfig.json']
+const defaultIgnores = [
+  'dist/**',
+  'dist-ssr/**',
+  'coverage/**',
+  'migrations/**',
+  'node_modules/**',
+  '**/.vite/**',
+  '**/cypress/screenshots/**',
+  '**/cypress/videos/**',
+  '**/cypress/downloads/**',
+  '**/*.md',
+  '**/package.json',
+  '**/tsconfig.json',
+  '**/*.tsbuildinfo'
+]
 
 export default function createConfig(options = {}, ...userConfigs) {
   const { ignores = [], ...antfuOptions } = options
@@ -30,9 +44,6 @@ export default function createConfig(options = {}, ...userConfigs) {
       'style/comma-dangle': ['error', 'never'],
       'ts/consistent-type-definitions': ['error', 'type'],
       'ts/no-redeclare': 'off',
-      'perfectionist/sort-imports': ['error', {
-        tsconfigRootDir: '.'
-      }],
       'unicorn/filename-case': ['error', {
         case: 'kebabCase',
         ignore: [/\.md$/]

@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "@monorepo-fastify-api-vue/api": "workspace:^",
-    "@types/node": "^22.0.0"
+    "@types/node": "^26.1.0"
   },
   "devDependencies": {
     "@monorepo-fastify-api-vue/eslint-config": "workspace:^",
-    "eslint": "^9.17.0"
+    "eslint": "^10.6.0"
   }
 }

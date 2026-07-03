@@ -1,6 +1,6 @@
-import { asc, count } from 'drizzle-orm'
-
 import type { Db } from '@/db/index.js'
+
+import { asc, count } from 'drizzle-orm'
 
 import { permissions } from '@/db/schema/index.js'
 

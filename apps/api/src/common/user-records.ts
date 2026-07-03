@@ -1,7 +1,7 @@
-import bcrypt from 'bcryptjs'
+import type { Tx } from '@/db/index.js'
 import process from 'node:process'
 
-import type { Tx } from '@/db/index.js'
+import bcrypt from 'bcryptjs'
 
 import { profiles, users } from '@/db/schema/index.js'
 

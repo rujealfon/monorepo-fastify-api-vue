@@ -1,7 +1,7 @@
-import { and, count, eq, isNull } from 'drizzle-orm'
-
 import type { Db, Tx } from '@/db/index.js'
+
 import type { CreateUserBody, UpdateUserBody } from '@/modules/users/schemas/index.js'
+import { and, count, eq, isNull } from 'drizzle-orm'
 
 import { ROLES } from '@/common/constants/index.js'
 import { ConflictError, ForbiddenError, NotFoundError } from '@/common/errors/AppError.js'

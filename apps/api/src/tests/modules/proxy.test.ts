@@ -1,10 +1,10 @@
 import type { FastifyInstance } from 'fastify'
 
-import { eq } from 'drizzle-orm'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
+import { eq } from 'drizzle-orm'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { auditLogs } from '@/db/schema/index.js'

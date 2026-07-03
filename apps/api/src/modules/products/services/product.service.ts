@@ -1,7 +1,7 @@
-import { and, count, eq, isNull } from 'drizzle-orm'
-
 import type { Db } from '@/db/index.js'
+
 import type { CreateProductBody, UpdateProductBody } from '@/modules/products/schemas/index.js'
+import { and, count, eq, isNull } from 'drizzle-orm'
 
 import { NotFoundError } from '@/common/errors/AppError.js'
 import { resolvePage } from '@/common/pagination.js'
