@@ -13,7 +13,7 @@ export const profiles = pgTable('profiles', {
   phoneNumber: text('phone_number'),
   birthDate: date('birth_date'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date())
 })
 
 export type ProfileRow = typeof profiles.$inferSelect

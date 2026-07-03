@@ -21,17 +21,17 @@ export async function resetDb(app: Awaited<ReturnType<typeof createTestApp>>) {
 
 export async function registerAndLogin(
   app: Awaited<ReturnType<typeof createTestApp>>,
-  user = { email: 'test@example.com', password: 'Password123' },
+  user = { email: 'test@example.com', password: 'Password123' }
 ) {
   await app.inject({
     method: 'POST',
     url: '/api/v1/auth/register',
-    payload: user,
+    payload: user
   })
   const res = await app.inject({
     method: 'POST',
     url: '/api/v1/auth/login',
-    payload: { email: user.email, password: user.password },
+    payload: { email: user.email, password: user.password }
   })
   return extractTokenFromCookie(res.headers['set-cookie'])
 }
@@ -39,12 +39,12 @@ export async function registerAndLogin(
 async function registerWithRoleAndLogin(
   app: Awaited<ReturnType<typeof createTestApp>>,
   roleName: string,
-  user: { email: string, password: string },
+  user: { email: string, password: string }
 ) {
   await app.inject({ method: 'POST', url: '/api/v1/auth/register', payload: user })
   const [role, userRow] = await Promise.all([
     app.db.query.roles.findFirst({ where: eq(roles.name, roleName) }),
-    app.db.query.users.findFirst({ where: eq(users.email, user.email) }),
+    app.db.query.users.findFirst({ where: eq(users.email, user.email) })
   ])
   if (role && userRow)
     await app.db.insert(userRoles).values({ userId: userRow.id, roleId: role.id }).onConflictDoNothing()
@@ -85,7 +85,7 @@ export async function eventually<T>(read: () => Promise<T>, done: (value: T) => 
 
 export async function registerAndLoginWithUser(
   app: Awaited<ReturnType<typeof createTestApp>>,
-  user = { email: 'test@example.com', password: 'Password123' },
+  user = { email: 'test@example.com', password: 'Password123' }
 ) {
   const registerRes = await app.inject({ method: 'POST', url: '/api/v1/auth/register', payload: user })
   assertOk(registerRes, 'register user')
@@ -108,7 +108,7 @@ export async function createRole(app: Awaited<ReturnType<typeof createTestApp>>,
     method: 'POST',
     url: '/api/v1/roles',
     headers: { authorization: `Bearer ${granterToken}` },
-    payload: { name, description },
+    payload: { name, description }
   })
   assertOk(res, 'create role')
   return res.json<{ data: TestRole }>().data
@@ -133,7 +133,7 @@ export async function createRoleWithPermission(
   app: Awaited<ReturnType<typeof createTestApp>>,
   granterToken: string,
   roleName: string,
-  permission: { resource: string, action: string, scope: string },
+  permission: { resource: string, action: string, scope: string }
 ) {
   const role = await createRole(app, granterToken, roleName)
   const perms = await listPermissions(app, granterToken)
@@ -143,7 +143,7 @@ export async function createRoleWithPermission(
   const grantRes = await app.inject({
     method: 'POST',
     url: `/api/v1/roles/${role.id}/permissions/${perm.id}`,
-    headers: { authorization: `Bearer ${granterToken}` },
+    headers: { authorization: `Bearer ${granterToken}` }
   })
   assertOk(grantRes, 'grant permission to role')
   return role
@@ -154,13 +154,13 @@ export async function registerAndAssignRole(
   app: Awaited<ReturnType<typeof createTestApp>>,
   granterToken: string,
   roleId: string,
-  user = { email: 'roleuser@example.com', password: 'Password123' },
+  user = { email: 'roleuser@example.com', password: 'Password123' }
 ) {
   const { user: registered, token } = await registerAndLoginWithUser(app, user)
   const assignRes = await app.inject({
     method: 'POST',
     url: `/api/v1/users/${registered.id}/roles/${roleId}`,
-    headers: { authorization: `Bearer ${granterToken}` },
+    headers: { authorization: `Bearer ${granterToken}` }
   })
   assertOk(assignRes, 'assign role to user')
   return { id: registered.id, token }

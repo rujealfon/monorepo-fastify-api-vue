@@ -9,13 +9,13 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
-  deletedBy: uuid('deleted_by'),
+  deletedBy: uuid('deleted_by')
 }, t => [
   // ponytail: partial index so deleted users don't block re-registration
   uniqueIndex('users_email_unique').on(t.email).where(sql`${t.deletedAt} IS NULL`),
   // Speeds up the soft-deleted-account reactivation lookup in registerUser,
   // which filters by email + deletedAt IS NOT NULL and sorts by deletedAt desc.
-  index('users_email_deleted_at_idx').on(t.email, t.deletedAt).where(sql`${t.deletedAt} IS NOT NULL`),
+  index('users_email_deleted_at_idx').on(t.email, t.deletedAt).where(sql`${t.deletedAt} IS NOT NULL`)
 ])
 
 export type UserRow = typeof users.$inferSelect

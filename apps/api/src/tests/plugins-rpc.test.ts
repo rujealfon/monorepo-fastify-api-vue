@@ -21,11 +21,11 @@ async function buildDocumentationApp() {
       components: {
         securitySchemes: {
           cookieAuth: { type: 'apiKey', in: 'cookie', name: 'token' },
-          bearerAuth: { type: 'http', scheme: 'bearer' },
-        },
-      },
+          bearerAuth: { type: 'http', scheme: 'bearer' }
+        }
+      }
     },
-    transform: jsonSchemaTransform,
+    transform: jsonSchemaTransform
   })
 
   await app.register(createFastifyRpcPlugin({
@@ -33,17 +33,17 @@ async function buildDocumentationApp() {
       method: 'POST',
       path: '/logout',
       optionalAuth: true,
-      responses: { 200: z.object({ ok: z.boolean() }) },
+      responses: { 200: z.object({ ok: z.boolean() }) }
     },
     requiredProfile: {
       method: 'GET',
       path: '/profile',
       auth: true,
-      responses: { 200: z.object({ ok: z.boolean() }) },
-    },
+      responses: { 200: z.object({ ok: z.boolean() }) }
+    }
   }, {
     optionalLogout: async () => ({ status: 200, body: { ok: true } }),
-    requiredProfile: async () => ({ status: 200, body: { ok: true } }),
+    requiredProfile: async () => ({ status: 200, body: { ok: true } })
   }))
 
   await app.ready()
@@ -61,11 +61,11 @@ describe('rpc plugin OpenAPI security', () => {
       expect(spec.paths['/logout']?.post?.security).toEqual([
         {},
         { cookieAuth: [] },
-        { bearerAuth: [] },
+        { bearerAuth: [] }
       ])
       expect(spec.paths['/profile']?.get?.security).toEqual([
         { cookieAuth: [] },
-        { bearerAuth: [] },
+        { bearerAuth: [] }
       ])
     }
     finally {

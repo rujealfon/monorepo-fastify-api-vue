@@ -30,7 +30,7 @@ export function assertCallerHoldsPermissions(
   callerIsSuperAdmin: boolean,
   callerPermissions: string[],
   targetPerms: Array<{ resource: string, action: string, scope: string }>,
-  message: string,
+  message: string
 ) {
   if (callerIsSuperAdmin)
     return

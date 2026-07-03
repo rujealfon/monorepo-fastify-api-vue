@@ -7,5 +7,5 @@ export default createFastifyRpcPlugin(profileSchema, {
     const userId = request.requestContext.get('userId') as string
     const user = await findUserById(request.server.db, userId)
     return { status: 200 as const, body: { success: true as const, data: user } }
-  },
+  }
 })

@@ -6,7 +6,7 @@ import * as schema from './schema/index.js'
 export function createDb(url: string, searchPath?: string) {
   const sql = postgres(url, {
     max: 10,
-    ...(searchPath ? { connection: { search_path: searchPath } } : {}),
+    ...(searchPath ? { connection: { search_path: searchPath } } : {})
   })
   const db = drizzle(sql, { schema })
   return { db, sql }

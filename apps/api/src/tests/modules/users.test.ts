@@ -34,7 +34,7 @@ describe('users API', () => {
       method: 'POST',
       url: '/api/v1/users',
       headers: { authorization: `Bearer ${token}` },
-      payload: { email, password },
+      payload: { email, password }
     })
     return res.json<{ data: User }>().data
   }
@@ -53,7 +53,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/users',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const body = res.json<{ data: unknown[], pagination: { page: number, limit: number } }>()
@@ -67,7 +67,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/users',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const body = res.json<{ data: User[] }>()
@@ -87,7 +87,7 @@ describe('users API', () => {
         avatarUrl: null,
         bio: null,
         phoneNumber: null,
-        birthDate: null,
+        birthDate: null
       })
     })
 
@@ -96,12 +96,12 @@ describe('users API', () => {
       await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/users',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       const body = res.json<{ data: User[] }>()
       expect(body.data.find(u => u.id === user.id)).toBeUndefined()
@@ -114,7 +114,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/users?page=1&limit=2',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const body = res.json<{ data: unknown[], pagination: { page: number, limit: number } }>()
@@ -138,7 +138,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/users/${created.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const { data } = res.json<{ data: User }>()
@@ -152,7 +152,7 @@ describe('users API', () => {
         avatarUrl: null,
         bio: null,
         phoneNumber: null,
-        birthDate: null,
+        birthDate: null
       })
     })
 
@@ -162,7 +162,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/users/${userId}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const { data } = res.json<{ data: User }>()
@@ -173,7 +173,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/users/00000000-0000-0000-0000-000000000000',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(404)
     })
@@ -183,12 +183,12 @@ describe('users API', () => {
       await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(404)
     })
@@ -197,7 +197,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/users/not-a-uuid',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -211,7 +211,7 @@ describe('users API', () => {
         method: 'POST',
         url: '/api/v1/users',
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'new@example.com', password: 'Password123' },
+        payload: { email: 'new@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(201)
       const { data } = res.json<{ data: User }>()
@@ -224,7 +224,7 @@ describe('users API', () => {
         avatarUrl: null,
         bio: null,
         phoneNumber: null,
-        birthDate: null,
+        birthDate: null
       })
     })
 
@@ -233,7 +233,7 @@ describe('users API', () => {
         method: 'POST',
         url: '/api/v1/users',
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'new@example.com', password: 'Password123' },
+        payload: { email: 'new@example.com', password: 'Password123' }
       })
       expect(res.json()).not.toHaveProperty('data.passwordHash')
     })
@@ -244,7 +244,7 @@ describe('users API', () => {
         method: 'POST',
         url: '/api/v1/users',
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'dup@example.com', password: 'Password123' },
+        payload: { email: 'dup@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(409)
     })
@@ -254,13 +254,13 @@ describe('users API', () => {
       await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/users',
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'reuse@example.com', password: 'Password123' },
+        payload: { email: 'reuse@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(201)
     })
@@ -270,7 +270,7 @@ describe('users API', () => {
         method: 'POST',
         url: '/api/v1/users',
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'bad-email', password: 'Password123' },
+        payload: { email: 'bad-email', password: 'Password123' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -280,7 +280,7 @@ describe('users API', () => {
         method: 'POST',
         url: '/api/v1/users',
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'short@example.com', password: 'abc' },
+        payload: { email: 'short@example.com', password: 'abc' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -290,7 +290,7 @@ describe('users API', () => {
         method: 'POST',
         url: '/api/v1/users',
         headers: { authorization: `Bearer ${token}` },
-        payload: {},
+        payload: {}
       })
       expect(res.statusCode).toBe(400)
     })
@@ -304,7 +304,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'PATCH',
         url: `/api/v1/users/${user.id}`,
-        payload: { email: 'updated@example.com' },
+        payload: { email: 'updated@example.com' }
       })
       expect(res.statusCode).toBe(401)
     })
@@ -315,7 +315,7 @@ describe('users API', () => {
         method: 'PATCH',
         url: `/api/v1/users/${user.id}`,
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'after@example.com' },
+        payload: { email: 'after@example.com' }
       })
       expect(res.statusCode).toBe(200)
       const { data } = res.json<{ data: User }>()
@@ -329,7 +329,7 @@ describe('users API', () => {
         method: 'PATCH',
         url: '/api/v1/users/00000000-0000-0000-0000-000000000000',
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'x@example.com' },
+        payload: { email: 'x@example.com' }
       })
       expect(res.statusCode).toBe(404)
     })
@@ -339,7 +339,7 @@ describe('users API', () => {
       await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
 
       const res = await app.inject({
@@ -348,8 +348,8 @@ describe('users API', () => {
         headers: { authorization: `Bearer ${token}` },
         payload: {
           email: 'deleted-update-new@example.com',
-          profile: { firstName: 'Changed' },
-        },
+          profile: { firstName: 'Changed' }
+        }
       })
 
       expect(res.statusCode).toBe(404)
@@ -365,7 +365,7 @@ describe('users API', () => {
         method: 'PATCH',
         url: `/api/v1/users/${user.id}`,
         headers: { authorization: `Bearer ${token}` },
-        payload: {},
+        payload: {}
       })
       expect(res.statusCode).toBe(400)
     })
@@ -376,7 +376,7 @@ describe('users API', () => {
         method: 'PATCH',
         url: `/api/v1/users/${user.id}`,
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'not-valid' },
+        payload: { email: 'not-valid' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -388,7 +388,7 @@ describe('users API', () => {
         method: 'PATCH',
         url: `/api/v1/users/${user.id}`,
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'taken@example.com' },
+        payload: { email: 'taken@example.com' }
       })
       expect(res.statusCode).toBe(409)
     })
@@ -399,7 +399,7 @@ describe('users API', () => {
         method: 'PATCH',
         url: `/api/v1/users/${user.id}`,
         headers: { authorization: `Bearer ${token}` },
-        payload: { email: 'emptyprofile-new@example.com', profile: {} },
+        payload: { email: 'emptyprofile-new@example.com', profile: {} }
       })
       expect(res.statusCode).toBe(200)
       expect(res.json<{ data: User }>().data.email).toBe('emptyprofile-new@example.com')
@@ -411,7 +411,7 @@ describe('users API', () => {
         method: 'PATCH',
         url: `/api/v1/users/${user.id}`,
         headers: { authorization: `Bearer ${token}` },
-        payload: { profile: { birthDate: 'not-a-date' } },
+        payload: { profile: { birthDate: 'not-a-date' } }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -431,7 +431,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(204)
     })
@@ -441,12 +441,12 @@ describe('users API', () => {
       await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(404)
     })
@@ -455,7 +455,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: '/api/v1/users/00000000-0000-0000-0000-000000000000',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(404)
     })
@@ -464,7 +464,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: '/api/v1/users/not-a-uuid',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -547,7 +547,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/users/${id}/roles/${adminRole.id}`,
-        headers: { authorization: `Bearer ${superToken}` },
+        headers: { authorization: `Bearer ${superToken}` }
       })
       expect(res.statusCode).toBe(200)
     })
@@ -561,7 +561,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/users/${id}/roles/${adminRole.id}`,
-        headers: { authorization: `Bearer ${token}` }, // admin token
+        headers: { authorization: `Bearer ${token}` } // admin token
       })
       expect(res.statusCode).toBe(403)
     })
@@ -580,7 +580,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/users/${targetId}/roles/${privilegedRole.id}`,
-        headers: { authorization: `Bearer ${managerToken}` },
+        headers: { authorization: `Bearer ${managerToken}` }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -599,7 +599,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${targetId}/roles/${privilegedRole.id}`,
-        headers: { authorization: `Bearer ${managerToken}` },
+        headers: { authorization: `Bearer ${managerToken}` }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -617,7 +617,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/users/${id}/roles/${systemRole.id}`,
-        headers: { authorization: `Bearer ${superToken}` },
+        headers: { authorization: `Bearer ${superToken}` }
       })
       expect(res.statusCode).toBe(200)
     })
@@ -632,7 +632,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${id}/roles/${userRole.id}`,
-        headers: { authorization: `Bearer ${superToken}` },
+        headers: { authorization: `Bearer ${superToken}` }
       })
       expect(res.statusCode).toBe(200)
     })
@@ -643,7 +643,7 @@ describe('users API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${id}/roles/00000000-0000-0000-0000-000000000000`,
-        headers: { authorization: `Bearer ${superToken}` },
+        headers: { authorization: `Bearer ${superToken}` }
       })
       expect(res.statusCode).toBe(404)
     })

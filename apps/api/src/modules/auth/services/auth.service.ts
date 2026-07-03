@@ -34,7 +34,7 @@ export async function registerUser(db: Db, body: RegisterBody) {
   // we only clear the soft-delete flags.
   const dead = await db.query.users.findFirst({
     where: and(eq(users.email, body.email), isNotNull(users.deletedAt)),
-    orderBy: desc(users.deletedAt),
+    orderBy: desc(users.deletedAt)
   })
   if (dead) {
     const canReactivate = dead.deletedBy === null || dead.deletedBy === dead.id

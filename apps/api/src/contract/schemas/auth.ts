@@ -7,7 +7,7 @@ import {
   authUserSchema,
   loginBodySchema,
   loginResponseSchema,
-  registerBodySchema,
+  registerBodySchema
 } from '@/modules/auth/schemas/index.js'
 
 export const authSchema = {
@@ -21,8 +21,8 @@ export const authSchema = {
       201: apiSuccessSchema(authUserSchema),
       400: apiErrorSchema,
       429: apiErrorSchema,
-      409: apiErrorSchema,
-    },
+      409: apiErrorSchema
+    }
   },
   login: {
     method: 'POST' as const,
@@ -33,8 +33,8 @@ export const authSchema = {
     responses: {
       200: apiSuccessSchema(authUserSchema),
       401: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   mobileLogin: {
     method: 'POST' as const,
@@ -46,8 +46,8 @@ export const authSchema = {
       200: apiSuccessSchema(loginResponseSchema),
       401: apiErrorSchema,
       403: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   logout: {
     method: 'POST' as const,
@@ -57,7 +57,7 @@ export const authSchema = {
     responses: {
       200: apiSuccessSchema(z.null()),
       403: apiErrorSchema,
-      429: apiErrorSchema,
-    },
-  },
+      429: apiErrorSchema
+    }
+  }
 } satisfies RouteMap

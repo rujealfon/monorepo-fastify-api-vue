@@ -7,12 +7,12 @@ import { apiErrorSchema, apiListSchema, apiSuccessSchema, paginationQuerySchema,
 import {
   createUserBodySchema,
   updateUserBodySchema,
-  userSchema,
+  userSchema
 } from '@/modules/users/schemas/index.js'
 
 const userRoleParamsSchema = z.object({
   id: z.uuid(),
-  roleId: z.uuid(),
+  roleId: z.uuid()
 })
 
 export const usersSchema = {
@@ -26,8 +26,8 @@ export const usersSchema = {
       200: apiListSchema(userSchema),
       401: apiErrorSchema,
       403: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   get: {
     method: 'GET' as const,
@@ -40,8 +40,8 @@ export const usersSchema = {
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   create: {
     method: 'POST' as const,
@@ -54,8 +54,8 @@ export const usersSchema = {
       401: apiErrorSchema,
       403: apiErrorSchema,
       409: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   update: {
     method: 'PATCH' as const,
@@ -70,8 +70,8 @@ export const usersSchema = {
       403: apiErrorSchema,
       404: apiErrorSchema,
       409: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   delete: {
     method: 'DELETE' as const,
@@ -84,8 +84,8 @@ export const usersSchema = {
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   assignRole: {
     method: 'POST' as const,
@@ -98,8 +98,8 @@ export const usersSchema = {
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   removeRole: {
     method: 'DELETE' as const,
@@ -112,7 +112,7 @@ export const usersSchema = {
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
-      429: apiErrorSchema,
-    },
-  },
+      429: apiErrorSchema
+    }
+  }
 } satisfies RouteMap

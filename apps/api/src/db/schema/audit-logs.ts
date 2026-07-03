@@ -8,10 +8,10 @@ export const auditLogs = pgTable('audit_logs', {
   resourceType: text('resource_type').notNull(),
   resourceId: uuid('resource_id'),
   metadata: jsonb('metadata'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 }, t => [
   index('audit_logs_user_id_idx').on(t.userId),
-  index('audit_logs_created_at_idx').on(t.createdAt),
+  index('audit_logs_created_at_idx').on(t.createdAt)
 ])
 
 export type AuditLogRow = typeof auditLogs.$inferSelect

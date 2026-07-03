@@ -7,7 +7,7 @@ const compressPlugin: FastifyPluginAsync = async (fastify) => {
   await fastify.register(compress, {
     global: true,
     encodings: ['br', 'gzip', 'deflate'],
-    threshold: 1024,
+    threshold: 1024
   })
 }
 

@@ -16,13 +16,13 @@ const scalarPlugin: FastifyPluginAsync = async (fastify) => {
       info: {
         title: 'Fastify API',
         description: 'API documentation',
-        version: '1.0.0',
+        version: '1.0.0'
       },
       servers: [
         {
           url: `http://localhost:${fastify.config.PORT}`,
-          description: 'Development',
-        },
+          description: 'Development'
+        }
       ],
       tags: [
         { name: 'Audit Logs', description: 'Audit log management endpoints' },
@@ -33,32 +33,32 @@ const scalarPlugin: FastifyPluginAsync = async (fastify) => {
         { name: 'Products', description: 'Product management endpoints' },
         { name: 'Profile', description: 'Authenticated user self-management endpoints' },
         { name: 'Roles', description: 'Role management endpoints' },
-        { name: 'Users', description: 'User management endpoints' },
+        { name: 'Users', description: 'User management endpoints' }
       ],
       components: {
         securitySchemes: {
           cookieAuth: {
             type: 'apiKey',
             in: 'cookie',
-            name: 'token',
+            name: 'token'
           },
           bearerAuth: {
             type: 'http',
             scheme: 'bearer',
-            bearerFormat: 'JWT',
-          },
-        },
-      },
+            bearerFormat: 'JWT'
+          }
+        }
+      }
     },
-    transform: jsonSchemaTransform,
+    transform: jsonSchemaTransform
   })
 
   await fastify.register(scalar, {
     routePrefix: '/',
     configuration: {
       spec: { content: () => fastify.swagger() },
-      theme: 'moon',
-    },
+      theme: 'moon'
+    }
   })
 }
 

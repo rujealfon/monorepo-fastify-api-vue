@@ -5,7 +5,7 @@ export const PG_UNIQUE_VIOLATION = '23505'
 export const ROLES = {
   USER: 'user',
   ADMIN: 'admin',
-  SUPER_ADMIN: 'super-admin',
+  SUPER_ADMIN: 'super-admin'
 } as const
 
 /** Permission strings used by requirePermission and assertSelfOrAdmin. */
@@ -17,33 +17,33 @@ export const PERMISSIONS = {
     DELETE_ANY: 'user:delete:any',
     READ_OWN: 'user:read:own',
     UPDATE_OWN: 'user:update:own',
-    ASSIGN_ROLE_ANY: 'user:assign-role:any',
+    ASSIGN_ROLE_ANY: 'user:assign-role:any'
   },
   ROLE: {
     READ_ANY: 'role:read:any',
     CREATE_ANY: 'role:create:any',
     UPDATE_ANY: 'role:update:any',
-    DELETE_ANY: 'role:delete:any',
+    DELETE_ANY: 'role:delete:any'
   },
   PERMISSION: {
     CREATE_ANY: 'permission:create:any',
     READ_ANY: 'permission:read:any',
     UPDATE_ANY: 'permission:update:any',
-    DELETE_ANY: 'permission:delete:any',
+    DELETE_ANY: 'permission:delete:any'
   },
   PRODUCT: {
     READ_ANY: 'product:read:any',
     CREATE_ANY: 'product:create:any',
     UPDATE_ANY: 'product:update:any',
-    DELETE_ANY: 'product:delete:any',
+    DELETE_ANY: 'product:delete:any'
   },
   AUDIT_LOG: {
-    READ_ANY: 'audit-log:read:any',
+    READ_ANY: 'audit-log:read:any'
   },
   METRICS: {
-    READ_ANY: 'metrics:read:any',
+    READ_ANY: 'metrics:read:any'
   },
   HEALTH: {
-    READ_DETAILS: 'health:read:details',
-  },
+    READ_DETAILS: 'health:read:details'
+  }
 } as const

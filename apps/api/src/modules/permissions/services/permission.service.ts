@@ -12,7 +12,7 @@ export async function findAllPermissions(db: Db, page: number, limit: number) {
       .orderBy(asc(permissions.resource), asc(permissions.action), asc(permissions.scope), asc(permissions.id))
       .offset((page - 1) * limit)
       .limit(limit),
-    db.select({ total: count() }).from(permissions),
+    db.select({ total: count() }).from(permissions)
   ])
   return {
     data: rows.map(p => ({
@@ -21,8 +21,8 @@ export async function findAllPermissions(db: Db, page: number, limit: number) {
       action: p.action,
       scope: p.scope,
       description: p.description,
-      createdAt: p.createdAt.toISOString(),
+      createdAt: p.createdAt.toISOString()
     })),
-    total,
+    total
   }
 }

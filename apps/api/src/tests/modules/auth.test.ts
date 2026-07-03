@@ -30,7 +30,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'alice@example.com', password: 'Password123' },
+        payload: { email: 'alice@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(201)
       const { data } = res.json<{ data: { id: string, email: string } }>()
@@ -42,7 +42,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'alice@example.com', password: 'Password123' },
+        payload: { email: 'alice@example.com', password: 'Password123' }
       })
       expect(res.json()).not.toHaveProperty('data.passwordHash')
     })
@@ -58,7 +58,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'charlie@example.com', password: 'short' },
+        payload: { email: 'charlie@example.com', password: 'short' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -67,7 +67,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'alice@example.com', password: 'password123' },
+        payload: { email: 'alice@example.com', password: 'password123' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -76,7 +76,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'not-an-email', password: 'Password123' },
+        payload: { email: 'not-an-email', password: 'Password123' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -85,7 +85,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { password: 'Password123' },
+        payload: { password: 'Password123' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -94,7 +94,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'alice@example.com' },
+        payload: { email: 'alice@example.com' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -107,7 +107,7 @@ describe('auth API', () => {
       await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'dave@example.com', password: 'Password123' },
+        payload: { email: 'dave@example.com', password: 'Password123' }
       })
     })
 
@@ -115,7 +115,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/login',
-        payload: { email: 'dave@example.com', password: 'Password123' },
+        payload: { email: 'dave@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(200)
       const cookie = firstCookieHeader(res.headers['set-cookie'])
@@ -127,7 +127,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/login',
-        payload: { email: 'dave@example.com', password: 'Password123' },
+        payload: { email: 'dave@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(200)
       const { data } = res.json<{ data: { id: string, email: string } }>()
@@ -140,13 +140,13 @@ describe('auth API', () => {
       const loginRes = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/login',
-        payload: { email: 'dave@example.com', password: 'Password123' },
+        payload: { email: 'dave@example.com', password: 'Password123' }
       })
       const token = firstCookieHeader(loginRes.headers['set-cookie']).split(';')[0]
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/profile',
-        headers: { cookie: token },
+        headers: { cookie: token }
       })
       expect(res.statusCode).toBe(200)
     })
@@ -155,7 +155,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/login',
-        payload: { email: 'dave@example.com', password: 'wrongpassword' },
+        payload: { email: 'dave@example.com', password: 'wrongpassword' }
       })
       expect(res.statusCode).toBe(401)
     })
@@ -164,7 +164,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/login',
-        payload: { email: 'ghost@example.com', password: 'Password123' },
+        payload: { email: 'ghost@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(401)
     })
@@ -173,7 +173,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/login',
-        payload: {},
+        payload: {}
       })
       expect(res.statusCode).toBe(400)
     })
@@ -186,7 +186,7 @@ describe('auth API', () => {
       await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'mobile@example.com', password: 'Password123' },
+        payload: { email: 'mobile@example.com', password: 'Password123' }
       })
     })
 
@@ -195,7 +195,7 @@ describe('auth API', () => {
         method: 'POST',
         url: '/api/v1/auth/mobile/login',
         headers: { 'x-mobile-api-key': app.config.MOBILE_API_KEY },
-        payload: { email: 'mobile@example.com', password: 'Password123' },
+        payload: { email: 'mobile@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(200)
       const { data } = res.json<{ data: { id: string, email: string, token: string } }>()
@@ -210,7 +210,7 @@ describe('auth API', () => {
         method: 'POST',
         url: '/api/v1/auth/mobile/login',
         headers: { 'x-mobile-api-key': 'wrong-key' },
-        payload: { email: 'mobile@example.com', password: 'Password123' },
+        payload: { email: 'mobile@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -219,7 +219,7 @@ describe('auth API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/mobile/login',
-        payload: { email: 'mobile@example.com', password: 'Password123' },
+        payload: { email: 'mobile@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -229,14 +229,14 @@ describe('auth API', () => {
         method: 'POST',
         url: '/api/v1/auth/mobile/login',
         headers: { 'x-mobile-api-key': app.config.MOBILE_API_KEY },
-        payload: { email: 'mobile@example.com', password: 'Password123' },
+        payload: { email: 'mobile@example.com', password: 'Password123' }
       })
       const { data } = loginRes.json<{ data: { token: string } }>()
 
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/profile',
-        headers: { authorization: `Bearer ${data.token}` },
+        headers: { authorization: `Bearer ${data.token}` }
       })
       expect(res.statusCode).toBe(200)
     })
@@ -246,7 +246,7 @@ describe('auth API', () => {
         method: 'POST',
         url: '/api/v1/auth/mobile/login',
         headers: { 'x-mobile-api-key': app.config.MOBILE_API_KEY },
-        payload: { email: 'mobile@example.com', password: 'wrongpassword' },
+        payload: { email: 'mobile@example.com', password: 'wrongpassword' }
       })
       expect(res.statusCode).toBe(401)
     })
@@ -256,7 +256,7 @@ describe('auth API', () => {
         method: 'POST',
         url: '/api/v1/auth/mobile/login',
         headers: { 'x-mobile-api-key': app.config.MOBILE_API_KEY },
-        payload: { email: 'ghost@example.com', password: 'Password123' },
+        payload: { email: 'ghost@example.com', password: 'Password123' }
       })
       expect(res.statusCode).toBe(401)
     })
@@ -266,7 +266,7 @@ describe('auth API', () => {
         method: 'POST',
         url: '/api/v1/auth/mobile/login',
         headers: { 'x-mobile-api-key': app.config.MOBILE_API_KEY },
-        payload: {},
+        payload: {}
       })
       expect(res.statusCode).toBe(400)
     })
@@ -295,7 +295,7 @@ describe('auth API', () => {
           .from(auditLogs)
           .where(and(eq(auditLogs.action, 'auth.logged_out'), eq(auditLogs.userId, user.id)))
           .limit(1),
-        rows => rows.length > 0,
+        rows => rows.length > 0
       )
       expect(log.resourceId).toBe(user.id)
     })
@@ -309,7 +309,7 @@ describe('auth API', () => {
           .from(auditLogs)
           .where(eq(auditLogs.action, 'auth.logged_out'))
           .limit(1),
-        rows => rows.length > 0,
+        rows => rows.length > 0
       )
       expect(log.userId).toBeNull()
       expect(log.resourceId).toBeNull()
@@ -319,21 +319,21 @@ describe('auth API', () => {
       const registerRes = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',
-        payload: { email: 'mobile-logout@example.com', password: 'Password123' },
+        payload: { email: 'mobile-logout@example.com', password: 'Password123' }
       })
       const { data: user } = registerRes.json<{ data: { id: string } }>()
       const loginRes = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/mobile/login',
         headers: { 'x-mobile-api-key': app.config.MOBILE_API_KEY },
-        payload: { email: 'mobile-logout@example.com', password: 'Password123' },
+        payload: { email: 'mobile-logout@example.com', password: 'Password123' }
       })
       const { data: { token } } = loginRes.json<{ data: { token: string } }>()
 
       await app.inject({
         method: 'POST',
         url: '/api/v1/auth/logout',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
 
       const [log] = await eventually(
@@ -342,7 +342,7 @@ describe('auth API', () => {
           .from(auditLogs)
           .where(and(eq(auditLogs.action, 'auth.logged_out'), eq(auditLogs.userId, user.id)))
           .limit(1),
-        rows => rows.length > 0,
+        rows => rows.length > 0
       )
       expect(log.resourceId).toBe(user.id)
     })
@@ -358,14 +358,14 @@ describe('auth API', () => {
         const blocked = await app.inject({
           method: 'POST',
           url: '/api/v1/auth/logout',
-          headers: { cookie: `token=${token}`, origin: 'https://evil.example.com' },
+          headers: { cookie: `token=${token}`, origin: 'https://evil.example.com' }
         })
         expect(blocked.statusCode).toBe(403)
 
         const allowed = await app.inject({
           method: 'POST',
           url: '/api/v1/auth/logout',
-          headers: { cookie: `token=${token}`, origin: 'https://app.example.com' },
+          headers: { cookie: `token=${token}`, origin: 'https://app.example.com' }
         })
         expect(allowed.statusCode).toBe(200)
       }
@@ -451,7 +451,7 @@ describe('auth API', () => {
         method: 'PATCH',
         url: `/api/v1/users/${id}`,
         headers: { authorization: `Bearer ${token}` },
-        payload: { profile: { firstName: 'Jay' } },
+        payload: { profile: { firstName: 'Jay' } }
       })
       expect(patch.statusCode).toBe(200)
     })
@@ -504,7 +504,7 @@ describe('auth API', () => {
       const del = await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${user.id}`,
-        headers: { authorization: `Bearer ${superToken}` },
+        headers: { authorization: `Bearer ${superToken}` }
       })
       expect(del.statusCode).toBe(204)
 
@@ -519,7 +519,7 @@ describe('auth API', () => {
       method: 'POST',
       url: '/api/v1/auth/login',
       headers: { 'content-type': 'application/json' },
-      payload: '{"email":',
+      payload: '{"email":'
     })
     expect(res.statusCode).toBe(400)
     expect(res.json()).toMatchObject({ success: false, error: { code: expect.any(String) } })

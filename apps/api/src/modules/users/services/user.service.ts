@@ -15,7 +15,7 @@ const userColumns = {
   id: true,
   email: true,
   createdAt: true,
-  updatedAt: true,
+  updatedAt: true
 } as const
 
 const profileColumns = {
@@ -24,11 +24,11 @@ const profileColumns = {
   avatarUrl: true,
   bio: true,
   phoneNumber: true,
-  birthDate: true,
+  birthDate: true
 } as const
 
 const userRolesRelation = {
-  with: { role: { columns: { id: true, name: true } } },
+  with: { role: { columns: { id: true, name: true } } }
 } as const
 
 // Locks the surviving super-admin rows for the duration of the caller's
@@ -81,11 +81,11 @@ function toUser(row: UserRow) {
       avatarUrl: null,
       bio: null,
       phoneNumber: null,
-      birthDate: null,
+      birthDate: null
     },
     roles: (row.userRoles ?? []).map(ur => ({ id: ur.role.id, name: ur.role.name })),
     createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString()
   }
 }
 
@@ -96,9 +96,9 @@ export async function findAllUsers(db: Db, page: number, limit: number) {
       with: { profile: { columns: profileColumns }, userRoles: userRolesRelation },
       where: isNull(users.deletedAt),
       offset: (page - 1) * limit,
-      limit,
+      limit
     }),
-    db.select({ total: count() }).from(users).where(isNull(users.deletedAt)),
+    db.select({ total: count() }).from(users).where(isNull(users.deletedAt))
   )
   return { data: rows.map(toUser), total }
 }
@@ -107,7 +107,7 @@ export async function findUserById(db: Db | Tx, id: string) {
   const row = await db.query.users.findFirst({
     columns: userColumns,
     with: { profile: { columns: profileColumns }, userRoles: userRolesRelation },
-    where: and(eq(users.id, id), isNull(users.deletedAt)),
+    where: and(eq(users.id, id), isNull(users.deletedAt))
   })
   if (!row)
     throw new NotFoundError('User', id)
@@ -143,7 +143,7 @@ export async function updateUser(db: Db, id: string, body: UpdateUserBody) {
     userUpdatedAt = await db.transaction(async (tx) => {
       const [user] = await tx.update(users).set({
         updatedAt: new Date(),
-        ...(body.email !== undefined && { email: body.email }),
+        ...(body.email !== undefined && { email: body.email })
       }).where(and(eq(users.id, id), isNull(users.deletedAt))).returning({ updatedAt: users.updatedAt })
       if (!user)
         throw new NotFoundError('User', id)
@@ -189,7 +189,7 @@ export async function deleteUser(db: Db, id: string, deletedBy?: string) {
 export async function assignRoleToUser(db: Db, userId: string, roleId: string, callerIsSuperAdmin = false, callerPermissions: string[] = []) {
   const [, role] = await Promise.all([
     findUserById(db, userId),
-    db.query.roles.findFirst({ where: eq(roles.id, roleId) }),
+    db.query.roles.findFirst({ where: eq(roles.id, roleId) })
   ])
   if (!role)
     throw new NotFoundError('Role', roleId)
@@ -216,7 +216,7 @@ export async function assignRoleToUser(db: Db, userId: string, roleId: string, c
 export async function removeRoleFromUser(db: Db, userId: string, roleId: string, callerIsSuperAdmin = false, callerPermissions: string[] = []) {
   const [, role] = await Promise.all([
     findUserById(db, userId),
-    db.query.roles.findFirst({ where: eq(roles.id, roleId) }),
+    db.query.roles.findFirst({ where: eq(roles.id, roleId) })
   ])
   if (!role)
     throw new NotFoundError('Role', roleId)

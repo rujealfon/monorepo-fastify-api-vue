@@ -20,7 +20,7 @@ const corsPlugin: FastifyPluginAsync = async (fastify) => {
     origin,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Mobile-Api-Key'],
-    credentials: true,
+    credentials: true
   })
 }
 

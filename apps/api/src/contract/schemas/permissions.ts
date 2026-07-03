@@ -15,7 +15,7 @@ export const permissionsSchema = {
       200: apiListSchema(permissionSchema),
       401: apiErrorSchema,
       403: apiErrorSchema,
-      429: apiErrorSchema,
-    },
-  },
+      429: apiErrorSchema
+    }
+  }
 } satisfies RouteMap

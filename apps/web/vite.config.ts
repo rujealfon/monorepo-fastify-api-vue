@@ -19,13 +19,13 @@ export default defineConfig({
       { find: /^@\/modules\/products\/schemas\//, replacement: `${apiSrc}/modules/products/schemas/` },
       { find: /^@\/modules\/roles\/schemas\//, replacement: `${apiSrc}/modules/roles/schemas/` },
       { find: /^@\/modules\/users\/schemas\//, replacement: `${apiSrc}/modules/users/schemas/` },
-      { find: '@', replacement: webSrc },
-    ],
+      { find: '@', replacement: webSrc }
+    ]
   },
   server: {
     host: true,
     proxy: {
-      '/api': process.env.API_URL ?? 'http://localhost:3000',
-    },
-  },
+      '/api': process.env.API_URL ?? 'http://localhost:3000'
+    }
+  }
 })

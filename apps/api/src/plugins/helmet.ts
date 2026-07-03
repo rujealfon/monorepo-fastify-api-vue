@@ -8,7 +8,7 @@ const helmetPlugin: FastifyPluginAsync = async (fastify) => {
     // CSP disabled only outside production: Scalar docs UI needs inline
     // scripts/styles there. Production mounts no HTML routes and Scalar is
     // not registered, so CSP stays on as defense in depth.
-    contentSecurityPolicy: fastify.config.NODE_ENV === 'production' ? undefined : false,
+    contentSecurityPolicy: fastify.config.NODE_ENV === 'production' ? undefined : false
   })
 }
 

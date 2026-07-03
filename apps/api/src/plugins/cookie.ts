@@ -13,8 +13,8 @@ const cookiePlugin: FastifyPluginAsync = async (fastify) => {
     parseOptions: {
       httpOnly: true,
       secure: fastify.config.NODE_ENV === 'production',
-      sameSite: 'strict',
-    },
+      sameSite: 'strict'
+    }
   })
 }
 

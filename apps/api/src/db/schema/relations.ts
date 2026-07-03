@@ -8,33 +8,33 @@ import { users } from './users.js'
 export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, {
     fields: [users.id],
-    references: [profiles.userId],
+    references: [profiles.userId]
   }),
-  userRoles: many(userRoles),
+  userRoles: many(userRoles)
 }))
 
 export const profilesRelations = relations(profiles, ({ one }) => ({
   user: one(users, {
     fields: [profiles.userId],
-    references: [users.id],
-  }),
+    references: [users.id]
+  })
 }))
 
 export const rolesRelations = relations(roles, ({ many }) => ({
   userRoles: many(userRoles),
-  rolePermissions: many(rolePermissions),
+  rolePermissions: many(rolePermissions)
 }))
 
 export const permissionsRelations = relations(permissions, ({ many }) => ({
-  rolePermissions: many(rolePermissions),
+  rolePermissions: many(rolePermissions)
 }))
 
 export const userRolesRelations = relations(userRoles, ({ one }) => ({
   user: one(users, { fields: [userRoles.userId], references: [users.id] }),
-  role: one(roles, { fields: [userRoles.roleId], references: [roles.id] }),
+  role: one(roles, { fields: [userRoles.roleId], references: [roles.id] })
 }))
 
 export const rolePermissionsRelations = relations(rolePermissions, ({ one }) => ({
   role: one(roles, { fields: [rolePermissions.roleId], references: [roles.id] }),
-  permission: one(permissions, { fields: [rolePermissions.permissionId], references: [permissions.id] }),
+  permission: one(permissions, { fields: [rolePermissions.permissionId], references: [permissions.id] })
 }))

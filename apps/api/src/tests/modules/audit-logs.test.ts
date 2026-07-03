@@ -28,7 +28,7 @@ describe('audit logs API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/audit-logs',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -38,7 +38,7 @@ describe('audit logs API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/audit-logs',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const body = res.json()
@@ -53,11 +53,11 @@ describe('audit logs API', () => {
         async () => (await app.inject({
           method: 'GET',
           url: '/api/v1/audit-logs',
-          headers: { authorization: `Bearer ${token}` },
+          headers: { authorization: `Bearer ${token}` }
         })).json(),
         body => ['auth.registered', 'auth.logged_in'].every(action =>
-          body.data.some((l: { action: string }) => l.action === action),
-        ),
+          body.data.some((l: { action: string }) => l.action === action)
+        )
       )
       const actions = body.data.map((l: { action: string }) => l.action)
       expect(actions).toContain('auth.registered')
@@ -69,7 +69,7 @@ describe('audit logs API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/audit-logs?page=1&limit=1',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const body = res.json()
@@ -82,7 +82,7 @@ describe('audit logs API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/audit-logs?page=99&limit=10',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const body = res.json<{ data: unknown[], pagination: { total: number } }>()
@@ -105,14 +105,14 @@ describe('audit logs API', () => {
       const profileRes = await app.inject({
         method: 'GET',
         url: '/api/v1/profile',
-        headers: { authorization: `Bearer ${otherToken}` },
+        headers: { authorization: `Bearer ${otherToken}` }
       })
       const otherId = profileRes.json().data.id
 
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/users/${otherId}/audit-logs`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -122,14 +122,14 @@ describe('audit logs API', () => {
       const profileRes = await app.inject({
         method: 'GET',
         url: '/api/v1/profile',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       const userId = profileRes.json().data.id
 
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/users/${userId}/audit-logs`,
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const body = res.json()
@@ -143,14 +143,14 @@ describe('audit logs API', () => {
       const profileRes = await app.inject({
         method: 'GET',
         url: '/api/v1/profile',
-        headers: { authorization: `Bearer ${userToken}` },
+        headers: { authorization: `Bearer ${userToken}` }
       })
       const userId = profileRes.json().data.id
 
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/users/${userId}/audit-logs`,
-        headers: { authorization: `Bearer ${adminToken}` },
+        headers: { authorization: `Bearer ${adminToken}` }
       })
       expect(res.statusCode).toBe(200)
     })
@@ -166,7 +166,7 @@ describe('audit logs API', () => {
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/users/${targetId}/audit-logs`,
-        headers: { authorization: `Bearer ${readerToken}` },
+        headers: { authorization: `Bearer ${readerToken}` }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -182,7 +182,7 @@ describe('audit logs API', () => {
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/users/${targetId}/audit-logs`,
-        headers: { authorization: `Bearer ${readerToken}` },
+        headers: { authorization: `Bearer ${readerToken}` }
       })
       expect(res.statusCode).toBe(200)
     })
@@ -196,7 +196,7 @@ describe('audit logs API', () => {
         method: 'POST',
         url: '/api/v1/products',
         headers: { authorization: `Bearer ${adminToken}` },
-        payload: { name: 'Widget', price: 9.99, stock: 5 },
+        payload: { name: 'Widget', price: 9.99, stock: 5 }
       })
 
       // Wait for fire-and-forget insert to settle
@@ -204,9 +204,9 @@ describe('audit logs API', () => {
         async () => (await app.inject({
           method: 'GET',
           url: '/api/v1/audit-logs',
-          headers: { authorization: `Bearer ${adminToken}` },
+          headers: { authorization: `Bearer ${adminToken}` }
         })).json(),
-        body => body.data.some((l: { action: string }) => l.action === 'product.created'),
+        body => body.data.some((l: { action: string }) => l.action === 'product.created')
       )
       const actions = body.data.map((l: { action: string }) => l.action)
       expect(actions).toContain('product.created')
@@ -219,23 +219,23 @@ describe('audit logs API', () => {
         method: 'POST',
         url: '/api/v1/products',
         headers: { authorization: `Bearer ${adminToken}` },
-        payload: { name: 'Doomed Widget', price: 4.99, stock: 1 },
+        payload: { name: 'Doomed Widget', price: 4.99, stock: 1 }
       })
       const productId = created.json().data.id
 
       await app.inject({
         method: 'DELETE',
         url: `/api/v1/products/${productId}`,
-        headers: { authorization: `Bearer ${adminToken}` },
+        headers: { authorization: `Bearer ${adminToken}` }
       })
 
       const body = await eventually(
         async () => (await app.inject({
           method: 'GET',
           url: '/api/v1/audit-logs',
-          headers: { authorization: `Bearer ${adminToken}` },
+          headers: { authorization: `Bearer ${adminToken}` }
         })).json(),
-        body => body.data.some((l: { action: string }) => l.action === 'product.deleted'),
+        body => body.data.some((l: { action: string }) => l.action === 'product.deleted')
       )
       const log = body.data.find((l: { action: string }) => l.action === 'product.deleted')
       expect(log).toBeDefined()
@@ -248,9 +248,9 @@ describe('audit logs API', () => {
         async () => (await app.inject({
           method: 'GET',
           url: '/api/v1/audit-logs',
-          headers: { authorization: `Bearer ${adminToken}` },
+          headers: { authorization: `Bearer ${adminToken}` }
         })).json(),
-        body => body.data.some((l: { action: string }) => l.action === 'auth.logged_in'),
+        body => body.data.some((l: { action: string }) => l.action === 'auth.logged_in')
       )
       const log = body.data.find((l: { action: string }) => l.action === 'auth.logged_in')
       expect(log).toBeDefined()
@@ -263,23 +263,23 @@ describe('audit logs API', () => {
       const profileRes = await app.inject({
         method: 'GET',
         url: '/api/v1/profile',
-        headers: { authorization: `Bearer ${adminToken}` },
+        headers: { authorization: `Bearer ${adminToken}` }
       })
       const adminId = profileRes.json().data.id
 
       await app.inject({
         method: 'DELETE',
         url: `/api/v1/users/${adminId}`,
-        headers: { authorization: `Bearer ${adminToken}` },
+        headers: { authorization: `Bearer ${adminToken}` }
       })
 
       const body = await eventually(
         async () => (await app.inject({
           method: 'GET',
           url: '/api/v1/audit-logs',
-          headers: { authorization: `Bearer ${observerToken}` },
+          headers: { authorization: `Bearer ${observerToken}` }
         })).json(),
-        body => body.data.some((l: { action: string }) => l.action === 'user.deleted'),
+        body => body.data.some((l: { action: string }) => l.action === 'user.deleted')
       )
       const actions = body.data.map((l: { action: string }) => l.action)
       expect(actions).toContain('user.deleted')

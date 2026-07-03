@@ -15,8 +15,8 @@ export const auditLogsSchema = {
       200: apiListSchema(auditLogSchema),
       401: apiErrorSchema,
       403: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   listForUser: {
     method: 'GET' as const,
@@ -29,7 +29,7 @@ export const auditLogsSchema = {
       200: apiListSchema(auditLogSchema),
       401: apiErrorSchema,
       403: apiErrorSchema,
-      429: apiErrorSchema,
-    },
-  },
+      429: apiErrorSchema
+    }
+  }
 } satisfies RouteMap

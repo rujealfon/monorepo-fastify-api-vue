@@ -10,7 +10,7 @@ import { permissions, rolePermissions, roles } from '@/db/schema/index.js'
 const SEED_ROLES = [
   { name: ROLES.SUPER_ADMIN, description: 'Full system access', isSystemRole: true },
   { name: ROLES.ADMIN, description: 'Administrative access', isSystemRole: false },
-  { name: ROLES.USER, description: 'Standard user access', isSystemRole: false },
+  { name: ROLES.USER, description: 'Standard user access', isSystemRole: false }
 ]
 
 function parsePermission(value: string) {
@@ -45,7 +45,7 @@ export const SEED_PERMISSIONS = [
   PERMISSIONS.PRODUCT.DELETE_ANY,
   PERMISSIONS.AUDIT_LOG.READ_ANY,
   PERMISSIONS.METRICS.READ_ANY,
-  PERMISSIONS.HEALTH.READ_DETAILS,
+  PERMISSIONS.HEALTH.READ_DETAILS
 ].map(parsePermission)
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
@@ -64,9 +64,9 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.PRODUCT.CREATE_ANY,
     PERMISSIONS.PRODUCT.UPDATE_ANY,
     PERMISSIONS.PRODUCT.DELETE_ANY,
-    PERMISSIONS.AUDIT_LOG.READ_ANY,
+    PERMISSIONS.AUDIT_LOG.READ_ANY
   ],
-  [ROLES.USER]: [PERMISSIONS.USER.READ_OWN, PERMISSIONS.USER.UPDATE_OWN, PERMISSIONS.PRODUCT.READ_ANY],
+  [ROLES.USER]: [PERMISSIONS.USER.READ_OWN, PERMISSIONS.USER.UPDATE_OWN, PERMISSIONS.PRODUCT.READ_ANY]
 }
 
 export async function seedRoles(db: Db) {

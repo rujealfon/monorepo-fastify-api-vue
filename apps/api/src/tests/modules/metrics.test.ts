@@ -29,7 +29,7 @@ describe('metrics API', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/metrics',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(403)
   })
@@ -39,7 +39,7 @@ describe('metrics API', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/metrics',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(403)
   })
@@ -49,7 +49,7 @@ describe('metrics API', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/metrics',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(200)
   })

@@ -23,7 +23,7 @@ export const configSchema = {
     NODE_ENV: {
       type: 'string',
       enum: ['development', 'production', 'test'],
-      default: 'development',
+      default: 'development'
     },
     DATABASE_URL: { type: 'string' },
     TEST_DATABASE_URL: { type: 'string', default: '' },
@@ -34,6 +34,6 @@ export const configSchema = {
     OTEL_ENDPOINT: { type: 'string', default: '' },
     MOBILE_API_KEY: { type: 'string', minLength: 32 },
     CORS_ORIGIN: { type: 'string', default: '' },
-    TRUST_PROXY: { type: 'string', default: '' },
-  },
+    TRUST_PROXY: { type: 'string', default: '' }
+  }
 } as const

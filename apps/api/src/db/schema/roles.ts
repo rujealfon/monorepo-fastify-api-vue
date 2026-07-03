@@ -8,16 +8,16 @@ export const roles = pgTable('roles', {
   name: text('name').notNull(),
   description: text('description'),
   isSystemRole: boolean('is_system_role').notNull().default(false),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 }, t => [
-  uniqueIndex('roles_name_unique').on(t.name),
+  uniqueIndex('roles_name_unique').on(t.name)
 ])
 
 export const userRoles = pgTable('user_roles', {
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  roleId: uuid('role_id').notNull().references(() => roles.id, { onDelete: 'cascade' }),
+  roleId: uuid('role_id').notNull().references(() => roles.id, { onDelete: 'cascade' })
 }, t => [
-  primaryKey({ columns: [t.userId, t.roleId] }),
+  primaryKey({ columns: [t.userId, t.roleId] })
 ])
 
 export type RoleRow = typeof roles.$inferSelect

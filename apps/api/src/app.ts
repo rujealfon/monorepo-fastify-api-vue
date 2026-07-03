@@ -69,8 +69,8 @@ export async function buildApp() {
       transport:
         process.env.NODE_ENV !== 'production'
           ? { target: 'pino-pretty', options: { colorize: true } }
-          : undefined,
-    },
+          : undefined
+    }
   }).withTypeProvider<ZodTypeProvider>()
 
   fastify.setValidatorCompiler(validatorCompiler)
@@ -80,7 +80,7 @@ export async function buildApp() {
   await fastify.register(envPlugin, {
     confKey: 'config',
     schema: configSchema,
-    dotenv: true,
+    dotenv: true
   })
 
   // Data layer
@@ -135,10 +135,10 @@ export async function buildApp() {
             return {
               path,
               code: (issue.keyword as string | undefined) ?? 'invalid',
-              message: (issue.message as string | undefined) ?? 'Invalid value',
+              message: (issue.message as string | undefined) ?? 'Invalid value'
             }
-          }),
-        },
+          })
+        }
       })
     }
     if (err.statusCode !== undefined && err.statusCode >= 400 && err.statusCode < 500) {
@@ -150,14 +150,14 @@ export async function buildApp() {
         409: 'Conflict',
         413: 'Payload too large',
         415: 'Unsupported media type',
-        422: 'Unprocessable entity',
+        422: 'Unprocessable entity'
       }
       return reply.status(err.statusCode).send({
         success: false,
         error: {
           code: err.code ?? 'HTTP_ERROR',
-          message: err.statusCode === 429 ? err.message : clientErrorMessages[err.statusCode] ?? 'HTTP error',
-        },
+          message: err.statusCode === 429 ? err.message : clientErrorMessages[err.statusCode] ?? 'HTTP error'
+        }
       })
     }
     const cause = (err as { cause?: { code?: string } }).cause
@@ -166,8 +166,8 @@ export async function buildApp() {
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: 'Internal server error',
-      },
+        message: 'Internal server error'
+      }
     })
   })
 

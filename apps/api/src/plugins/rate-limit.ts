@@ -21,7 +21,7 @@ const rateLimitPlugin: FastifyPluginAsync = async (fastify) => {
       const path = request.url.split('?', 1)[0]?.replace(/\/$/, '')
       return path === '/api/v1/health/live' || path === '/api/v1/health/ready'
     },
-    keyGenerator: (request: FastifyRequest) => request.ip,
+    keyGenerator: (request: FastifyRequest) => request.ip
   })
 }
 

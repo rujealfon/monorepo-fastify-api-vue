@@ -7,7 +7,7 @@ import { apiErrorSchema, apiListSchema, apiSuccessSchema, paginationQuerySchema,
 import {
   createProductBodySchema,
   productSchema,
-  updateProductBodySchema,
+  updateProductBodySchema
 } from '@/modules/products/schemas/index.js'
 
 export const productsSchema = {
@@ -21,8 +21,8 @@ export const productsSchema = {
       200: apiListSchema(productSchema),
       401: apiErrorSchema,
       403: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   get: {
     method: 'GET' as const,
@@ -35,8 +35,8 @@ export const productsSchema = {
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   create: {
     method: 'POST' as const,
@@ -48,8 +48,8 @@ export const productsSchema = {
       201: apiSuccessSchema(productSchema),
       401: apiErrorSchema,
       403: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   update: {
     method: 'PATCH' as const,
@@ -63,8 +63,8 @@ export const productsSchema = {
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
-      429: apiErrorSchema,
-    },
+      429: apiErrorSchema
+    }
   },
   delete: {
     method: 'DELETE' as const,
@@ -77,7 +77,7 @@ export const productsSchema = {
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
-      429: apiErrorSchema,
-    },
-  },
+      429: apiErrorSchema
+    }
+  }
 } satisfies RouteMap

@@ -15,14 +15,14 @@ export async function findAuditLogs(db: Db, page: number, limit: number, userId?
       .orderBy(desc(auditLogs.createdAt))
       .offset((page - 1) * limit)
       .limit(limit),
-    db.select({ total: count() }).from(auditLogs).where(where),
+    db.select({ total: count() }).from(auditLogs).where(where)
   )
   return {
     data: rows.map(r => ({
       ...r,
       metadata: r.metadata as Record<string, unknown> | null,
-      createdAt: r.createdAt.toISOString(),
+      createdAt: r.createdAt.toISOString()
     })),
-    total,
+    total
   }
 }

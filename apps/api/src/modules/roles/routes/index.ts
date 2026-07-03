@@ -46,5 +46,5 @@ export default createFastifyRpcPlugin(rolesSchema, {
     await roleService.removePermissionFromRole(request.server.db, params.id, params.permId, isSuperAdmin)
     logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'permission.removed', resourceType: 'role', resourceId: params.id, metadata: { permId: params.permId } })
     return { status: 200 as const, body: { success: true as const, data: null } }
-  },
+  }
 })
