@@ -12,6 +12,7 @@
     "test:unit": "nub run --filter @monorepo-fastify-api-vue/api test:unit",
     "lint": "nub run -r --parallel lint",
     "lint:fix": "nub run -r --parallel lint:fix",
+    "lint-staged": "lint-staged",
     "db:generate": "nub run --filter @monorepo-fastify-api-vue/api db:generate",
     "db:migrate": "nub run --filter @monorepo-fastify-api-vue/api db:migrate",
     "db:seed": "nub run --filter @monorepo-fastify-api-vue/api db:seed",
@@ -21,6 +22,13 @@
     "clean:dist": "rm -rf apps/*/dist packages/*/dist"
   },
   "devDependencies": {
+    "lint-staged": "^17.0.8",
     "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "apps/api/**/*.{js,cjs,mjs,ts}": "pnpm --dir apps/api exec eslint --fix",
+    "apps/web/**/*.{js,cjs,mjs,ts,vue}": "pnpm --dir apps/web exec eslint --fix",
+    "packages/api-client/**/*.{js,cjs,mjs,ts}": "pnpm --dir packages/api-client exec eslint --fix",
+    "packages/eslint-config/**/*.{js,cjs,mjs,ts}": "pnpm --dir packages/eslint-config exec eslint --fix"
   }
 }
