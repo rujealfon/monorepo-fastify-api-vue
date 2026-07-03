@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-import { api } from '@/api'
+import { api } from '@/shared/api/client'
 
 export function useHealth() {
   const status = ref('checking')

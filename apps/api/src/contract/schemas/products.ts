@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import type { RouteMap } from '@/contract/types.js'
+
 import { PERMISSIONS } from '@/common/constants/index.js'
 import { apiErrorSchema, apiListSchema, apiSuccessSchema, paginationQuerySchema, uuidParamSchema } from '@/common/schemas/index.js'
 import {
@@ -7,8 +9,6 @@ import {
   productSchema,
   updateProductBodySchema,
 } from '@/modules/products/schemas/index.js'
-
-import type { RouteMap } from '../types.js'
 
 export const productsSchema = {
   list: {

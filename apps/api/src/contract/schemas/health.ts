@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-import { apiErrorSchema, apiSuccessSchema } from '@/common/schemas/index.js'
+import type { RouteMap } from '@/contract/types.js'
 
-import type { RouteMap } from '../types.js'
+import { apiErrorSchema, apiSuccessSchema } from '@/common/schemas/index.js'
 
 export const healthSchema = {
   live: {

@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import type { RouteMap } from '@/contract/types.js'
+
 import { apiErrorSchema, apiSuccessSchema } from '@/common/schemas/index.js'
 import {
   authUserSchema,
@@ -7,8 +9,6 @@ import {
   loginResponseSchema,
   registerBodySchema,
 } from '@/modules/auth/schemas/index.js'
-
-import type { RouteMap } from '../types.js'
 
 export const authSchema = {
   register: {

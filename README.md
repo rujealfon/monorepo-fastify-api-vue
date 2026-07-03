@@ -139,10 +139,10 @@ See [DOCKER.md](DOCKER.md) for full details on each scenario.
 
 ## API Client Usage
 
-`apps/web/src/api.ts` exports a singleton configured via `VITE_API_URL`:
+`apps/web/src/shared/api/client.ts` exports a singleton configured via `VITE_API_URL`:
 
 ```ts
-import { api } from "@/api"
+import { api } from "@/shared/api/client"
 
 const users = await api.users.list({ query: { page: 1, limit: 10 } })
 ```

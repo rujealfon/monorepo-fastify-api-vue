@@ -7,7 +7,7 @@ const { live } = vi.hoisted(() => ({
   live: vi.fn(),
 }))
 
-vi.mock('@/api', () => ({
+vi.mock('@/shared/api/client', () => ({
   api: {
     health: { live },
   },
