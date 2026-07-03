@@ -1,27 +1,29 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { useHealthQuery } from '../health.queries'
 
-import { useHealth } from '../composables/useHealth'
-
-const { status, error, loading, checkHealth } = useHealth()
-
-onMounted(checkHealth)
+const { state, asyncStatus, refetch } = useHealthQuery()
 </script>
 
 <template>
   <main class="health">
     <h1>Health</h1>
 
-    <p class="status" :class="{ down: status !== 'ok' }">
-      {{ status }}
+    <p v-if="state.status === 'pending'" class="status">
+      checking
+    </p>
+    <p v-else-if="state.status === 'error'" class="status down">
+      unavailable
+    </p>
+    <p v-else class="status" :class="{ down: state.data !== 'ok' }">
+      {{ state.data }}
     </p>
 
-    <p v-if="error" class="error">
-      {{ error }}
+    <p v-if="state.status === 'error'" class="error">
+      Health check failed
     </p>
 
-    <button type="button" :disabled="loading" @click="checkHealth">
-      {{ loading ? 'Checking...' : 'Check again' }}
+    <button type="button" :disabled="asyncStatus === 'loading'" @click="refetch()">
+      {{ asyncStatus === 'loading' ? 'Checking...' : 'Check again' }}
     </button>
   </main>
 </template>

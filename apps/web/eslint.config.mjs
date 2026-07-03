@@ -13,6 +13,18 @@ export default createConfig({
     'unicorn/filename-case': 'off',
   },
 }, {
+  // Feature boundaries: a feature may only reach outside itself via @/shared
+  // or @/app aliases; cross-feature imports are forbidden.
+  files: ['src/features/**'],
+  rules: {
+    'no-restricted-imports': ['error', {
+      patterns: [{
+        group: ['@/features/*'],
+        message: 'Features must not import from other features. Use relative imports within a feature, or move shared code to @/shared.',
+      }],
+    }],
+  },
+}, {
   ...pluginCypress.configs.recommended,
   files: [
     'cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}',

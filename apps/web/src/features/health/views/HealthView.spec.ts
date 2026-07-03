@@ -1,4 +1,6 @@
+import { PiniaColada } from '@pinia/colada'
 import { flushPromises, mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import HealthView from './HealthView.vue'
@@ -7,10 +9,8 @@ const { live } = vi.hoisted(() => ({
   live: vi.fn(),
 }))
 
-vi.mock('@/api', () => ({
-  api: {
-    health: { live },
-  },
+vi.mock('../health.api', () => ({
+  getLiveHealthStatus: live,
 }))
 
 describe('healthView', () => {
@@ -18,10 +18,18 @@ describe('healthView', () => {
     live.mockReset()
   })
 
-  it('shows live health status', async () => {
-    live.mockResolvedValue({ data: { status: 'ok' } })
+  function mountHealthView() {
+    return mount(HealthView, {
+      global: {
+        plugins: [createPinia(), PiniaColada],
+      },
+    })
+  }
 
-    const wrapper = mount(HealthView)
+  it('shows live health status', async () => {
+    live.mockResolvedValue('ok')
+
+    const wrapper = mountHealthView()
     await flushPromises()
 
     expect(live).toHaveBeenCalledOnce()
@@ -31,7 +39,7 @@ describe('healthView', () => {
   it('shows an error when the health check fails', async () => {
     live.mockRejectedValue(new Error('down'))
 
-    const wrapper = mount(HealthView)
+    const wrapper = mountHealthView()
     await flushPromises()
 
     expect(wrapper.text()).toContain('unavailable')
