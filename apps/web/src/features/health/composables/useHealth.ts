@@ -1,27 +1,23 @@
-import { ref } from 'vue'
+import { useQuery } from '@pinia/colada'
+import { computed } from 'vue'
 
-import { api } from '@/shared/api/client'
+import { healthLiveQuery } from '@/features/health/queries'
 
 export function useHealth() {
-  const status = ref('checking')
-  const error = ref('')
-  const loading = ref(false)
+  const query = useQuery(healthLiveQuery)
+  const status = computed(() => {
+    if (query.data.value)
+      return query.data.value.data.status
 
-  async function checkHealth() {
-    loading.value = true
-    error.value = ''
+    if (query.status.value === 'error')
+      return 'unavailable'
 
-    try {
-      const response = await api.health.live()
-      status.value = response.data.status
-    }
-    catch {
-      status.value = 'unavailable'
-      error.value = 'Health check failed'
-    }
-    finally {
-      loading.value = false
-    }
+    return 'checking'
+  })
+  const error = computed(() => query.status.value === 'error' ? 'Health check failed' : '')
+  const loading = computed(() => query.asyncStatus.value === 'loading')
+  const checkHealth = () => {
+    void query.refetch()
   }
 
   return { status, error, loading, checkHealth }

@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-
 import { useHealth } from '@/features/health/composables/useHealth'
 
 const { status, error, loading, checkHealth } = useHealth()
-
-onMounted(checkHealth)
 </script>
 
 <template>

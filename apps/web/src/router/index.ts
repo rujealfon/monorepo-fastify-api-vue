@@ -13,7 +13,7 @@ const router = createRouter({
       component: DefaultLayout,
       children: [...homeRoutes, ...aboutRoutes, ...healthRoutes],
     },
-    // Auth feature routes go under AuthLayout once they exist:
+    // TODO Auth feature routes go under AuthLayout once they exist:
     // { path: '/', component: () => import('@/app/layouts/AuthLayout.vue'), children: [...authRoutes] },
   ],
 })
