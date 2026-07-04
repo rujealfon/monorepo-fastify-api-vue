@@ -27,7 +27,8 @@ jobs:
         run: nub install --frozen-lockfile
 
       - name: Start databases
-        run: docker compose up -d --wait postgres valkey
+        run: docker compose up -d --wait postgres
+        # run: docker compose up -d --wait postgres valkey
 
       - name: Run migrations
         run: |
@@ -62,4 +63,5 @@ jobs:
         if: failure()
         run: |
           docker compose ps
-          docker compose logs --no-color --tail=200 api postgres valkey
+          # docker compose logs --no-color --tail=200 api postgres valkey
+          docker compose logs --no-color --tail=200 api postgres

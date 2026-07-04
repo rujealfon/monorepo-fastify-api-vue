@@ -41,7 +41,8 @@ COPY packages/api-client/src ./packages/api-client/src
 COPY packages/eslint-config ./packages/eslint-config
 # Web app source
 COPY apps/web ./apps/web
-RUN nubx vite build --config apps/web/vite.config.ts
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+RUN nub run --filter @monorepo-fastify-api-vue/web build
 
 # Production: nginx serves static files + proxies /api
 FROM nginx:alpine AS production

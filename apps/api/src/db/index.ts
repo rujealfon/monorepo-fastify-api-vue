@@ -5,10 +5,11 @@ import * as schema from './schema/index.js'
 
 export function createDb(url: string, searchPath?: string, max = 10) {
   const sql = postgres(url, {
-    max,
     idle_timeout: 30,
     connect_timeout: 10,
     max_lifetime: 60 * 30,
+    max: Number(process.env.DB_POOL_MAX ?? 10),
+    ssl: process.env.NODE_ENV === 'production' ? 'require' : undefined,
     ...(searchPath ? { connection: { search_path: searchPath } } : {})
   })
   const db = drizzle(sql, { schema })

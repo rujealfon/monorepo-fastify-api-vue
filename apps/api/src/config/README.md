@@ -33,12 +33,12 @@ No other files need to change — `fastify.config.MY_VAR` is immediately availab
 |---|---|
 | `DATABASE_URL` | PostgreSQL connection string |
 | `JWT_SECRET` | Min 32 characters |
-| `VALKEY_URL` | Valkey connection string (use the `redis://` protocol scheme) |
 
 ## Optional variables
 
 | Variable | Default | Notes |
 |---|---|---|
+| `VALKEY_URL` | *(empty)* | Valkey connection string; currently unused while Valkey is disabled |
 | `PORT` | `3000` | |
 | `HOST` | `0.0.0.0` | |
 | `NODE_ENV` | `development` | `development` \| `production` \| `test` |

@@ -34,7 +34,7 @@ The Vue container proxies `/api` → `http://api:3000` inside Docker. No env var
 | Service | Container | Port | Description |
 |---|---|---|---|
 | `postgres` | `fastify_postgres` | `5432` | PostgreSQL 18 |
-| `valkey` | `fastify_valkey` | `6379` | Valkey (Redis-compatible) cache |
+| `valkey` | `fastify_valkey` | `6379` | Valkey cache, currently commented out |
 | `api` | `fastify_api` | `3000` | Fastify API — hot reload via `nub watch` |
 | `web` | `fastify_web` | `5173` | Vue Vite dev server — hot reload |
 | `drizzle-studio` | `fastify_drizzle_studio` | `4983` | Drizzle Studio |

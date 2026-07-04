@@ -112,8 +112,8 @@ Tests use Vitest and exercise the real database and Valkey; do not mock these de
 
 ### Valkey & Plugins
 
-- Valkey is registered by `src/plugins/valkey.ts`; access through `fastify.valkey`. Do not instantiate separate Valkey clients elsewhere.
-- Plugin registration order in `app.ts` must be preserved: `env` → `db` → `valkey` → `rate-limit` → `helmet` → `cors` → `cookie` → `jwt` → `request-context` → auth decorators → routes.
+- Valkey is currently disabled. Rate limiting uses in-memory storage. Before horizontal scaling, re-enable `src/plugins/valkey.ts` and the Valkey-backed rate-limit store; access Valkey through `fastify.valkey`.
+- Plugin registration order in `app.ts` must be preserved: `env` → `db` → optional `valkey` → `rate-limit` → `helmet` → `cors` → `cookie` → `jwt` → `request-context` → auth decorators → routes.
 - Changes to `@fastify/rate-limit`, `@fastify/helmet`, `@fastify/cors`, `@fastify/jwt`, or `@fastify/cookie` must not weaken production defaults (e.g. sameSite, httpOnly, secure flags on cookies; CORS origin whitelist).
 - OpenTelemetry (`@opentelemetry/auto-instrumentations-node`) and Prometheus (`prom-client`) instrumentation must remain intact; do not remove trace/metric instrumentation from request paths.
 
@@ -144,4 +144,4 @@ All `timestamp` columns use `{ withTimezone: true }` (maps to Postgres `TIMESTAM
 
 ## Architecture & Configuration Notes
 
-Preserve the plugin registration order in `app.ts`: `env` first, Valkey before rate limiting, and request context before auth and request ID hooks. Domain errors should extend `AppError` and use existing subclasses such as `NotFoundError`, `UnauthorizedError`, `ConflictError`, and `ValidationError`. Copy `.env.example` to `.env`; required variables include `DATABASE_URL`, `JWT_SECRET`, and `VALKEY_URL`.
+Preserve the plugin registration order in `app.ts`: `env` first, optional Valkey before rate limiting, and request context before auth and request ID hooks. Domain errors should extend `AppError` and use existing subclasses such as `NotFoundError`, `UnauthorizedError`, `ConflictError`, and `ValidationError`. Copy `.env.example` to `.env`; required variables include `DATABASE_URL`, `JWT_SECRET`, and `MOBILE_API_KEY`.

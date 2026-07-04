@@ -37,6 +37,4 @@ RUN nub install --frozen-lockfile --prod
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY apps/api/migrations ./apps/api/migrations
 WORKDIR /app/apps/api
-ENV PORT=8000
-EXPOSE 8000
 CMD ["node", "dist/server.js"]
