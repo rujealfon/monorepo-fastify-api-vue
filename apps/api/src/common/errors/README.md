@@ -10,7 +10,7 @@ AppError (base)           AppError.ts
 ├── UnauthorizedError   → 401 UNAUTHORIZED
 ├── ForbiddenError      → 403 FORBIDDEN
 ├── ConflictError       → 409 CONFLICT
-└── ValidationError     → 422 VALIDATION_ERROR
+└── ValidationError     → 400 VALIDATION_ERROR
 ```
 
 ## AppError shape
