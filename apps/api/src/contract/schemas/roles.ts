@@ -20,6 +20,7 @@ export const rolesSchema = {
     query: paginationQuerySchema,
     responses: {
       200: apiListSchema(roleSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       429: apiErrorSchema
@@ -33,6 +34,7 @@ export const rolesSchema = {
     params: uuidParamSchema,
     responses: {
       200: apiSuccessSchema(roleSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
@@ -47,6 +49,7 @@ export const rolesSchema = {
     body: createRoleBodySchema,
     responses: {
       201: apiSuccessSchema(roleSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       409: apiErrorSchema,
@@ -62,6 +65,7 @@ export const rolesSchema = {
     body: updateRoleBodySchema,
     responses: {
       200: apiSuccessSchema(roleSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
@@ -77,6 +81,7 @@ export const rolesSchema = {
     params: uuidParamSchema,
     responses: {
       204: z.null(),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
@@ -91,6 +96,7 @@ export const rolesSchema = {
     params: rolePermParamsSchema,
     responses: {
       200: apiSuccessSchema(z.null()),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
@@ -105,6 +111,7 @@ export const rolesSchema = {
     params: rolePermParamsSchema,
     responses: {
       200: apiSuccessSchema(z.null()),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,

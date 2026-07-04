@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs'
 import process from 'node:process'
 import envPlugin from '@fastify/env'
 import Fastify from 'fastify'
-import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
+import { isResponseSerializationError, serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
 
 import authDecorator from './common/decorators/auth.js'
 import { AppError } from './common/errors/AppError.js'
@@ -182,6 +182,19 @@ export async function buildApp() {
         error: {
           code: err.code ?? 'HTTP_ERROR',
           message: err.statusCode === 429 ? err.message : clientErrorMessages[err.statusCode] ?? 'HTTP error'
+        }
+      })
+    }
+    if (isResponseSerializationError(error)) {
+      request.log.error(
+        { method: error.method, url: error.url, issues: error.cause.issues },
+        'response serialization error — handler returned a payload that violates its declared contract'
+      )
+      return reply.status(500).send({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Internal server error'
         }
       })
     }

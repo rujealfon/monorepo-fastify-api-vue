@@ -32,6 +32,7 @@ export const authSchema = {
     body: loginBodySchema,
     responses: {
       200: apiSuccessSchema(authUserSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       429: apiErrorSchema
     }
@@ -44,6 +45,7 @@ export const authSchema = {
     body: loginBodySchema,
     responses: {
       200: apiSuccessSchema(loginResponseSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       429: apiErrorSchema

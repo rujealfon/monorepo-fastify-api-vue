@@ -79,9 +79,12 @@ export async function updateProduct(db: Db, id: string, body: UpdateProductBody)
 }
 
 export async function deleteProduct(db: Db, id: string) {
-  const product = await findProductById(db, id)
-  const [row] = await db.update(products).set({ deletedAt: new Date() }).where(and(eq(products.id, id), isNull(products.deletedAt))).returning({ id: products.id })
+  const [row] = await db
+    .update(products)
+    .set({ deletedAt: new Date() })
+    .where(and(eq(products.id, id), isNull(products.deletedAt)))
+    .returning({ id: products.id, name: products.name, price: products.price, stock: products.stock, createdAt: products.createdAt, updatedAt: products.updatedAt })
   if (!row)
     throw new NotFoundError('Product', id)
-  return product
+  return toProduct(row)
 }

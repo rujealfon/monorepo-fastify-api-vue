@@ -1,8 +1,11 @@
+export type AppErrorField = { path: PropertyKey[], code: string, message: string }
+
 export class AppError extends Error {
   constructor(
     public readonly statusCode: number,
     public readonly code: string,
-    message: string
+    message: string,
+    public readonly fields?: AppErrorField[]
   ) {
     super(message)
     this.name = this.constructor.name
@@ -13,7 +16,8 @@ export class AppError extends Error {
       success: false as const,
       error: {
         code: this.code,
-        message: this.message
+        message: this.message,
+        ...(this.fields && { fields: this.fields })
       }
     }
   }
@@ -45,6 +49,6 @@ export class UnauthorizedError extends AppError {
 
 export class ValidationError extends AppError {
   constructor(message: string) {
-    super(422, 'VALIDATION_ERROR', message)
+    super(400, 'VALIDATION_ERROR', message)
   }
 }

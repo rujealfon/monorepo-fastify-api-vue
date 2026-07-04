@@ -3,9 +3,12 @@ import postgres from 'postgres'
 
 import * as schema from './schema/index.js'
 
-export function createDb(url: string, searchPath?: string) {
+export function createDb(url: string, searchPath?: string, max = 10) {
   const sql = postgres(url, {
-    max: 10,
+    max,
+    idle_timeout: 30,
+    connect_timeout: 10,
+    max_lifetime: 60 * 30,
     ...(searchPath ? { connection: { search_path: searchPath } } : {})
   })
   const db = drizzle(sql, { schema })

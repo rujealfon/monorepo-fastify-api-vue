@@ -26,7 +26,7 @@ export const userSchema = z.object({
 })
 
 export const createUserBodySchema = z.object({
-  email: z.email().meta({ examples: ['user@example.com'] }),
+  email: z.email().max(254).toLowerCase().meta({ examples: ['user@example.com'] }),
   password: passwordSchema.meta({ examples: ['SecurePassword1'] })
 })
 
@@ -44,7 +44,7 @@ export const updateProfileBodySchema = z.object({
 
 export const updateUserBodySchema = z
   .object({
-    email: z.email().optional().meta({ description: 'Email address', examples: ['user@example.com'] }),
+    email: z.email().max(254).toLowerCase().optional().meta({ description: 'Email address', examples: ['user@example.com'] }),
     profile: updateProfileBodySchema.optional().meta({ description: 'Profile fields to update' })
   })
   .refine(data => data.email !== undefined || (data.profile !== undefined && Object.keys(data.profile).length > 0), {

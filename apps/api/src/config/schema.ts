@@ -12,6 +12,7 @@ export type AppConfig = {
   MOBILE_API_KEY: string
   CORS_ORIGIN: string
   TRUST_PROXY: string
+  DB_POOL_MAX: number
 }
 
 export const configSchema = {
@@ -34,6 +35,7 @@ export const configSchema = {
     OTEL_ENDPOINT: { type: 'string', default: '' },
     MOBILE_API_KEY: { type: 'string', minLength: 32 },
     CORS_ORIGIN: { type: 'string', default: '' },
-    TRUST_PROXY: { type: 'string', default: '' }
+    TRUST_PROXY: { type: 'string', default: '' },
+    DB_POOL_MAX: { type: 'integer', default: 10 }
   }
 } as const

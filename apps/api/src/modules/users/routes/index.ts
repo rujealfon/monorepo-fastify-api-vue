@@ -32,14 +32,14 @@ export default createFastifyRpcPlugin(usersSchema, {
 
   create: async ({ body, request }) => {
     const user = await userService.createUser(request.server.db, body)
-    logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'user.created', resourceType: 'user', resourceId: user.id })
+    logAudit(request.server.db, request.log, { userId: request.requestContext.get('userId'), action: 'user.created', resourceType: 'user', resourceId: user.id })
     return { status: 201 as const, body: { success: true as const, data: user } }
   },
 
   update: async ({ params, body, request }) => {
     assertSelfOrAdmin(request, params.id, PERMISSIONS.USER.UPDATE_ANY)
     const user = await userService.updateUser(request.server.db, params.id, body)
-    logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'user.updated', resourceType: 'user', resourceId: params.id, metadata: { changedFields: Object.keys(body) } })
+    logAudit(request.server.db, request.log, { userId: request.requestContext.get('userId'), action: 'user.updated', resourceType: 'user', resourceId: params.id, metadata: { changedFields: Object.keys(body) } })
     return { status: 200 as const, body: { success: true as const, data: user } }
   },
 
@@ -47,7 +47,7 @@ export default createFastifyRpcPlugin(usersSchema, {
     assertSelfOrAdmin(request, params.id, PERMISSIONS.USER.DELETE_ANY)
     const actorId = request.requestContext.get('userId')
     await userService.deleteUser(request.server.db, params.id, actorId)
-    logAudit(request.server.db, { userId: actorId, action: 'user.deleted', resourceType: 'user', resourceId: params.id })
+    logAudit(request.server.db, request.log, { userId: actorId, action: 'user.deleted', resourceType: 'user', resourceId: params.id })
     return { status: 204 as const, body: null }
   },
 
@@ -55,7 +55,7 @@ export default createFastifyRpcPlugin(usersSchema, {
     const isSuperAdmin = request.requestContext.get('isSuperAdmin') ?? false
     const callerPermissions = request.requestContext.get('permissions') ?? []
     await userService.assignRoleToUser(request.server.db, params.id, params.roleId, isSuperAdmin, callerPermissions)
-    logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'role.assigned', resourceType: 'user', resourceId: params.id, metadata: { roleId: params.roleId } })
+    logAudit(request.server.db, request.log, { userId: request.requestContext.get('userId'), action: 'role.assigned', resourceType: 'user', resourceId: params.id, metadata: { roleId: params.roleId } })
     return { status: 200 as const, body: { success: true as const, data: null } }
   },
 
@@ -63,7 +63,7 @@ export default createFastifyRpcPlugin(usersSchema, {
     const isSuperAdmin = request.requestContext.get('isSuperAdmin') ?? false
     const callerPermissions = request.requestContext.get('permissions') ?? []
     await userService.removeRoleFromUser(request.server.db, params.id, params.roleId, isSuperAdmin, callerPermissions)
-    logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'role.removed', resourceType: 'user', resourceId: params.id, metadata: { roleId: params.roleId } })
+    logAudit(request.server.db, request.log, { userId: request.requestContext.get('userId'), action: 'role.removed', resourceType: 'user', resourceId: params.id, metadata: { roleId: params.roleId } })
     return { status: 200 as const, body: { success: true as const, data: null } }
   }
 })

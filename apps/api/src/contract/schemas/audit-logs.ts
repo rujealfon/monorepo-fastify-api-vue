@@ -13,6 +13,7 @@ export const auditLogsSchema = {
     query: paginationQuerySchema,
     responses: {
       200: apiListSchema(auditLogSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       429: apiErrorSchema
@@ -27,6 +28,7 @@ export const auditLogsSchema = {
     query: paginationQuerySchema,
     responses: {
       200: apiListSchema(auditLogSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       429: apiErrorSchema

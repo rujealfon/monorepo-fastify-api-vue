@@ -131,7 +131,7 @@ Tests use Vitest and exercise the real database and Valkey; do not mock these de
 
 ### Testing
 
-- Add or update `app.inject()` tests for every route behavior change: auth failures (401), permission failures (403), validation errors (422), pagination, soft-delete behavior, audit-log side effects, and sensitive-field omission.
+- Add or update `app.inject()` tests for every route behavior change: auth failures (401), permission failures (403), validation errors (400), pagination, soft-delete behavior, audit-log side effects, and sensitive-field omission.
 - Tests hit the real database and Valkey — do not mock them. Use `createTestApp()` and `registerAndLogin()` from `src/tests/fixtures/index.ts`.
 
 ## Commit & Pull Request Guidelines
