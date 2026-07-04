@@ -10,6 +10,7 @@
     "build": "docker exec fastify_api nubx tsc && docker exec fastify_api nubx tsc-alias && docker cp fastify_api:/app/apps/api/dist ./dist",
     "build:vercel": "tsc && tsc-alias",
     "start": "docker exec fastify_api node dist/server.js",
+    "start:vercel": "node dist/server.js",
     "migrate": "node dist/db/migrate.js",
     "db:generate": "docker exec fastify_drizzle_studio nubx drizzle-kit generate",
     "db:migrate": "docker exec fastify_drizzle_studio nubx drizzle-kit migrate && docker exec -e DATABASE_URL=postgres://postgres:password@postgres:5432/fastify_test fastify_drizzle_studio nubx drizzle-kit migrate",
