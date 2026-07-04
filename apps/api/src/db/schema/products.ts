@@ -9,9 +9,9 @@ export const products = pgTable('products', {
   stock: integer('stock').notNull().default(0),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
-  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  deletedAt: timestamp('deleted_at', { withTimezone: true })
 }, t => [
-  index('products_deleted_at_idx').on(t.deletedAt).where(sql`${t.deletedAt} IS NULL`),
+  index('products_deleted_at_idx').on(t.deletedAt).where(sql`${t.deletedAt} IS NULL`)
 ])
 
 export type ProductRow = typeof products.$inferSelect

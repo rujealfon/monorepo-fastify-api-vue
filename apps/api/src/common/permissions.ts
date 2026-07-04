@@ -1,6 +1,6 @@
-import { sql } from 'drizzle-orm'
-
 import type { Tx } from '@/db/index.js'
+
+import { sql } from 'drizzle-orm'
 
 import { ForbiddenError } from '@/common/errors/AppError.js'
 
@@ -30,7 +30,7 @@ export function assertCallerHoldsPermissions(
   callerIsSuperAdmin: boolean,
   callerPermissions: string[],
   targetPerms: Array<{ resource: string, action: string, scope: string }>,
-  message: string,
+  message: string
 ) {
   if (callerIsSuperAdmin)
     return

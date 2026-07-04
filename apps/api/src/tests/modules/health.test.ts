@@ -68,7 +68,7 @@ describe('health API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/health/details',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -78,7 +78,7 @@ describe('health API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/health/details',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       expectHealthDetails(res.json())
@@ -89,7 +89,7 @@ describe('health API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/health/details',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       expectHealthDetails(res.json())

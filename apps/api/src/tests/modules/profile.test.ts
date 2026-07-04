@@ -33,7 +33,7 @@ describe('profile API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/profile',
-        headers: { authorization: `Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` }
       })
       expect(res.statusCode).toBe(200)
       const { success, data } = res.json<{ success: boolean, data: Record<string, unknown> }>()
@@ -53,7 +53,7 @@ describe('profile API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/profile',
-        headers: { authorization: `Bearer ${otherToken}` },
+        headers: { authorization: `Bearer ${otherToken}` }
       })
       expect(res.statusCode).toBe(200)
       const { data } = res.json<{ data: { email: string } }>()

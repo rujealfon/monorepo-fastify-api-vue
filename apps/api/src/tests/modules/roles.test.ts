@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify'
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-
 import type { TestPermission as Permission, TestRole as Role } from '@/tests/fixtures/index.js'
+
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { createRole as createRoleFixture, createRoleWithPermission, createTestApp, listPermissions as listPermissionsFixture, listRoles as listRolesFixture, registerAdminAndLogin, registerAndAssignRole, registerAndLogin, registerSuperAdminAndLogin, resetDb } from '@/tests/fixtures/index.js'
 
@@ -103,7 +103,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/roles?page=1&limit=2',
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(200)
       const body = res.json<{ data: unknown[], pagination: { page: number, limit: number, total: number } }>()
@@ -156,7 +156,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/roles/00000000-0000-0000-0000-000000000000',
-        headers: auth(adminToken),
+        headers: auth(adminToken)
       })
       expect(res.statusCode).toBe(404)
     })
@@ -190,7 +190,7 @@ describe('roles API', () => {
         method: 'POST',
         url: '/api/v1/roles',
         headers: auth(superAdminToken),
-        payload: { name: 'editor', description: 'Can edit content' },
+        payload: { name: 'editor', description: 'Can edit content' }
       })
       expect(res.statusCode).toBe(201)
       const { data } = res.json<{ data: Role }>()
@@ -207,7 +207,7 @@ describe('roles API', () => {
         method: 'POST',
         url: '/api/v1/roles',
         headers: auth(superAdminToken),
-        payload: { name: 'sneaky', isSystemRole: true },
+        payload: { name: 'sneaky', isSystemRole: true }
       })
       // isSystemRole is stripped from the schema, so the field is ignored
       expect(res.statusCode).toBe(201)
@@ -221,7 +221,7 @@ describe('roles API', () => {
         method: 'POST',
         url: '/api/v1/roles',
         headers: auth(superAdminToken),
-        payload: { name: 'editor' },
+        payload: { name: 'editor' }
       })
       expect(res.statusCode).toBe(409)
     })
@@ -231,7 +231,7 @@ describe('roles API', () => {
         method: 'POST',
         url: '/api/v1/roles',
         headers: auth(superAdminToken),
-        payload: { description: 'No name' },
+        payload: { description: 'No name' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -241,7 +241,7 @@ describe('roles API', () => {
         method: 'POST',
         url: '/api/v1/roles',
         headers: auth(superAdminToken),
-        payload: { name: '' },
+        payload: { name: '' }
       })
       expect(res.statusCode).toBe(400)
     })
@@ -268,7 +268,7 @@ describe('roles API', () => {
         method: 'PATCH',
         url: `/api/v1/roles/${role.id}`,
         headers: auth(superAdminToken),
-        payload: { name: 'new-name', description: 'new desc' },
+        payload: { name: 'new-name', description: 'new desc' }
       })
       expect(res.statusCode).toBe(200)
       const { data } = res.json<{ data: Role }>()
@@ -282,7 +282,7 @@ describe('roles API', () => {
         method: 'PATCH',
         url: `/api/v1/roles/${role.id}`,
         headers: auth(superAdminToken),
-        payload: { description: null },
+        payload: { description: null }
       })
       expect(res.statusCode).toBe(200)
       expect(res.json<{ data: Role }>().data.description).toBeNull()
@@ -293,7 +293,7 @@ describe('roles API', () => {
         method: 'PATCH',
         url: '/api/v1/roles/00000000-0000-0000-0000-000000000000',
         headers: auth(superAdminToken),
-        payload: { name: 'x' },
+        payload: { name: 'x' }
       })
       expect(res.statusCode).toBe(404)
     })
@@ -305,7 +305,7 @@ describe('roles API', () => {
         method: 'PATCH',
         url: `/api/v1/roles/${role.id}`,
         headers: auth(superAdminToken),
-        payload: { name: 'taken' },
+        payload: { name: 'taken' }
       })
       expect(res.statusCode).toBe(409)
     })
@@ -350,7 +350,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: '/api/v1/roles/00000000-0000-0000-0000-000000000000',
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(404)
     })
@@ -372,7 +372,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/roles/${role.id}/permissions/${perms[0].id}`,
-        headers: auth(adminToken),
+        headers: auth(adminToken)
       })
       expect(res.statusCode).toBe(403)
     })
@@ -384,7 +384,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/roles/${role.id}/permissions/${perm.id}`,
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(200)
     })
@@ -403,7 +403,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/roles/00000000-0000-0000-0000-000000000000/permissions/${perms[0].id}`,
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(404)
     })
@@ -413,7 +413,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/roles/${role.id}/permissions/00000000-0000-0000-0000-000000000000`,
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(404)
     })
@@ -429,7 +429,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'POST',
         url: `/api/v1/roles/${target.id}/permissions/${deleteAnyPerm.id}`,
-        headers: auth(managerToken),
+        headers: auth(managerToken)
       })
       expect(res.statusCode).toBe(403)
     })
@@ -451,7 +451,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/roles/${role.id}/permissions/${perms[0].id}`,
-        headers: auth(adminToken),
+        headers: auth(adminToken)
       })
       expect(res.statusCode).toBe(403)
     })
@@ -464,7 +464,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/roles/${role.id}/permissions/${perm.id}`,
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(200)
     })
@@ -475,7 +475,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/roles/${role.id}/permissions/${perms[0].id}`,
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(200)
     })
@@ -485,7 +485,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/roles/00000000-0000-0000-0000-000000000000/permissions/${perms[0].id}`,
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(404)
     })
@@ -495,7 +495,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/roles/${role.id}/permissions/00000000-0000-0000-0000-000000000000`,
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(404)
     })
@@ -504,7 +504,7 @@ describe('roles API', () => {
       const res = await app.inject({
         method: 'DELETE',
         url: '/api/v1/roles/not-a-uuid/permissions/not-a-uuid',
-        headers: auth(superAdminToken),
+        headers: auth(superAdminToken)
       })
       expect(res.statusCode).toBe(400)
     })

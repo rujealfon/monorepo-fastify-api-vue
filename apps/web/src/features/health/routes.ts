@@ -4,6 +4,6 @@ export const healthRoutes: RouteRecordRaw[] = [
   {
     path: '/health',
     name: 'health',
-    component: () => import('./views/HealthView.vue'),
-  },
+    component: () => import('./views/HealthView.vue')
+  }
 ]

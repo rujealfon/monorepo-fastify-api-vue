@@ -1,7 +1,7 @@
-import { and, asc, count, eq } from 'drizzle-orm'
-
 import type { Db } from '@/db/index.js'
+
 import type { CreateRoleBody, UpdateRoleBody } from '@/modules/roles/schemas/index.js'
+import { and, asc, count, eq } from 'drizzle-orm'
 
 import { ConflictError, ForbiddenError, NotFoundError } from '@/common/errors/AppError.js'
 import { isUniqueViolation } from '@/common/errors/postgres.js'
@@ -15,14 +15,14 @@ function toRole(row: typeof roles.$inferSelect) {
     name: row.name,
     description: row.description,
     isSystemRole: row.isSystemRole,
-    createdAt: row.createdAt.toISOString(),
+    createdAt: row.createdAt.toISOString()
   }
 }
 
 export async function findAllRoles(db: Db, page: number, limit: number) {
   const { rows, total } = await resolvePage(
     db.select().from(roles).orderBy(asc(roles.name)).offset((page - 1) * limit).limit(limit),
-    db.select({ total: count() }).from(roles),
+    db.select({ total: count() }).from(roles)
   )
   return { data: rows.map(toRole), total }
 }
@@ -59,7 +59,7 @@ export async function updateRole(db: Db, id: string, body: UpdateRoleBody, calle
   try {
     const [row] = await db.update(roles).set({
       ...(body.name !== undefined && { name: body.name }),
-      ...(body.description !== undefined && { description: body.description }),
+      ...(body.description !== undefined && { description: body.description })
     }).where(eq(roles.id, id)).returning()
     if (!row)
       throw new NotFoundError('Role', id)
@@ -89,7 +89,7 @@ export async function deleteRole(db: Db, id: string) {
 export async function assignPermissionToRole(db: Db, roleId: string, permId: string, callerIsSuperAdmin = false, callerPermissions: string[] = []) {
   const [role, perm] = await Promise.all([
     findRoleById(db, roleId),
-    db.query.permissions.findFirst({ where: eq(permissions.id, permId) }),
+    db.query.permissions.findFirst({ where: eq(permissions.id, permId) })
   ])
   if (role.isSystemRole && !callerIsSuperAdmin)
     throw new ForbiddenError('System role permissions can only be modified by a super-admin')
@@ -112,7 +112,7 @@ export async function assignPermissionToRole(db: Db, roleId: string, permId: str
 export async function removePermissionFromRole(db: Db, roleId: string, permId: string, callerIsSuperAdmin = false) {
   const [role, perm] = await Promise.all([
     findRoleById(db, roleId),
-    db.query.permissions.findFirst({ where: eq(permissions.id, permId) }),
+    db.query.permissions.findFirst({ where: eq(permissions.id, permId) })
   ])
   if (role.isSystemRole && !callerIsSuperAdmin)
     throw new ForbiddenError('System role permissions can only be modified by a super-admin')
@@ -125,7 +125,7 @@ export async function removePermissionFromRole(db: Db, roleId: string, permId: s
     // concurrent grant, reopening the race those locks exist to close.
     await lockRoleForPermissionChange(tx, roleId)
     await tx.delete(rolePermissions).where(
-      and(eq(rolePermissions.roleId, roleId), eq(rolePermissions.permissionId, permId)),
+      and(eq(rolePermissions.roleId, roleId), eq(rolePermissions.permissionId, permId))
     )
   })
 }

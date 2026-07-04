@@ -11,8 +11,8 @@ export function initTelemetry(endpoint: string) {
   sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({ url: endpoint }),
     instrumentations: [getNodeAutoInstrumentations({
-      '@opentelemetry/instrumentation-fs': { enabled: false },
-    })],
+      '@opentelemetry/instrumentation-fs': { enabled: false }
+    })]
   })
 
   sdk.start()

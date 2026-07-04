@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify'
 
-import fp from 'fastify-plugin'
 import { randomUUID } from 'node:crypto'
+import fp from 'fastify-plugin'
 
 const REQUEST_ID_PATTERN = /^[\w\-]{1,64}$/
 

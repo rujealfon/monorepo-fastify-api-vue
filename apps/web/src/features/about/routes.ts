@@ -4,6 +4,6 @@ export const aboutRoutes: RouteRecordRaw[] = [
   {
     path: '/about',
     name: 'about',
-    component: () => import('./views/AboutView.vue'),
-  },
+    component: () => import('./views/AboutView.vue')
+  }
 ]

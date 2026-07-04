@@ -6,7 +6,7 @@ export type RouteSchema<
   TQuery extends z.ZodType | undefined = undefined,
   TParams extends z.ZodType | undefined = undefined,
   TBody extends z.ZodType | undefined = undefined,
-  TResponses extends Record<number, z.ZodType> = Record<number, z.ZodType>,
+  TResponses extends Record<number, z.ZodType> = Record<number, z.ZodType>
 > = {
   method: HttpMethod
   path: string

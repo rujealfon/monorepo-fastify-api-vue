@@ -6,7 +6,7 @@ export const permissionSchema = z.object({
   action: z.string(),
   scope: z.string(),
   description: z.string().nullable(),
-  createdAt: z.iso.datetime(),
+  createdAt: z.iso.datetime()
 })
 
 export type Permission = z.infer<typeof permissionSchema>

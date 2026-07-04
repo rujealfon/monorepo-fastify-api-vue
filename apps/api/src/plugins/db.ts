@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify'
 
-import fp from 'fastify-plugin'
 import process from 'node:process'
+import fp from 'fastify-plugin'
 
 import { testSchemaName } from '@/common/test-db-schema.js'
 import { createDb } from '@/db/index.js'

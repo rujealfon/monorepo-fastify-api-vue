@@ -12,10 +12,10 @@ const healthRoutes: FastifyPluginAsyncZod = async (fastify) => {
       tags: ['Health'],
       summary: 'Liveness probe',
       response: {
-        200: apiSuccessSchema(z.object({ status: z.string() })),
-      },
+        200: apiSuccessSchema(z.object({ status: z.string() }))
+      }
     },
-    handler: controller.liveness,
+    handler: controller.liveness
   })
 
   fastify.get('/ready', {
@@ -24,10 +24,10 @@ const healthRoutes: FastifyPluginAsyncZod = async (fastify) => {
       summary: 'Readiness probe (checks DB + Valkey connectivity)',
       response: {
         200: apiSuccessSchema(z.object({ status: z.string() })),
-        503: apiErrorSchema,
-      },
+        503: apiErrorSchema
+      }
     },
-    handler: controller.readiness,
+    handler: controller.readiness
   })
 
   fastify.get('/details', {
@@ -42,17 +42,17 @@ const healthRoutes: FastifyPluginAsyncZod = async (fastify) => {
             heapUsed: z.number(),
             rssBytes: z.number(),
             eventLoopDelay: z.number(),
-            eventLoopUtilized: z.number(),
+            eventLoopUtilized: z.number()
           }),
-          underPressure: z.boolean(),
+          underPressure: z.boolean()
         })),
         401: apiErrorSchema,
         403: apiErrorSchema,
-        429: apiErrorSchema,
-      },
+        429: apiErrorSchema
+      }
     },
     preValidation: [fastify.authenticate, fastify.requirePermission(PERMISSIONS.HEALTH.READ_DETAILS)],
-    handler: controller.details,
+    handler: controller.details
   })
 }
 

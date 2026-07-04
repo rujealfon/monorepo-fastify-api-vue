@@ -8,7 +8,7 @@ describe('scalar plugin', () => {
     const app = Fastify()
     app.decorate('config', {
       NODE_ENV: 'production',
-      PORT: 3000,
+      PORT: 3000
     })
 
     await app.register(scalarPlugin)

@@ -17,9 +17,12 @@ lerna-debug.log*
 coverage/
 .nyc_output/
 dist-ssr/
+.vite/
+**/.vite/
 __screenshots__/
 **/cypress/videos/
 **/cypress/screenshots/
+**/cypress/downloads/
 
 .DS_Store
 Thumbs.db

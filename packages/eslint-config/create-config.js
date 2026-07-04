@@ -1,6 +1,20 @@
 import antfu from '@antfu/eslint-config'
 
-const defaultIgnores = ['dist/**', 'migrations/**', '**/*.md', '**/package.json', '**/tsconfig.json']
+const defaultIgnores = [
+  'dist/**',
+  'dist-ssr/**',
+  'coverage/**',
+  'migrations/**',
+  'node_modules/**',
+  '**/.vite/**',
+  '**/cypress/screenshots/**',
+  '**/cypress/videos/**',
+  '**/cypress/downloads/**',
+  '**/*.md',
+  '**/package.json',
+  '**/tsconfig.json',
+  '**/*.tsbuildinfo'
+]
 
 export default function createConfig(options = {}, ...userConfigs) {
   const { ignores = [], ...antfuOptions } = options
@@ -11,7 +25,7 @@ export default function createConfig(options = {}, ...userConfigs) {
     formatters: {
       css: true,
       html: true,
-      markdown: 'prettier',
+      markdown: 'prettier'
     },
     stylistic: true,
     // stylistic: {
@@ -20,28 +34,25 @@ export default function createConfig(options = {}, ...userConfigs) {
     //   quotes: 'double',
     // },
     ...antfuOptions,
-    ignores: [...defaultIgnores, ...ignores],
+    ignores: [...defaultIgnores, ...ignores]
   }, {
     rules: {
-      // 'antfu/no-top-level-await': 'off',
-      // 'node/prefer-global/process': 'off',
-      // 'ts/no-redeclare': 'off',
+      'antfu/no-top-level-await': 'off',
       'no-console': ['warn'],
       'node/no-process-env': ['error'],
-      // 'style/comma-dangle': ['error', 'never'],
+      'node/prefer-global/process': 'off',
+      'style/comma-dangle': ['error', 'never'],
       'ts/consistent-type-definitions': ['error', 'type'],
-      'perfectionist/sort-imports': ['error', {
-        tsconfigRootDir: '.',
-      }],
+      'ts/no-redeclare': 'off',
       'unicorn/filename-case': ['error', {
         case: 'kebabCase',
-        ignore: [/\.md$/],
-      }],
-    },
+        ignore: [/\.md$/]
+      }]
+    }
   }, {
     files: ['**/*.d.ts'],
     rules: {
-      'ts/consistent-type-definitions': ['error', 'interface'],
-    },
+      'ts/consistent-type-definitions': ['error', 'interface']
+    }
   }, ...userConfigs)
 }

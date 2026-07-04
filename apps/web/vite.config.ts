@@ -1,6 +1,6 @@
-import vue from '@vitejs/plugin-vue'
 import process from 'node:process'
 import { fileURLToPath, URL } from 'node:url'
+import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 
 const apiSrc = fileURLToPath(new URL('../api/src', import.meta.url))
@@ -19,13 +19,13 @@ export default defineConfig({
       { find: /^@\/modules\/products\/schemas\//, replacement: `${apiSrc}/modules/products/schemas/` },
       { find: /^@\/modules\/roles\/schemas\//, replacement: `${apiSrc}/modules/roles/schemas/` },
       { find: /^@\/modules\/users\/schemas\//, replacement: `${apiSrc}/modules/users/schemas/` },
-      { find: '@', replacement: webSrc },
-    ],
+      { find: '@', replacement: webSrc }
+    ]
   },
   server: {
     host: true,
     proxy: {
-      '/api': process.env.API_URL ?? 'http://localhost:3000',
-    },
-  },
+      '/api': process.env.API_URL ?? 'http://localhost:3000'
+    }
+  }
 })

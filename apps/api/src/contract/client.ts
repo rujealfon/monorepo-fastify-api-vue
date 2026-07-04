@@ -49,7 +49,7 @@ type NsClient<T extends RouteMap> = {
 export class RpcError extends Error {
   constructor(
     public readonly status: number,
-    public readonly data: unknown,
+    public readonly data: unknown
   ) {
     super(`RPC Error ${status}`)
   }
@@ -60,7 +60,7 @@ export class RpcError extends Error {
 function buildNsClient<T extends RouteMap>(
   schema: T,
   baseUrl: string,
-  getToken?: () => string,
+  getToken?: () => string
 ): NsClient<T> {
   const client: Record<string, unknown> = {}
 
@@ -100,7 +100,7 @@ function buildNsClient<T extends RouteMap>(
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        ...input?.headers,
+        ...input?.headers
       }
       if (getToken && (route.auth || route.optionalAuth || route.permission)) {
         const token = getToken()
@@ -112,7 +112,7 @@ function buildNsClient<T extends RouteMap>(
         method: route.method,
         headers,
         credentials: 'include',
-        body: input?.body !== undefined ? JSON.stringify(input.body) : undefined,
+        body: input?.body !== undefined ? JSON.stringify(input.body) : undefined
       })
 
       if (res.status === 204)
@@ -141,7 +141,7 @@ function buildNsClient<T extends RouteMap>(
 
 export function createApiClient(
   baseUrl: string,
-  options?: { getToken?: () => string },
+  options?: { getToken?: () => string }
 ) {
   return {
     auditLogs: buildNsClient(auditLogsSchema, baseUrl, options?.getToken),
@@ -151,6 +151,6 @@ export function createApiClient(
     products: buildNsClient(productsSchema, baseUrl, options?.getToken),
     profile: buildNsClient(profileSchema, baseUrl, options?.getToken),
     roles: buildNsClient(rolesSchema, baseUrl, options?.getToken),
-    users: buildNsClient(usersSchema, baseUrl, options?.getToken),
+    users: buildNsClient(usersSchema, baseUrl, options?.getToken)
   }
 }

@@ -7,6 +7,6 @@ export const homeRoutes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
-  },
+    component: HomeView
+  }
 ]

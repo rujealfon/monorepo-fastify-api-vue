@@ -6,13 +6,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import HealthView from './HealthView.vue'
 
 const { live } = vi.hoisted(() => ({
-  live: vi.fn(),
+  live: vi.fn()
 }))
 
 vi.mock('@/shared/api/client', () => ({
   api: {
-    health: { live },
-  },
+    health: { live }
+  }
 }))
 
 describe('healthView', () => {
@@ -25,9 +25,9 @@ describe('healthView', () => {
       global: {
         plugins: [
           createPinia(),
-          [PiniaColada, { queryOptions: { staleTime: 0 } }],
-        ],
-      },
+          [PiniaColada, { queryOptions: { staleTime: 0 } }]
+        ]
+      }
     })
   }
 

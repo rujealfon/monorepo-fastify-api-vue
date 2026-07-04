@@ -38,9 +38,9 @@ async function loadAuthContext(request: FastifyRequest): Promise<boolean> {
     request.server.db.query.userRoles.findMany({
       where: eq(userRoles.userId, userId),
       with: {
-        role: { with: { rolePermissions: { with: { permission: true } } } },
-      },
-    }),
+        role: { with: { rolePermissions: { with: { permission: true } } } }
+      }
+    })
   ])
 
   if (!activeUsers[0])
@@ -50,9 +50,9 @@ async function loadAuthContext(request: FastifyRequest): Promise<boolean> {
   const permissions = [
     ...new Set(
       userRoleRows.flatMap(r =>
-        r.role.rolePermissions.map(rp => formatPermission(rp.permission)),
-      ),
-    ),
+        r.role.rolePermissions.map(rp => formatPermission(rp.permission))
+      )
+    )
   ]
 
   request.requestContext.set('userId', userId)

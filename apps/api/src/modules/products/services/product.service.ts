@@ -1,7 +1,7 @@
-import { and, count, eq, isNull } from 'drizzle-orm'
-
 import type { Db } from '@/db/index.js'
+
 import type { CreateProductBody, UpdateProductBody } from '@/modules/products/schemas/index.js'
+import { and, count, eq, isNull } from 'drizzle-orm'
 
 import { NotFoundError } from '@/common/errors/AppError.js'
 import { resolvePage } from '@/common/pagination.js'
@@ -13,7 +13,7 @@ const productColumns = {
   price: true,
   stock: true,
   createdAt: true,
-  updatedAt: true,
+  updatedAt: true
 } as const
 
 function toProduct(row: {
@@ -33,9 +33,9 @@ export async function findAllProducts(db: Db, page: number, limit: number) {
       columns: productColumns,
       where: isNull(products.deletedAt),
       offset: (page - 1) * limit,
-      limit,
+      limit
     }),
-    db.select({ total: count() }).from(products).where(isNull(products.deletedAt)),
+    db.select({ total: count() }).from(products).where(isNull(products.deletedAt))
   )
   return { data: rows.map(toProduct), total }
 }
@@ -43,7 +43,7 @@ export async function findAllProducts(db: Db, page: number, limit: number) {
 export async function findProductById(db: Db, id: string) {
   const row = await db.query.products.findFirst({
     where: and(eq(products.id, id), isNull(products.deletedAt)),
-    columns: productColumns,
+    columns: productColumns
   })
   if (!row)
     throw new NotFoundError('Product', id)
@@ -66,7 +66,7 @@ export async function updateProduct(db: Db, id: string, body: UpdateProductBody)
     .set({
       ...(body.name !== undefined && { name: body.name }),
       ...(body.price !== undefined && { price: String(body.price) }), // see createProduct
-      ...(body.stock !== undefined && { stock: body.stock }),
+      ...(body.stock !== undefined && { stock: body.stock })
     })
     .where(and(eq(products.id, id), isNull(products.deletedAt)))
     .returning({ id: products.id, name: products.name, price: products.price, stock: products.stock, createdAt: products.createdAt, updatedAt: products.updatedAt })

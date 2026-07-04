@@ -24,7 +24,7 @@ export async function liveness(_request: FastifyRequest, _reply: FastifyReply) {
 export async function readiness(request: FastifyRequest, reply: FastifyReply) {
   const [dbOk, valkeyOk] = await Promise.all([
     checkDb(request.server.db),
-    checkValkey(request.server.valkey),
+    checkValkey(request.server.valkey)
   ])
 
   if (!dbOk || !valkeyOk) {
@@ -32,8 +32,8 @@ export async function readiness(request: FastifyRequest, reply: FastifyReply) {
       success: false,
       error: {
         code: 'SERVICE_UNAVAILABLE',
-        message: !dbOk ? 'database unreachable' : 'valkey unreachable',
-      },
+        message: !dbOk ? 'database unreachable' : 'valkey unreachable'
+      }
     })
   }
 
@@ -47,7 +47,7 @@ export async function details(request: FastifyRequest, _reply: FastifyReply) {
     heapUsed: processMemory.heapUsed,
     rssBytes: processMemory.rss,
     eventLoopDelay: 0,
-    eventLoopUtilized: performance.eventLoopUtilization().utilization,
+    eventLoopUtilized: performance.eventLoopUtilization().utilization
   }
   const underPressure = pressure.isUnderPressure?.() ?? false
 
@@ -59,9 +59,9 @@ export async function details(request: FastifyRequest, _reply: FastifyReply) {
         heapUsed: memory.heapUsed,
         rssBytes: memory.rssBytes,
         eventLoopDelay: memory.eventLoopDelay,
-        eventLoopUtilized: memory.eventLoopUtilized,
+        eventLoopUtilized: memory.eventLoopUtilized
       },
-      underPressure,
-    },
+      underPressure
+    }
   }
 }

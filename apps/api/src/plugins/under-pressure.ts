@@ -16,7 +16,7 @@ const underPressurePlugin: FastifyPluginAsync = async (fastify) => {
     maxEventLoopUtilization: 0.98,
     message: 'Server is under pressure',
     retryAfter: 50,
-    exposeStatusRoute: false,
+    exposeStatusRoute: false
   })
 }
 

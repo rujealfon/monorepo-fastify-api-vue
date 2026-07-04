@@ -9,16 +9,16 @@ export const permissions = pgTable('permissions', {
   action: text('action').notNull(),
   scope: text('scope').notNull(),
   description: text('description'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 }, t => [
-  uniqueIndex('permissions_resource_action_scope_unique').on(t.resource, t.action, t.scope),
+  uniqueIndex('permissions_resource_action_scope_unique').on(t.resource, t.action, t.scope)
 ])
 
 export const rolePermissions = pgTable('role_permissions', {
   roleId: uuid('role_id').notNull().references(() => roles.id, { onDelete: 'cascade' }),
-  permissionId: uuid('permission_id').notNull().references(() => permissions.id, { onDelete: 'cascade' }),
+  permissionId: uuid('permission_id').notNull().references(() => permissions.id, { onDelete: 'cascade' })
 }, t => [
-  primaryKey({ columns: [t.roleId, t.permissionId] }),
+  primaryKey({ columns: [t.roleId, t.permissionId] })
 ])
 
 export type PermissionRow = typeof permissions.$inferSelect

@@ -29,7 +29,7 @@ describe('products API', () => {
       method: 'POST',
       url: '/api/v1/products',
       headers: { authorization: `Bearer ${token}` },
-      payload: { name, price: 9.99, stock: 100 },
+      payload: { name, price: 9.99, stock: 100 }
     })
     return res.json<{ data: { id: string, name: string } }>().data
   }
@@ -39,7 +39,7 @@ describe('products API', () => {
       method: 'POST',
       url: '/api/v1/products',
       headers: { authorization: `Bearer ${token}` },
-      payload: { name: 'Widget', price: 9.99, stock: 100 },
+      payload: { name: 'Widget', price: 9.99, stock: 100 }
     })
     expect(res.statusCode).toBe(201)
     const body = res.json<{ data: { id: string, name: string } }>()
@@ -51,7 +51,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/v1/products',
-      payload: { name: 'Widget', price: 9.99, stock: 100 },
+      payload: { name: 'Widget', price: 9.99, stock: 100 }
     })
     expect(res.statusCode).toBe(401)
   })
@@ -61,7 +61,7 @@ describe('products API', () => {
       method: 'POST',
       url: '/api/v1/products',
       headers: { authorization: `Bearer ${token}` },
-      payload: { name: '', price: -1, stock: 1.5 },
+      payload: { name: '', price: -1, stock: 1.5 }
     })
     expect(res.statusCode).toBe(400)
   })
@@ -70,7 +70,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/products',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(200)
     const body = res.json<{ data: unknown[] }>()
@@ -89,7 +89,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/products?page=1&limit=2',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(200)
     const body = res.json<{ data: unknown[], pagination: { page: number, limit: number, total: number } }>()
@@ -102,7 +102,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'GET',
       url: `/api/v1/products/${product.id}`,
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(200)
     expect(res.json<{ data: { id: string, name: string } }>().data).toMatchObject(product)
@@ -118,7 +118,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/products/00000000-0000-0000-0000-000000000000',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(404)
   })
@@ -127,7 +127,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/products/not-a-uuid',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(400)
   })
@@ -139,7 +139,7 @@ describe('products API', () => {
       method: 'PATCH',
       url: `/api/v1/products/${created.id}`,
       headers: { authorization: `Bearer ${token}` },
-      payload: { price: 24.99 },
+      payload: { price: 24.99 }
     })
     expect(update.statusCode).toBe(200)
   })
@@ -149,7 +149,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: `/api/v1/products/${created.id}`,
-      payload: { price: 24.99 },
+      payload: { price: 24.99 }
     })
     expect(res.statusCode).toBe(401)
   })
@@ -159,7 +159,7 @@ describe('products API', () => {
       method: 'PATCH',
       url: '/api/v1/products/00000000-0000-0000-0000-000000000000',
       headers: { authorization: `Bearer ${token}` },
-      payload: { price: 24.99 },
+      payload: { price: 24.99 }
     })
     expect(res.statusCode).toBe(404)
   })
@@ -170,7 +170,7 @@ describe('products API', () => {
       { url: `/api/v1/products/${created.id}`, payload: {} },
       { url: `/api/v1/products/${created.id}`, payload: { price: -1 } },
       { url: `/api/v1/products/${created.id}`, payload: { stock: 1.5 } },
-      { url: '/api/v1/products/not-a-uuid', payload: { price: 24.99 } },
+      { url: '/api/v1/products/not-a-uuid', payload: { price: 24.99 } }
     ]
 
     for (const testCase of cases) {
@@ -178,7 +178,7 @@ describe('products API', () => {
         method: 'PATCH',
         url: testCase.url,
         headers: { authorization: `Bearer ${token}` },
-        payload: testCase.payload,
+        payload: testCase.payload
       })
       expect(res.statusCode).toBe(400)
     }
@@ -190,7 +190,7 @@ describe('products API', () => {
     const del = await app.inject({
       method: 'DELETE',
       url: `/api/v1/products/${created.id}`,
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(del.statusCode).toBe(204)
   })
@@ -200,20 +200,20 @@ describe('products API', () => {
     await app.inject({
       method: 'DELETE',
       url: `/api/v1/products/${created.id}`,
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
 
     const get = await app.inject({
       method: 'GET',
       url: `/api/v1/products/${created.id}`,
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(get.statusCode).toBe(404)
 
     const list = await app.inject({
       method: 'GET',
       url: '/api/v1/products',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(list.json<{ data: Array<{ id: string }> }>().data.find(p => p.id === created.id)).toBeUndefined()
   })
@@ -228,7 +228,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'DELETE',
       url: '/api/v1/products/00000000-0000-0000-0000-000000000000',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(404)
   })
@@ -237,7 +237,7 @@ describe('products API', () => {
     const res = await app.inject({
       method: 'DELETE',
       url: '/api/v1/products/not-a-uuid',
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${token}` }
     })
     expect(res.statusCode).toBe(400)
   })
@@ -258,7 +258,7 @@ describe('products API', () => {
         .where(and(
           eq(permissions.resource, resource),
           eq(permissions.action, action),
-          eq(permissions.scope, scope),
+          eq(permissions.scope, scope)
         ))
         .limit(1)
       if (!role || !permission)
@@ -268,7 +268,7 @@ describe('products API', () => {
         .delete(rolePermissions)
         .where(and(
           eq(rolePermissions.roleId, role.id),
-          eq(rolePermissions.permissionId, permission.id),
+          eq(rolePermissions.permissionId, permission.id)
         ))
     }
 
@@ -278,7 +278,7 @@ describe('products API', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/products',
-        headers: { authorization: `Bearer ${userToken}` },
+        headers: { authorization: `Bearer ${userToken}` }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -288,7 +288,7 @@ describe('products API', () => {
         method: 'POST',
         url: '/api/v1/products',
         headers: { authorization: `Bearer ${token}` },
-        payload: { name: 'Gadget', price: 19.99, stock: 50 },
+        payload: { name: 'Gadget', price: 19.99, stock: 50 }
       })
       const { data: created } = create.json<{ data: { id: string } }>()
       await revokeProductReadPermission()
@@ -296,7 +296,7 @@ describe('products API', () => {
       const res = await app.inject({
         method: 'GET',
         url: `/api/v1/products/${created.id}`,
-        headers: { authorization: `Bearer ${userToken}` },
+        headers: { authorization: `Bearer ${userToken}` }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -306,7 +306,7 @@ describe('products API', () => {
         method: 'POST',
         url: '/api/v1/products',
         headers: { authorization: `Bearer ${userToken}` },
-        payload: { name: 'Widget', price: 9.99, stock: 100 },
+        payload: { name: 'Widget', price: 9.99, stock: 100 }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -316,7 +316,7 @@ describe('products API', () => {
         method: 'POST',
         url: '/api/v1/products',
         headers: { authorization: `Bearer ${token}` },
-        payload: { name: 'Gadget', price: 19.99, stock: 50 },
+        payload: { name: 'Gadget', price: 19.99, stock: 50 }
       })
       const { data: created } = create.json<{ data: { id: string } }>()
 
@@ -324,7 +324,7 @@ describe('products API', () => {
         method: 'PATCH',
         url: `/api/v1/products/${created.id}`,
         headers: { authorization: `Bearer ${userToken}` },
-        payload: { price: 24.99 },
+        payload: { price: 24.99 }
       })
       expect(res.statusCode).toBe(403)
     })
@@ -334,14 +334,14 @@ describe('products API', () => {
         method: 'POST',
         url: '/api/v1/products',
         headers: { authorization: `Bearer ${token}` },
-        payload: { name: 'Doohickey', price: 4.99, stock: 10 },
+        payload: { name: 'Doohickey', price: 4.99, stock: 10 }
       })
       const { data: created } = create.json<{ data: { id: string } }>()
 
       const res = await app.inject({
         method: 'DELETE',
         url: `/api/v1/products/${created.id}`,
-        headers: { authorization: `Bearer ${userToken}` },
+        headers: { authorization: `Bearer ${userToken}` }
       })
       expect(res.statusCode).toBe(403)
     })

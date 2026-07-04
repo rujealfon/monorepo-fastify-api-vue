@@ -62,7 +62,7 @@ function needsCsrfCheck(route: RouteMap[string], request: FastifyRequest) {
 
 export function createFastifyRpcPlugin<T extends RouteMap>(
   schema: T,
-  handlers: RouteHandlers<T>,
+  handlers: RouteHandlers<T>
 ): FastifyPluginAsync {
   return async (fastify) => {
     for (const [name, route] of Object.entries(schema)) {
@@ -76,7 +76,7 @@ export function createFastifyRpcPlugin<T extends RouteMap>(
           if (needsCsrfCheck(route, request) && !hasValidCsrfOrigin(request)) {
             return reply.status(403).send({
               success: false,
-              error: { code: 'FORBIDDEN', message: 'Invalid CSRF origin' },
+              error: { code: 'FORBIDDEN', message: 'Invalid CSRF origin' }
             })
           }
         })
@@ -99,7 +99,7 @@ export function createFastifyRpcPlugin<T extends RouteMap>(
           ...(route.query !== undefined && { querystring: route.query }),
           ...(route.params !== undefined && { params: route.params }),
           ...(route.body !== undefined && { body: route.body }),
-          response: route.responses,
+          response: route.responses
         } as any,
         preValidation: preValidation.length ? preValidation : undefined,
         handler: async (request, reply) => {
@@ -108,12 +108,12 @@ export function createFastifyRpcPlugin<T extends RouteMap>(
             params: request.params,
             body: request.body,
             request,
-            reply,
+            reply
           })
           if (result.status === 204)
             return reply.status(204).send()
           return reply.status(result.status).send(result.body)
-        },
+        }
       })
     }
   }

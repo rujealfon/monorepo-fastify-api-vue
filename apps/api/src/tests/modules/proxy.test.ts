@@ -1,10 +1,10 @@
 import type { FastifyInstance } from 'fastify'
 
-import { eq } from 'drizzle-orm'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
+import { eq } from 'drizzle-orm'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { auditLogs } from '@/db/schema/index.js'
@@ -44,14 +44,14 @@ describe('trusted proxy handling', () => {
     await app.inject({
       method: 'POST',
       url: '/api/v1/auth/register',
-      payload: { email: 'proxy@example.com', password: 'Password123' },
+      payload: { email: 'proxy@example.com', password: 'Password123' }
     })
 
     await app.inject({
       method: 'POST',
       url: '/api/v1/auth/login',
       headers: { 'x-forwarded-for': '203.0.113.7' },
-      payload: { email: 'proxy@example.com', password: 'Password123' },
+      payload: { email: 'proxy@example.com', password: 'Password123' }
     })
 
     const log = await eventually(
@@ -63,7 +63,7 @@ describe('trusted proxy handling', () => {
           .limit(1)
         return row
       },
-      row => row !== undefined,
+      row => row !== undefined
     )
 
     expect(log.metadata).toMatchObject({ ip: '203.0.113.7' })

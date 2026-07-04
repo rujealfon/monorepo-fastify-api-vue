@@ -11,17 +11,17 @@ function createValkeyConfig(url: string): GlideClientConfiguration {
   return {
     addresses: [{
       host: parsedUrl.hostname,
-      port: parsedUrl.port ? Number.parseInt(parsedUrl.port, 10) : 6379,
+      port: parsedUrl.port ? Number.parseInt(parsedUrl.port, 10) : 6379
     }],
     databaseId: Number.isNaN(databaseId) ? undefined : databaseId,
     useTLS: parsedUrl.protocol === 'rediss:',
     credentials: parsedUrl.password
       ? {
           username: parsedUrl.username ? decodeURIComponent(parsedUrl.username) : 'default',
-          password: decodeURIComponent(parsedUrl.password),
+          password: decodeURIComponent(parsedUrl.password)
         }
       : undefined,
-    requestTimeout: 5000,
+    requestTimeout: 5000
   }
 }
 

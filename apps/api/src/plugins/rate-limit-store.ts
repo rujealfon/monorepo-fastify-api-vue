@@ -33,7 +33,7 @@ const rateLimitScript = new Script(`
 
 type StoreCallback = (
   error: Error | null,
-  result?: { current: number, ttl: number },
+  result?: { current: number, ttl: number }
 ) => void
 
 type RateLimitRouteOptions = RouteOptions & {
@@ -87,9 +87,9 @@ export function createValkeyRateLimitStore(valkey: GlideClient): RateLimitStoreC
       return new ValkeyRateLimitStore(
         {
           continueExceeding: this.continueExceeding,
-          exponentialBackoff: this.exponentialBackoff,
+          exponentialBackoff: this.exponentialBackoff
         },
-        `${this.keyPrefix}${method}${url}-`,
+        `${this.keyPrefix}${method}${url}-`
       )
     }
 
@@ -102,7 +102,7 @@ export function createValkeyRateLimitStore(valkey: GlideClient): RateLimitStoreC
           'rate_limit.time_window_ms': timeWindow,
           'rate_limit.max': max,
           'rate_limit.continue_exceeding': this.continueExceeding,
-          'rate_limit.exponential_backoff': this.exponentialBackoff,
+          'rate_limit.exponential_backoff': this.exponentialBackoff
         })
 
         try {
@@ -112,8 +112,8 @@ export function createValkeyRateLimitStore(valkey: GlideClient): RateLimitStoreC
               String(timeWindow),
               String(max),
               String(this.continueExceeding),
-              String(this.exponentialBackoff),
-            ],
+              String(this.exponentialBackoff)
+            ]
           })
 
           if (!Array.isArray(result)) {
@@ -122,7 +122,7 @@ export function createValkeyRateLimitStore(valkey: GlideClient): RateLimitStoreC
 
           return {
             current: toNumber(result[0]),
-            ttl: toNumber(result[1]),
+            ttl: toNumber(result[1])
           }
         }
         catch (error) {

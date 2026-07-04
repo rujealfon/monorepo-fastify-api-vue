@@ -2,7 +2,7 @@ export class AppError extends Error {
   constructor(
     public readonly statusCode: number,
     public readonly code: string,
-    message: string,
+    message: string
   ) {
     super(message)
     this.name = this.constructor.name
@@ -13,8 +13,8 @@ export class AppError extends Error {
       success: false as const,
       error: {
         code: this.code,
-        message: this.message,
-      },
+        message: this.message
+      }
     }
   }
 }

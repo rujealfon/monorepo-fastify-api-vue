@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=24.18.0 <25"
+  },
   "scripts": {
     "dev": "nub run -r --parallel --aggregate-output dev",
     "build": "nub run -r build",
@@ -12,6 +15,7 @@
     "test:unit": "nub run --filter @monorepo-fastify-api-vue/api test:unit",
     "lint": "nub run -r --parallel lint",
     "lint:fix": "nub run -r --parallel lint:fix",
+    "lint-staged": "lint-staged",
     "db:generate": "nub run --filter @monorepo-fastify-api-vue/api db:generate",
     "db:migrate": "nub run --filter @monorepo-fastify-api-vue/api db:migrate",
     "db:seed": "nub run --filter @monorepo-fastify-api-vue/api db:seed",
@@ -21,6 +25,13 @@
     "clean:dist": "rm -rf apps/*/dist packages/*/dist"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "lint-staged": "^17.0.8",
+    "typescript": "^6.0.3"
+  },
+  "lint-staged": {
+    "apps/api/**/*.{js,cjs,mjs,ts}": "nub --cwd apps/api exec eslint --fix",
+    "apps/web/**/*.{js,cjs,mjs,ts,vue}": "nub --cwd apps/web exec eslint --fix",
+    "packages/api-client/**/*.{js,cjs,mjs,ts}": "nub --cwd packages/api-client exec eslint --fix",
+    "packages/eslint-config/**/*.{js,cjs,mjs,ts}": "nub --cwd packages/eslint-config exec eslint --fix"
   }
 }

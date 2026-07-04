@@ -23,14 +23,14 @@ const metricsPlugin: FastifyPluginAsync = async (fastify) => {
         200: z.string(),
         401: apiErrorSchema,
         403: apiErrorSchema,
-        429: apiErrorSchema,
-      },
+        429: apiErrorSchema
+      }
     },
     preValidation: [fastify.authenticate, fastify.requirePermission(PERMISSIONS.METRICS.READ_ANY)],
     handler: async (_request: FastifyRequest, reply: FastifyReply) => {
       reply.header('Content-Type', registry.contentType)
       return registry.metrics()
-    },
+    }
   })
 }
 

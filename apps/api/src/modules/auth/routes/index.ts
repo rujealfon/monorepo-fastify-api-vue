@@ -18,7 +18,7 @@ function tokenCookieOptions(request: { server: { config: { NODE_ENV: string } } 
     path: '/',
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'none' as const : 'strict' as const,
+    sameSite: isProduction ? 'none' as const : 'strict' as const
   }
 }
 
@@ -58,5 +58,5 @@ export default createFastifyRpcPlugin(authSchema, {
     logAudit(request.server.db, { userId, action: 'auth.logged_out', resourceType: userId ? 'user' : 'anonymous', resourceId: userId, metadata: { ip: request.ip, ua: request.headers['user-agent'] ?? null } })
     reply.clearCookie('token', tokenCookieOptions(request))
     return { status: 200 as const, body: { success: true as const, data: null } }
-  },
+  }
 })

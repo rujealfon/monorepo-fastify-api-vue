@@ -7,7 +7,7 @@ export const auditLogSchema = z.object({
   resourceType: z.string(),
   resourceId: z.uuid().nullable(),
   metadata: z.record(z.string(), z.unknown()).nullable(),
-  createdAt: z.iso.datetime(),
+  createdAt: z.iso.datetime()
 })
 
 export type AuditLog = z.infer<typeof auditLogSchema>

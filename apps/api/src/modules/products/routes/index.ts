@@ -31,5 +31,5 @@ export default createFastifyRpcPlugin(productsSchema, {
     const product = await productService.deleteProduct(request.server.db, params.id)
     logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'product.deleted', resourceType: 'product', resourceId: params.id, metadata: { name: product.name, price: product.price } })
     return { status: 204 as const, body: null }
-  },
+  }
 })

@@ -8,12 +8,12 @@ export const profileSchema = z.object({
   avatarUrl: z.string().nullable().meta({ examples: ['https://example.com/avatar.jpg'] }),
   bio: z.string().nullable().meta({ examples: ['Software engineer based in NYC'] }),
   phoneNumber: z.string().nullable().meta({ examples: ['+1234567890'] }),
-  birthDate: z.iso.date().nullable().meta({ examples: ['1990-01-15'] }),
+  birthDate: z.iso.date().nullable().meta({ examples: ['1990-01-15'] })
 })
 
 export const embeddedRoleSchema = z.object({
   id: z.uuid().meta({ examples: ['019ee4e4-bd7d-7e0d-8402-eeb73c578a01'] }),
-  name: z.string().meta({ examples: ['admin'] }),
+  name: z.string().meta({ examples: ['admin'] })
 })
 
 export const userSchema = z.object({
@@ -22,12 +22,12 @@ export const userSchema = z.object({
   profile: profileSchema,
   roles: z.array(embeddedRoleSchema),
   createdAt: z.iso.datetime().meta({ examples: ['2024-01-15T10:30:00.000Z'] }),
-  updatedAt: z.iso.datetime().meta({ examples: ['2024-01-15T10:30:00.000Z'] }),
+  updatedAt: z.iso.datetime().meta({ examples: ['2024-01-15T10:30:00.000Z'] })
 })
 
 export const createUserBodySchema = z.object({
   email: z.email().meta({ examples: ['user@example.com'] }),
-  password: passwordSchema.meta({ examples: ['SecurePassword1'] }),
+  password: passwordSchema.meta({ examples: ['SecurePassword1'] })
 })
 
 export const updateProfileBodySchema = z.object({
@@ -36,16 +36,16 @@ export const updateProfileBodySchema = z.object({
   avatarUrl: z.url().nullable().optional().meta({ description: 'Avatar URL', examples: ['https://example.com/avatar.jpg'] }),
   bio: z.string().nullable().optional().meta({ description: 'Short bio', examples: ['Software engineer based in NYC'] }),
   phoneNumber: z.string().nullable().optional().meta({ description: 'Phone number', examples: ['+1234567890'] }),
-  birthDate: z.iso.date().nullable().optional().meta({ description: 'Birth date (YYYY-MM-DD)', examples: ['1990-01-15'] }),
+  birthDate: z.iso.date().nullable().optional().meta({ description: 'Birth date (YYYY-MM-DD)', examples: ['1990-01-15'] })
 })
 
 export const updateUserBodySchema = z
   .object({
     email: z.email().optional().meta({ description: 'Email address', examples: ['user@example.com'] }),
-    profile: updateProfileBodySchema.optional().meta({ description: 'Profile fields to update' }),
+    profile: updateProfileBodySchema.optional().meta({ description: 'Profile fields to update' })
   })
   .refine(data => data.email !== undefined || (data.profile !== undefined && Object.keys(data.profile).length > 0), {
-    message: 'At least one field must be provided (email or a non-empty profile)',
+    message: 'At least one field must be provided (email or a non-empty profile)'
   })
 
 export { uuidParamSchema as userParamsSchema, paginationQuerySchema as userQuerySchema }

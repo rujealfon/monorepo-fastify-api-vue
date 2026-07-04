@@ -21,5 +21,5 @@ export default createFastifyRpcPlugin(auditLogsSchema, {
     const { page, limit } = query
     const { data, total } = await findAuditLogs(request.server.db, page, limit, params.id)
     return { status: 200 as const, body: { success: true as const, data, pagination: { page, limit, total } } }
-  },
+  }
 })

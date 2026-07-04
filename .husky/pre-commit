@@ -1,2 +1,2 @@
-nub run lint:fix
+nub run lint-staged
 # nub run test:unit
