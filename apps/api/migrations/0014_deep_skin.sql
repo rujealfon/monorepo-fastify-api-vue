@@ -1,3 +1,8 @@
+-- Fine as-is for dev/test/CI (empty or small `users` table — lock is instant).
+-- On a production `users` table with real rows, run
+-- src/db/prod-migrations/0014-email-lowercase.ts instead of letting drizzle-kit
+-- apply this file: it does the same backfill + index swap without holding a
+-- write lock (see the comment in that script for why this file can't).
 DO $$
 BEGIN
   IF EXISTS (
