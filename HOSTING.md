@@ -21,7 +21,7 @@ Prices change. Re-check official pricing pages before deploying production.
 | Platform | Good For | Rough Starter Cost | Notes |
 | --- | --- | ---: | --- |
 | Cloud Run + Cloudflare Pages + Neon | Lowest idle cost with existing architecture | Usage-based | Best overall pay-per-usage fit. |
-| Render | Simple all-in-one deployment | About `$13/mo` | Predictable, easy, but less usage-based. |
+| Render | Simple all-in-one deployment | `$0` to start | Free API + static site + free Postgres trial; paid Postgres needed after trial. |
 | Railway | Usage-based app hosting | `$5/mo` minimum, often `$10-$30/mo+` | Convenient, but always-on DB can add up. |
 | Fly.io | Global app runtime | `$40+/mo` with managed Postgres | Good infra, but managed Postgres starts higher. |
 | Vercel + Neon | Frontend-first deployments | `$0+` | Great for frontend; Fastify API would need adaptation to Functions. |
@@ -57,10 +57,10 @@ Best if simplicity matters more than pure pay-per-usage.
 | Piece | Rough Cost |
 | --- | ---: |
 | Static frontend | `$0/mo` |
-| API web service | `$7/mo` Starter |
-| Postgres | `$6/mo` Basic 256MB |
+| API web service | `$0/mo` Free |
+| Postgres | `$0/mo` Free trial, then paid |
 
-Realistic minimum: `$13/mo` for frontend + API + Postgres.
+Realistic starting cost: `$0/mo`. Render free Postgres is temporary, so expect to upgrade the database when the trial expires.
 
 Pricing: <https://render.com/pricing>
 
@@ -126,7 +126,7 @@ Use **Vercel** for frontend only.
 
 ## Deploy To Render
 
-Use the root [render.yaml](render.yaml) blueprint. It creates the API service, static web service, and Postgres database.
+Use the root [render.yaml](render.yaml) blueprint. It creates the API service, static web service, and Postgres database on free plans for starting.
 
 Current app shape on Render:
 
@@ -168,7 +168,7 @@ You are currently on **New Static Site**. That screen is only for the Vue fronte
    - Name: `monorepo-fastify-api-vue-db`
    - Database: `fastify_prod`
    - User: `fastify`
-   - Plan: Basic 256MB
+   - Plan: Free
    - Region: Singapore
 4. Click **New** again.
 5. Choose **Web Service**.
@@ -179,7 +179,7 @@ You are currently on **New Static Site**. That screen is only for the Vue fronte
    - Dockerfile path: `Dockerfile`
    - Docker context: `.`
    - Health check path: `/api/v1/health/ready`
-   - Plan: Starter
+   - Plan: Free
    - Region: Singapore
 8. Add API environment variables:
    - `DATABASE_URL`: use the internal connection string from the Render Postgres service
