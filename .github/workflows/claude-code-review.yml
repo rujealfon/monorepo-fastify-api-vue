@@ -43,7 +43,8 @@ jobs:
         run: nub install --frozen-lockfile
 
       - name: Start databases
-        run: docker compose up -d --wait postgres valkey
+        # run: docker compose up -d --wait postgres valkey
+        run: docker compose up -d --wait postgres
 
       - name: Run migrations
         run: |
