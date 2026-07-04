@@ -65,6 +65,12 @@ async function run() {
     // Build the new unique index without blocking writers, then swap it in
     // with a near-instant metadata-only rename — `users` is never left
     // without a unique constraint on email.
+    //
+    // Drop any leftover from a prior crashed run first: CONCURRENTLY can abort
+    // partway through and leave an INVALID index behind, and IF NOT EXISTS on
+    // the CREATE below would then skip rebuilding it, promoting a non-enforcing
+    // index via rename and silently losing the unique constraint on email.
+    await sql`DROP INDEX CONCURRENTLY IF EXISTS users_email_unique_new`
     await sql`
       CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS users_email_unique_new
       ON users (lower(email)) WHERE deleted_at IS NULL

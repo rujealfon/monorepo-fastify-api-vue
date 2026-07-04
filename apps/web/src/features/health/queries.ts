@@ -9,5 +9,9 @@ export const HEALTH_KEYS = {
 
 export const healthLiveQuery = defineQueryOptions({
   key: HEALTH_KEYS.live(),
-  query: () => api.health.live()
+  query: () => api.health.live(),
+  // Health is volatile — the global 30s staleTime is too long here, and
+  // autoRefetch re-checks automatically while the page stays mounted.
+  staleTime: 5_000,
+  autoRefetch: true
 })
