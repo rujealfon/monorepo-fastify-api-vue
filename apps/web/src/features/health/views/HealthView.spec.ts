@@ -1,3 +1,4 @@
+import { RpcError } from '@monorepo-fastify-api-vue/api-client'
 import { PiniaColada } from '@pinia/colada'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia } from 'pinia'
@@ -45,6 +46,31 @@ describe('healthView', () => {
     live.mockRejectedValue(new Error('down'))
 
     const wrapper = mountHealthView()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('unavailable')
+    expect(wrapper.text()).toContain('Health check failed')
+  })
+
+  it('includes the HTTP status when the health check fails with an RpcError', async () => {
+    live.mockRejectedValue(new RpcError(503, { error: 'down' }))
+
+    const wrapper = mountHealthView()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('unavailable')
+    expect(wrapper.text()).toContain('Health check failed (HTTP 503)')
+  })
+
+  it('prefers the error state over stale data after a failed refetch', async () => {
+    live.mockResolvedValueOnce({ data: { status: 'ok' } })
+    live.mockRejectedValueOnce(new Error('down'))
+
+    const wrapper = mountHealthView()
+    await flushPromises()
+    expect(wrapper.text()).toContain('ok')
+
+    await wrapper.find('button').trigger('click')
     await flushPromises()
 
     expect(wrapper.text()).toContain('unavailable')

@@ -59,8 +59,14 @@ export async function registerUser(db: Db, body: RegisterBody) {
   }
 
   const password = passwordSchema.safeParse(body.password)
-  if (!password.success)
-    throw new AppError(400, 'VALIDATION_ERROR', password.error.issues[0]?.message ?? 'Invalid password')
+  if (!password.success) {
+    const fields = password.error.issues.map(issue => ({
+      path: issue.path,
+      code: issue.code,
+      message: issue.message
+    }))
+    throw new AppError(400, 'VALIDATION_ERROR', fields[0]?.message ?? 'Invalid password', fields)
+  }
 
   const passwordHash = await hashPassword(body.password)
 

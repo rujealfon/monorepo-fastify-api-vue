@@ -17,19 +17,19 @@ export default createFastifyRpcPlugin(productsSchema, {
 
   create: async ({ body, request }) => {
     const product = await productService.createProduct(request.server.db, body)
-    logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'product.created', resourceType: 'product', resourceId: product.id, metadata: { name: product.name, price: product.price } })
+    logAudit(request.server.db, request.log, { userId: request.requestContext.get('userId'), action: 'product.created', resourceType: 'product', resourceId: product.id, metadata: { name: product.name, price: product.price } })
     return { status: 201 as const, body: { success: true as const, data: product } }
   },
 
   update: async ({ params, body, request }) => {
     const product = await productService.updateProduct(request.server.db, params.id, body)
-    logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'product.updated', resourceType: 'product', resourceId: params.id, metadata: { changes: body } })
+    logAudit(request.server.db, request.log, { userId: request.requestContext.get('userId'), action: 'product.updated', resourceType: 'product', resourceId: params.id, metadata: { changes: body } })
     return { status: 200 as const, body: { success: true as const, data: product } }
   },
 
   delete: async ({ params, request }) => {
     const product = await productService.deleteProduct(request.server.db, params.id)
-    logAudit(request.server.db, { userId: request.requestContext.get('userId'), action: 'product.deleted', resourceType: 'product', resourceId: params.id, metadata: { name: product.name, price: product.price } })
+    logAudit(request.server.db, request.log, { userId: request.requestContext.get('userId'), action: 'product.deleted', resourceType: 'product', resourceId: params.id, metadata: { name: product.name, price: product.price } })
     return { status: 204 as const, body: null }
   }
 })

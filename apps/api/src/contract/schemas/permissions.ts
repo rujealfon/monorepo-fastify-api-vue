@@ -13,6 +13,7 @@ export const permissionsSchema = {
     query: paginationQuerySchema,
     responses: {
       200: apiListSchema(permissionSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       429: apiErrorSchema

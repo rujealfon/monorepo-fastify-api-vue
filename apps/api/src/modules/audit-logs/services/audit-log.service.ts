@@ -1,6 +1,6 @@
 import type { Db } from '@/db/index.js'
 
-import { count, desc, eq, getTableColumns } from 'drizzle-orm'
+import { asc, count, desc, eq, getTableColumns } from 'drizzle-orm'
 
 import { resolvePage } from '@/common/pagination.js'
 import { auditLogs } from '@/db/schema/index.js'
@@ -12,7 +12,7 @@ export async function findAuditLogs(db: Db, page: number, limit: number, userId?
       .select(getTableColumns(auditLogs))
       .from(auditLogs)
       .where(where)
-      .orderBy(desc(auditLogs.createdAt))
+      .orderBy(desc(auditLogs.createdAt), asc(auditLogs.id))
       .offset((page - 1) * limit)
       .limit(limit),
     db.select({ total: count() }).from(auditLogs).where(where)

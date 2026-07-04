@@ -8,7 +8,7 @@ const { status, error, loading, checkHealth } = useHealth()
   <main class="health">
     <h1>Health</h1>
 
-    <p class="status" :class="{ down: status !== 'ok' }">
+    <p class="status" :class="{ down: status === 'unavailable', checking: status === 'checking' }">
       {{ status }}
     </p>
 
@@ -48,6 +48,10 @@ h1 {
 .status.down,
 .error {
   color: #c2410c;
+}
+
+.status.checking {
+  color: var(--color-text);
 }
 
 button {

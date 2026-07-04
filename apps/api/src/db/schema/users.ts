@@ -11,8 +11,10 @@ export const users = pgTable('users', {
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
   deletedBy: uuid('deleted_by')
 }, t => [
-  // ponytail: partial index so deleted users don't block re-registration
-  uniqueIndex('users_email_unique').on(t.email).where(sql`${t.deletedAt} IS NULL`),
+  // ponytail: partial index so deleted users don't block re-registration.
+  // Indexed on lower(email) so the constraint holds even if a write path
+  // (e.g. a future migration script) skips the Zod .toLowerCase() transform.
+  uniqueIndex('users_email_unique').on(sql`lower(${t.email})`).where(sql`${t.deletedAt} IS NULL`),
   // Speeds up the soft-deleted-account reactivation lookup in registerUser,
   // which filters by email + deletedAt IS NOT NULL and sorts by deletedAt desc.
   index('users_email_deleted_at_idx').on(t.email, t.deletedAt).where(sql`${t.deletedAt} IS NOT NULL`)

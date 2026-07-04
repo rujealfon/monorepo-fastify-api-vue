@@ -10,7 +10,9 @@ export const auditLogs = pgTable('audit_logs', {
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 }, t => [
-  index('audit_logs_user_id_idx').on(t.userId),
+  // Composite serves the per-user listing (filter userId, order createdAt desc)
+  // directly; the createdAt index covers the unfiltered global listing.
+  index('audit_logs_user_id_created_at_idx').on(t.userId, t.createdAt.desc()),
   index('audit_logs_created_at_idx').on(t.createdAt)
 ])
 

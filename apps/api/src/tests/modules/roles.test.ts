@@ -288,6 +288,18 @@ describe('roles API', () => {
       expect(res.json<{ data: Role }>().data.description).toBeNull()
     })
 
+    it('returns 400 for an empty body', async () => {
+      const role = await createRole('untouched')
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/roles/${role.id}`,
+        headers: auth(superAdminToken),
+        payload: {}
+      })
+      expect(res.statusCode).toBe(400)
+      expect(res.json()).toMatchObject({ success: false, error: { code: 'VALIDATION_ERROR' } })
+    })
+
     it('returns 404 for an unknown id', async () => {
       const res = await app.inject({
         method: 'PATCH',

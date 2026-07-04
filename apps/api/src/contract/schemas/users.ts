@@ -24,6 +24,7 @@ export const usersSchema = {
     query: paginationQuerySchema,
     responses: {
       200: apiListSchema(userSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       429: apiErrorSchema
@@ -37,6 +38,7 @@ export const usersSchema = {
     params: uuidParamSchema,
     responses: {
       200: apiSuccessSchema(userSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
@@ -51,6 +53,7 @@ export const usersSchema = {
     body: createUserBodySchema,
     responses: {
       201: apiSuccessSchema(userSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       409: apiErrorSchema,
@@ -66,6 +69,7 @@ export const usersSchema = {
     body: updateUserBodySchema,
     responses: {
       200: apiSuccessSchema(userSchema),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
@@ -81,6 +85,7 @@ export const usersSchema = {
     params: uuidParamSchema,
     responses: {
       204: z.null(),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
@@ -95,6 +100,7 @@ export const usersSchema = {
     params: userRoleParamsSchema,
     responses: {
       200: apiSuccessSchema(z.null()),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,
@@ -109,6 +115,7 @@ export const usersSchema = {
     params: userRoleParamsSchema,
     responses: {
       200: apiSuccessSchema(z.null()),
+      400: apiErrorSchema,
       401: apiErrorSchema,
       403: apiErrorSchema,
       404: apiErrorSchema,

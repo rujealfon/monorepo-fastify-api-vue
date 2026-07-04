@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const registerBodySchema = z.object({
-  email: z.email().meta({ examples: ['alice@example.com'] }),
+  email: z.email().max(254).toLowerCase().meta({ examples: ['alice@example.com'] }),
   password: z.string().min(1).max(72).meta({
     description: 'New accounts require uppercase, lowercase, and digit; legacy account reactivation may use the original password.',
     examples: ['SecurePassword1']
@@ -9,7 +9,7 @@ export const registerBodySchema = z.object({
 })
 
 export const loginBodySchema = z.object({
-  email: z.email().meta({ examples: ['alice@example.com'] }),
+  email: z.email().max(254).toLowerCase().meta({ examples: ['alice@example.com'] }),
   password: z.string().min(1).meta({ examples: ['SecurePassword1'] })
 })
 

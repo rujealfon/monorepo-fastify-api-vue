@@ -14,9 +14,14 @@ const underPressurePlugin: FastifyPluginAsync = async (fastify) => {
     maxHeapUsedBytes: 200 * 1024 * 1024,
     maxRssBytes: 300 * 1024 * 1024,
     maxEventLoopUtilization: 0.98,
-    message: 'Server is under pressure',
     retryAfter: 50,
-    exposeStatusRoute: false
+    exposeStatusRoute: false,
+    pressureHandler: (_request, reply) => {
+      reply.status(503).send({
+        success: false,
+        error: { code: 'SERVICE_UNAVAILABLE', message: 'Server is under pressure' }
+      })
+    }
   })
 }
 

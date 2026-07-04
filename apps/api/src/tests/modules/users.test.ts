@@ -415,6 +415,28 @@ describe('users API', () => {
       })
       expect(res.statusCode).toBe(400)
     })
+
+    it('returns 400 for an invalid phone number', async () => {
+      const user = await createUser('phone@example.com')
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { profile: { phoneNumber: 'call me maybe' } }
+      })
+      expect(res.statusCode).toBe(400)
+    })
+
+    it('returns 400 for an over-length bio', async () => {
+      const user = await createUser('longbio@example.com')
+      const res = await app.inject({
+        method: 'PATCH',
+        url: `/api/v1/users/${user.id}`,
+        headers: { authorization: `Bearer ${token}` },
+        payload: { profile: { bio: 'x'.repeat(1001) } }
+      })
+      expect(res.statusCode).toBe(400)
+    })
   })
 
   // ── DELETE /api/v1/users/:id ───────────────────────────────────────────────

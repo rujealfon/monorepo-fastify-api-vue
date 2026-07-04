@@ -98,6 +98,30 @@ describe('auth API', () => {
       })
       expect(res.statusCode).toBe(400)
     })
+
+    it('normalizes email to lowercase on registration', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: { email: 'Mixed.Case@Example.com', password: 'Password123' }
+      })
+      expect(res.statusCode).toBe(201)
+      expect(res.json<{ data: { email: string } }>().data.email).toBe('mixed.case@example.com')
+    })
+
+    it('returns 409 for duplicate email differing only in case', async () => {
+      await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: { email: 'foo@example.com', password: 'Password123' }
+      })
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: { email: 'Foo@Example.com', password: 'Password123' }
+      })
+      expect(res.statusCode).toBe(409)
+    })
   })
 
   // ── POST /api/v1/auth/login ────────────────────────────────────────────────
@@ -176,6 +200,16 @@ describe('auth API', () => {
         payload: {}
       })
       expect(res.statusCode).toBe(400)
+    })
+
+    it('logs in with a different case than the email was registered with', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/login',
+        payload: { email: 'Dave@Example.com', password: 'Password123' }
+      })
+      expect(res.statusCode).toBe(200)
+      expect(res.json<{ data: { email: string } }>().data.email).toBe('dave@example.com')
     })
   })
 
