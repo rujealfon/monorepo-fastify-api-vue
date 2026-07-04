@@ -17,7 +17,7 @@ export type AppConfig = {
 
 export const configSchema = {
   type: 'object',
-  required: ['DATABASE_URL', 'JWT_SECRET', 'VALKEY_URL', 'MOBILE_API_KEY'],
+  required: ['DATABASE_URL', 'JWT_SECRET', 'MOBILE_API_KEY'],
   properties: {
     PORT: { type: 'integer', default: 3000 },
     HOST: { type: 'string', default: '0.0.0.0' },
@@ -30,7 +30,8 @@ export const configSchema = {
     TEST_DATABASE_URL: { type: 'string', default: '' },
     JWT_SECRET: { type: 'string', minLength: 32 },
     LOG_LEVEL: { type: 'string', default: 'info' },
-    VALKEY_URL: { type: 'string' },
+    // ponytail: optional while Valkey is disabled; make required again when valkeyPlugin is registered.
+    VALKEY_URL: { type: 'string', default: '' },
     COOKIE_SECRET: { type: 'string', default: '', anyOf: [{ maxLength: 0 }, { minLength: 32 }] },
     OTEL_ENDPOINT: { type: 'string', default: '' },
     MOBILE_API_KEY: { type: 'string', minLength: 32 },

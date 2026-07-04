@@ -25,6 +25,7 @@ declare module 'fastify' {
     optionalAuthenticate: (request: Request, reply: Reply) => Promise<void>
     requirePermission: (permission: string) => (request: Request, reply: Reply) => Promise<void>
     swagger: (opts?: { yaml?: boolean }) => Record<string, unknown> | string
+    // ponytail: Valkey is disabled at startup, but dormant plugin files still compile against this decorator.
     valkey: GlideClient
   }
 

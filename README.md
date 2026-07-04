@@ -162,7 +162,7 @@ The web health page at `/health` uses `api.health.live()` (`GET /api/v1/health/l
 
 ### `apps/api/.env`
 
-Copy from `.env.example`. Required: `DATABASE_URL`, `JWT_SECRET`, `VALKEY_URL`, `MOBILE_API_KEY`.
+Copy from `.env.example`. Required: `DATABASE_URL`, `JWT_SECRET`, `MOBILE_API_KEY`.
 Set `CORS_ORIGIN` when the frontend is on a different domain.
 
 ### `apps/web/.env`

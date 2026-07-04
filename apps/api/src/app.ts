@@ -33,7 +33,7 @@ import requestContextPlugin from './plugins/request-context.js'
 import scalarPlugin from './plugins/scalar.js'
 import sensiblePlugin from './plugins/sensible.js'
 import underPressurePlugin from './plugins/under-pressure.js'
-import valkeyPlugin from './plugins/valkey.js'
+// import valkeyPlugin from './plugins/valkey.js'
 
 function parseTrustProxy(value: string | undefined) {
   if (!value)
@@ -110,7 +110,8 @@ export async function buildApp() {
 
   // Data layer
   await fastify.register(dbPlugin)
-  await fastify.register(valkeyPlugin)
+  // ponytail: Valkey is disabled for now; rate limiting uses in-memory storage until horizontal scaling.
+  // await fastify.register(valkeyPlugin)
   await fastify.register(rateLimitPlugin)
 
   // Security & transport

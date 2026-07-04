@@ -11,7 +11,7 @@ A production-ready REST API built with **Fastify 5**, **TypeScript**, **PostgreS
 | Framework | [Fastify 5](https://fastify.dev) |
 | Language | TypeScript 5.9 (NodeNext modules) |
 | Database | PostgreSQL via [Drizzle ORM](https://orm.drizzle.team) |
-| Cache / Rate-limit store | Valkey via [Valkey GLIDE](https://glide.valkey.io/) |
+| Cache / Rate-limit store | Valkey via [Valkey GLIDE](https://glide.valkey.io/) — currently disabled |
 | Validation | [Zod](https://zod.dev) + [fastify-type-provider-zod](https://github.com/turkerdev/fastify-type-provider-zod) |
 | Auth | JWT via [@fastify/jwt](https://github.com/fastify/fastify-jwt) |
 | API Docs | [Scalar](https://scalar.com) + [@fastify/swagger](https://github.com/fastify/fastify-swagger) (OpenAPI 3.0) |
@@ -76,7 +76,7 @@ cp apps/api/.env.example apps/api/.env
 |---|---|---|---|
 | `DATABASE_URL` | ✅ | — | PostgreSQL connection string |
 | `JWT_SECRET` | ✅ | — | Secret for signing JWTs (min 32 chars) |
-| `VALKEY_URL` | ✅ | — | Valkey connection string (`redis://localhost:6379`) |
+| `VALKEY_URL` |  | *(empty)* | Valkey connection string; currently unused while Valkey is disabled |
 | `MOBILE_API_KEY` | ✅ | — | Shared secret for mobile clients |
 | `TEST_DATABASE_URL` | | *(empty)* | PostgreSQL connection string for test runs |
 | `PORT` | | `3000` | Server port |
@@ -213,8 +213,8 @@ Run `nub run db:seed` to insert (idempotent).
 ## Architecture Notes
 
 - **Contract-first RPC** — `src/contract/` is the single source of truth for route shapes. A schema change is a type error on both server and client simultaneously.
-- **Plugin registration order** in `app.ts` is fixed: `env` → `db` → `valkey` → `rate-limit` → `helmet` → `cors` → `cookie` → `jwt` → `request-context` → auth decorators → routes.
+- **Plugin registration order** in `app.ts` is fixed: `env` → `db` → optional `valkey` → `rate-limit` → `helmet` → `cors` → `cookie` → `jwt` → `request-context` → auth decorators → routes.
 - **Dynamic RBAC** — permissions loaded from DB on every request, not embedded in the JWT.
 - **Services have no Fastify imports** — receive `db` as a parameter, independently testable.
-- **Rate limiting** uses Valkey — safe for multi-instance deployments. Active only in `NODE_ENV=production`.
+- **Rate limiting** is active in `NODE_ENV=production` with in-memory storage. Restore the Valkey store before horizontal scaling.
 - **Audit logging** is fire-and-forget — insert failures never surface to the caller.

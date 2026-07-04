@@ -9,6 +9,7 @@
 		"dev": "echo 'API runs in Docker — start with: docker-compose up -d'",
 		"build": "docker exec fastify_api nubx tsc && docker exec fastify_api nubx tsc-alias && docker cp fastify_api:/app/apps/api/dist ./dist",
 		"start": "docker exec fastify_api node dist/server.js",
+		"migrate": "node dist/db/migrate.js",
 		"db:generate": "docker exec fastify_drizzle_studio nubx drizzle-kit generate",
 		"db:migrate": "docker exec fastify_drizzle_studio nubx drizzle-kit migrate && docker exec -e DATABASE_URL=postgres://postgres:password@postgres:5432/fastify_test fastify_drizzle_studio nubx drizzle-kit migrate",
 		"db:studio": "docker exec fastify_drizzle_studio nubx drizzle-kit studio --port 4983 --host 0.0.0.0",
@@ -17,7 +18,7 @@
 		"test": "nub run test:unit",
 		"test:unit": "docker exec -e NODE_ENV=test fastify_api nubx vitest run",
 		"db:seed": "docker exec fastify_api nub src/db/seed.ts",
-		"prepare": "husky"
+		"prepare": "husky || true"
 	},
 	"dependencies": {
 		"@fastify/compress": "^9.0.0",

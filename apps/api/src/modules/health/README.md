@@ -7,7 +7,7 @@ Health check module — liveness, readiness, and system detail probes for orches
 | Method | Path | Description |
 |---|---|---|
 | GET | `/api/v1/health/live` | **Liveness** — always `200` if the process is running |
-| GET | `/api/v1/health/ready` | **Readiness** — `200` when DB + Valkey are reachable; `503` otherwise |
+| GET | `/api/v1/health/ready` | **Readiness** — `200` when DB is reachable; `503` otherwise |
 | GET | `/api/v1/health/details` | **Details** — heap usage, RSS, event loop delay/utilization, and pressure flag |
 
 ## Example responses
@@ -19,7 +19,7 @@ Health check module — liveness, readiness, and system detail probes for orches
 { "success": true, "data": { "status": "ready" } }
 
 // 503 — unhealthy
-{ "success": false, "error": { "code": "SERVICE_UNAVAILABLE", "message": "valkey unreachable" } }
+{ "success": false, "error": { "code": "SERVICE_UNAVAILABLE", "message": "database unreachable" } }
 ```
 
 ### GET /api/v1/health/details
@@ -54,4 +54,4 @@ Health check module — liveness, readiness, and system detail probes for orches
 ## Services
 
 - `checkDb(db)` — executes `SELECT 1`
-- `checkValkey(valkey)` — executes `PING`
+- `checkValkey(valkey)` — currently commented out while Valkey is disabled

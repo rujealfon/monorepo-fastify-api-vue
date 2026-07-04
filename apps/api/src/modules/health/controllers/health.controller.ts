@@ -3,7 +3,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import { performance } from 'node:perf_hooks'
 import process from 'node:process'
 
-import { checkDb, checkValkey } from '@/modules/health/services/health.service.js'
+import { checkDb } from '@/modules/health/services/health.service.js'
 
 type PressureMetrics = {
   heapUsed: number
@@ -22,17 +22,15 @@ export async function liveness(_request: FastifyRequest, _reply: FastifyReply) {
 }
 
 export async function readiness(request: FastifyRequest, reply: FastifyReply) {
-  const [dbOk, valkeyOk] = await Promise.all([
-    checkDb(request.server.db),
-    checkValkey(request.server.valkey)
-  ])
+  const dbOk = await checkDb(request.server.db)
+  // ponytail: Valkey is disabled for now; add checkValkey(request.server.valkey) back when re-enabled.
 
-  if (!dbOk || !valkeyOk) {
+  if (!dbOk) {
     return reply.status(503).send({
       success: false,
       error: {
         code: 'SERVICE_UNAVAILABLE',
-        message: !dbOk ? 'database unreachable' : 'valkey unreachable'
+        message: 'database unreachable'
       }
     })
   }

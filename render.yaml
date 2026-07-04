@@ -1,0 +1,55 @@
+services:
+  - type: web
+    name: monorepo-fastify-api-vue-api
+    runtime: docker
+    plan: starter
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health/ready
+    numInstances: 1
+    preDeployCommand: node dist/db/migrate.js
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: monorepo-fastify-api-vue-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MOBILE_API_KEY
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: LOG_LEVEL
+        value: info
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://monorepo-fastify-api-vue-web.onrender.com
+      - key: TRUST_PROXY
+        value: 'true'
+
+  - type: web
+    name: monorepo-fastify-api-vue-web
+    runtime: static
+    buildCommand: npm install -g @nubjs/nub && nub install --frozen-lockfile && nub run --filter @monorepo-fastify-api-vue/web build
+    staticPublishPath: ./apps/web/dist
+    envVars:
+      - key: NODE_VERSION
+        value: 24.18.0
+      - key: VITE_API_URL
+        value: https://monorepo-fastify-api-vue-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: monorepo-fastify-api-vue-db
+    plan: basic-256mb
+    region: singapore
+    postgresMajorVersion: '18'
+    databaseName: fastify_prod
+    user: fastify
