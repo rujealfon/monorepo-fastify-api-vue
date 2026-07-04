@@ -47,6 +47,10 @@ Database is [Neon](https://neon.tech) Postgres — no static IP required since N
    - `VITE_API_URL=https://<your-api-project>.vercel.app` (baked into the client bundle at build time — see `apps/web/src/shared/api/client.ts`)
 3. Deploy.
 
+## Troubleshooting
+
+- **`sh: line 1: docker: command not found` / build runs `pnpm run build`** — the Vercel project's **Root Directory** is set to `apps/api` instead of the repo root. With Root Directory = `apps/api`, Vercel looks for `Dockerfile.vercel` inside `apps/api/`, doesn't find it, and falls back to detecting a Node project — which runs `apps/api`'s `build` script (`docker exec fastify_api nubx tsc && ...`), a local-dev-only script that assumes a running docker-compose container. Fix: in the Vercel project's **Settings → General → Root Directory**, clear it (or set to `.`) so it points at the repo root where `Dockerfile.vercel` actually lives, then redeploy.
+
 ## Known limitations vs. current Docker/Fly setup
 
 - **No static outbound IP / no Secure Compute** for Vercel containers — fine here since Neon is public+TLS, but if you ever add another backend that requires IP allowlisting, it won't work without a proxy.
