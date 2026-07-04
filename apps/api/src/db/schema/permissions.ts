@@ -1,4 +1,4 @@
-import { pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
+import { index, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
 import { uuidv7 } from 'uuidv7'
 
 import { roles } from './roles.js'
@@ -18,7 +18,10 @@ export const rolePermissions = pgTable('role_permissions', {
   roleId: uuid('role_id').notNull().references(() => roles.id, { onDelete: 'cascade' }),
   permissionId: uuid('permission_id').notNull().references(() => permissions.id, { onDelete: 'cascade' })
 }, t => [
-  primaryKey({ columns: [t.roleId, t.permissionId] })
+  primaryKey({ columns: [t.roleId, t.permissionId] }),
+  // The composite PK only covers lookups by roleId prefix; the FK cascade
+  // from permissions needs this index to avoid full scans on delete.
+  index('role_permissions_permission_id_idx').on(t.permissionId)
 ])
 
 export type PermissionRow = typeof permissions.$inferSelect

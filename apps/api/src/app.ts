@@ -1,5 +1,6 @@
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 
+import { randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import process from 'node:process'
 import envPlugin from '@fastify/env'
@@ -47,6 +48,8 @@ function parseTrustProxy(value: string | undefined) {
   return value
 }
 
+const REQUEST_ID_PATTERN = /^[\w-]{1,64}$/
+
 function readDotenvTrustProxy() {
   try {
     const line = readFileSync('.env', 'utf8')
@@ -64,12 +67,34 @@ export async function buildApp() {
   const trustProxy = parseTrustProxy(process.env.TRUST_PROXY ?? readDotenvTrustProxy())
   const fastify = Fastify({
     ...(trustProxy !== undefined && { trustProxy }),
+    requestIdHeader: 'x-request-id',
+    genReqId: (request) => {
+      const raw = request.headers['x-request-id']
+      return typeof raw === 'string' && REQUEST_ID_PATTERN.test(raw) ? raw : randomUUID()
+    },
+    requestTimeout: 30_000,
+    connectionTimeout: 30_000,
     logger: {
       level: process.env.LOG_LEVEL ?? 'info',
       transport:
         process.env.NODE_ENV !== 'production'
           ? { target: 'pino-pretty', options: { colorize: true } }
-          : undefined
+          : undefined,
+      ...(process.env.NODE_ENV === 'production' && {
+        base: { service: 'api', environment: process.env.NODE_ENV }
+      }),
+      redact: {
+        paths: [
+          'req.headers.authorization',
+          'req.headers.cookie',
+          'res.headers["set-cookie"]',
+          '*.password',
+          '*.passwordHash',
+          '*.token',
+          '*.secret'
+        ],
+        censor: '[REDACTED]'
+      }
     }
   }).withTypeProvider<ZodTypeProvider>()
 
@@ -170,6 +195,14 @@ export async function buildApp() {
       }
     })
   })
+
+  fastify.setNotFoundHandler(
+    fastify.hasDecorator('rateLimit') ? { preHandler: fastify.rateLimit() } : {},
+    (request, reply) => reply.status(404).send({
+      success: false,
+      error: { code: 'NOT_FOUND', message: 'Route not found' }
+    })
+  )
 
   // Routes
   await fastify.register(healthRoutes, { prefix: '/api/v1/health' })

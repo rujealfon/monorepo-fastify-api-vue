@@ -30,12 +30,15 @@ export const createUserBodySchema = z.object({
   password: passwordSchema.meta({ examples: ['SecurePassword1'] })
 })
 
+export const phoneNumberSchema = z.string()
+  .regex(/^\+?[0-9\s\-()]{7,20}$/, 'Invalid phone number')
+
 export const updateProfileBodySchema = z.object({
-  firstName: z.string().nullable().optional().meta({ description: 'First name', examples: ['John'] }),
-  lastName: z.string().nullable().optional().meta({ description: 'Last name', examples: ['Doe'] }),
-  avatarUrl: z.url().nullable().optional().meta({ description: 'Avatar URL', examples: ['https://example.com/avatar.jpg'] }),
-  bio: z.string().nullable().optional().meta({ description: 'Short bio', examples: ['Software engineer based in NYC'] }),
-  phoneNumber: z.string().nullable().optional().meta({ description: 'Phone number', examples: ['+1234567890'] }),
+  firstName: z.string().max(100).nullable().optional().meta({ description: 'First name', examples: ['John'] }),
+  lastName: z.string().max(100).nullable().optional().meta({ description: 'Last name', examples: ['Doe'] }),
+  avatarUrl: z.url().max(2048).nullable().optional().meta({ description: 'Avatar URL', examples: ['https://example.com/avatar.jpg'] }),
+  bio: z.string().max(1000).nullable().optional().meta({ description: 'Short bio', examples: ['Software engineer based in NYC'] }),
+  phoneNumber: phoneNumberSchema.nullable().optional().meta({ description: 'Phone number', examples: ['+1234567890'] }),
   birthDate: z.iso.date().nullable().optional().meta({ description: 'Birth date (YYYY-MM-DD)', examples: ['1990-01-15'] })
 })
 

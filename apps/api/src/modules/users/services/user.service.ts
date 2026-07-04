@@ -1,7 +1,7 @@
 import type { Db, Tx } from '@/db/index.js'
 
 import type { CreateUserBody, UpdateUserBody } from '@/modules/users/schemas/index.js'
-import { and, count, eq, isNull } from 'drizzle-orm'
+import { and, asc, count, eq, isNull } from 'drizzle-orm'
 
 import { ROLES } from '@/common/constants/index.js'
 import { ConflictError, ForbiddenError, NotFoundError } from '@/common/errors/AppError.js'
@@ -95,6 +95,9 @@ export async function findAllUsers(db: Db, page: number, limit: number) {
       columns: userColumns,
       with: { profile: { columns: profileColumns }, userRoles: userRolesRelation },
       where: isNull(users.deletedAt),
+      // Deterministic pagination — without an order, Postgres may shuffle rows
+      // across pages. uuidv7 ids are time-ordered, so id breaks createdAt ties.
+      orderBy: [asc(users.createdAt), asc(users.id)],
       offset: (page - 1) * limit,
       limit
     }),

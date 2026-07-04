@@ -1,7 +1,7 @@
 import type { Db } from '@/db/index.js'
 
 import type { CreateProductBody, UpdateProductBody } from '@/modules/products/schemas/index.js'
-import { and, count, eq, isNull } from 'drizzle-orm'
+import { and, asc, count, eq, isNull } from 'drizzle-orm'
 
 import { NotFoundError } from '@/common/errors/AppError.js'
 import { resolvePage } from '@/common/pagination.js'
@@ -32,6 +32,9 @@ export async function findAllProducts(db: Db, page: number, limit: number) {
     db.query.products.findMany({
       columns: productColumns,
       where: isNull(products.deletedAt),
+      // Deterministic pagination — without an order, Postgres may shuffle rows
+      // across pages. uuidv7 ids are time-ordered, so id breaks createdAt ties.
+      orderBy: [asc(products.createdAt), asc(products.id)],
       offset: (page - 1) * limit,
       limit
     }),

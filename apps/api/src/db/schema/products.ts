@@ -11,7 +11,9 @@ export const products = pgTable('products', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
   deletedAt: timestamp('deleted_at', { withTimezone: true })
 }, t => [
-  index('products_deleted_at_idx').on(t.deletedAt).where(sql`${t.deletedAt} IS NULL`)
+  // Serves the list query (filter: deletedAt IS NULL, sort: createdAt) with a
+  // single partial index; indexing deletedAt itself would index a constant NULL.
+  index('products_live_created_at_idx').on(t.createdAt).where(sql`${t.deletedAt} IS NULL`)
 ])
 
 export type ProductRow = typeof products.$inferSelect
